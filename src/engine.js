@@ -30,7 +30,7 @@ export default class Engine extends Singleton {
         PlayerController,
         settings={}
     ) {
-        let engine = this.getInstance();
+        let engine = this.instance;
 
         if (engine) return engine;
         engine = new this(logger, PlayerController, settings);
