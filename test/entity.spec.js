@@ -73,14 +73,28 @@ describe('The Entity Class', () => {
                 expect(entity.mesh).to.exist;
                 expect(entity.mesh).to.equal(_comp);
             });
-            it(`should have a meshAsync property that is a promise that resolves
-            to the entity mesh once available`, (done) => {
+            it.only(`should have a meshAsync property that is configurable until
+            it's returned promise resolves to the entity mesh once available, then
+            redefining the property to resolve directly to the mesh, and no longer
+            reconfigurable`, (done) => {
                 expect(() => entity.meshAsync.then(mesh => {
                     expect(mesh).to.exist;
                     expect(mesh).to.equal(_comp);
-                    done();
                 }).catch(done)).to.not.throw(Error);
-                setTimeout(() => entity.TestComponent = _comp, 50);
+                expect(() => entity.meshAsync.then(mesh => {
+                    expect(mesh).to.exist;
+                    expect(mesh).to.equal(_comp);
+                }).catch(done)).to.not.throw(Error);
+                setTimeout(() => {
+                    entity.TestComponent = _comp;
+                    setTimeout(() => {
+                        expect(() => entity.meshAsync.then(mesh => {
+                            expect(mesh).to.exist;
+                            expect(mesh).to.equal(_comp);
+                            done();
+                        }).catch(done)).to.not.throw(Error);
+                    }, 20)
+                }, 20);
             });
             it(`should have a get method that takes a property path and
             returns the value or false if it doesn't exist`, () => {

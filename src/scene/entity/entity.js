@@ -30,11 +30,13 @@ export default class Entity extends Static {
                     const stop = setInterval(() => {
                         if (entity.mesh) {
                             clearInterval(stop);
-                            Object.defineProperty(entity, 'meshAsync', {
-                                value: Promise.resolve(entity.mesh),
-                                configurable: false,
-                                writable: false
-                            });
+                            if (Object.getOwnPropertyDescriptor(entity, 'meshAsync').get) {
+                                Object.defineProperty(entity, 'meshAsync', {
+                                    value: Promise.resolve(entity.mesh),
+                                    configurable: false,
+                                    writable: false
+                                });
+                            }
                             res(entity.mesh);
                         } else if (Date.now() - t > asyncTimeout) {
                             clearInterval(stop);
