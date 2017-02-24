@@ -4,7 +4,7 @@
   "authors": [
     "zimmed@zimmed.io"
   ],
-  "version": "0.1.0d",
+  "version": "0.1.2",
   "license": "MIT",
   "repository": "github.com/zimmed/bavel",
   "main": "lib/index.js",
