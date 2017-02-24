@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "lodash",
+    "transform-export-extensions"
+  ],
+  "presets": [
+    "async-to-bluebird",
+    "es2015"
+  ]
+}
