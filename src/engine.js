@@ -5,7 +5,7 @@ import Scene from './scene';
 import EventProxy from './state-event-proxy';
 import events from './state-events';
 
-if (!require.ensure) {
+if (typeof require.ensure !== 'function') {
     require.ensure = (dep, cb) => cb(dep);
 }
 
