@@ -13,11 +13,12 @@
     <li><strong>TESTS: 94 passing (1s) - 1 pending</strong></li>
     <li>Added complete test coverage for Engine Class</li>
     <li>Added complete test coverage for PlayerController Class</li>
+    <li>Added complete test coverage for StateEventProxy</li>
 </ul>
 <p><strong>0.1 Todo</strong></p>
 <ul>
-    <li>Finish test coverage for StateEventProxy</li>
-    <li>Add documentation to code and generate API docs</li>
+    <li>Add in-line documentation to code</li>
+    <li>Generate API documentation</li>
 </ul>
 <p><strong>Roadmap</strong></p>
 <ul>
