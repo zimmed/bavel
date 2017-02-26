@@ -20,7 +20,7 @@ export default class PlayerController extends Singleton {
 
     constructor(engine, uiData={}) {
         super();
-        StateProxy(this, `engine.${this.constructor.name}`, _.assign({
+        StateProxy(this, `engine.ctrl`, _.assign({
             messages: [],
             player: null,
             target: null
@@ -40,59 +40,86 @@ export default class PlayerController extends Singleton {
         });
     }
 
-    message(type, sender, msg) {
+    message(type, sender, msg, max=this.constructor.MAX_MESSAGES) {
         return this.messages = _.take(
             _.concat(
                 {time: this.constructor.getTime(), type, sender, msg},
                 this.messages),
-            this.constructor.MAX_MESSAGES);
+            max);
     }
 
     mClick({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error('Improper event passed to mClick');
+        }
         this.engine.logger.debug(`Click at (${pageX}, ${pageY})`);
     }
 
     mAltClick({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error('Improper event passed to mAltClick');
+        }
         this.engine.logger.debug(`Alt Click at (${pageX}, ${pageY})`);
     }
 
-    mWheel({deltaY}) {
+    mWheel({deltaX, deltaY, deltaZ}) {
+        if (_.isUndefined(deltaY) && _.isUndefined(deltaX) && _.isUndefined(deltaX)) {
+            throw new Error('Improper event passed to mWheel');
+        }
         if (deltaY) {
             this.engine.logger.debug(`MouseWheel scroll ${deltaY > 0 ? 'out' : 'in'} ${deltaY}`);
         }
     }
 
-    mOver(evt) {
+    mOver({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error('Improper event passed to mAltClick');
+        }
         this.engine.logger.debug('Pointer has entered canvas element.');
     }
 
-    mOut(evt) {
+    mOut({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error('Improper event passed to mAltClick');
+        }
         this.engine.logger.debug('Pointer has left cavnas element.');
     }
 
     entityOver(entity, evt) {
+        if (!entity || !evt) {
+            throw new Error('Improper arguments passed to entityOver');
+        }
         this.target = entity;
     }
 
     entityOut(entity, evt) {
-        if (this.target.uid === entity.uid) {
+        if (!entity || !evt) {
+            throw new Error('Improper arguments passed to entityOut');
+        }
+        if (!this.target || this.target.uid === entity.uid) {
             this.target = null;
         }
     }
 
     entityClick(entity, {pointerX, pointerY}) {
+        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {
+            throw new Error('Improper arguments passed to entityClick');
+        }
         let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
 
-        this.engine.instance.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
+        this.engine.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
     }
 
     entityAltClick(entity, {pointerX, pointerY}) {
+        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {
+            throw new Error('Improper arguments passed to entityAltClick');
+        }
         let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
 
-        this.engine.instance.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
+        this.engine.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
     }
 }
 
 PlayerController.MAX_MESSAGES = 100;
 
-const round = (x) => Math.floor(x * 100 + .5) / 100;
+export const round = (x) => Math.floor(x * 100 + .5) / 100;

@@ -1,6 +1,7 @@
 export isArray from 'lodash/isArray';
 export isObject from 'lodash/isObject';
 export isPlainObject from 'lodash/isPlainObject';
+export isUndefined from 'lodash/isUndefined';
 export isNumber from 'lodash/isNumber';
 export get from 'lodash/get';
 export assign from 'lodash/assign';
