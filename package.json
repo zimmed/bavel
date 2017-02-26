@@ -9,7 +9,9 @@
   "repository": "github.com/zimmed/bavel",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node ./node_modules/.bin/mocha --require babel-core/register 'test/**/*.spec.js'",
+    "test-save": "node ./node_modules/.bin/mocha -R json-stream --require babel-core/register 'test/**/*.spec.js' > test-results.json",
+    "test-run": "node ./node_modules/.bin/mocha --require babel-core/register 'test/**/*.spec.js'",
+    "test": "npm run test-save && npm run test-run",
     "compile": "rm -rf ./lib && node ./node_modules/.bin/babel -d lib/ src/"
   },
   "graphicsLibs": [

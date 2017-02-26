@@ -1,1 +1,4 @@
 src
+test
+test-results.json
+.gitignore
