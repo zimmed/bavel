@@ -5,6 +5,10 @@ import Scene from './scene';
 import EventProxy from './state-event-proxy';
 import events from './state-events';
 
+if (!require.ensure) {
+    require.ensure = (dep, cb) => cb(dep);
+}
+
 export const LoadStates = {
     BOOT: 'Booting Up',
     RES: 'Loading Resources',
@@ -17,15 +21,19 @@ export const LoadStates = {
     DONE: false
 };
 
-const _engine = {};
-
-let loader = null,
-    GraphicsLibrary = null;
+let loader,
+    logger,
+    playerController,
+    GraphicsLibrary,
+    resourceProvider,
+    canvasElement,
+    babylonEngine,
+    terrainEntity;
 
 export default class Engine extends Singleton {
 
     static init(
-        logger,
+        loggerService,
         resourceProviderLoader,
         PlayerController,
         settings={}
@@ -33,22 +41,24 @@ export default class Engine extends Singleton {
         let engine = this.instance;
 
         if (engine) return engine;
-        engine = new this(logger, PlayerController, settings);
+        loader = logger = playerController = GraphicsLibrary = terrainEntity =
+            resourceProvider = canvasElement = babylonEngine = null;
+        engine = new this(loggerService, PlayerController, settings);
         engine.loading = LoadStates.RES;
         loader = resourceProviderLoader().then(provider => {
-            _engine.provider = provider;
+            resourceProvider = provider;
             engine.loading = LoadStates.INIT;
             engine.scene = new Scene(engine);
         });
         return engine;
     }
 
-    constructor(logger, PlayerController, settings) {
-        super();
+    // For testing purposes -- cannot stub constructor
+    static constructorHelper(self, loggerService, PlayerController, settings) {
         if (!PlayerController) {
             PlayerController = require('./player-controller').default;
         }
-        _.assign(EventProxy(this, 'engine', {
+        _.assign(EventProxy(self, 'engine', {
             fps: 0,
             loading: LoadStates.BOOT
         }), {
@@ -56,25 +66,28 @@ export default class Engine extends Singleton {
             running: false,
             settings
         });
-        _.assign(_engine, {
-            logger,
-            playerCtrl: new PlayerController(this)
-        });
+        logger = loggerService;
+        playerController = new PlayerController(self);
+    }
+
+    constructor(...args) {
+        super();
+        Engine.constructorHelper(this, ...args);
     }
 
     get GL() { return GraphicsLibrary; }
-    get baby() { return _engine.baby; }
-    get canvas() { return _engine.canvas; }
-    get provider() { return _engine.provider; }
-    get playerCtrl() { return _engine.playerCtrl; }
-    get logger() { return _engine.logger; }
-    get terrain() { return _engine.terrain; }
-    set terrain(v) { return _engine.terrain = v; }
+    get baby() { return babylonEngine; }
+    get canvas() { return canvasElement; }
+    get provider() { return resourceProvider; }
+    get ctrl() { return playerController; }
+    get logger() { return logger; }
+    get terrain() { return terrainEntity; }
+    set terrain(v) { return terrainEntity = v; }
 
     mount(canvas) {
         return loader
             .then(() => {
-                this.logger.debug('Mounting engine to canvas...');
+                logger.debug('Mounting engine to canvas...');
                 this.loading = LoadStates.GL;
                 return new Promise(res => {
                     require.ensure(['babylonjs'], () => {
@@ -85,61 +98,58 @@ export default class Engine extends Singleton {
             .then(BabylonJS => {
                 GraphicsLibrary = BabylonJS;
 
-                _engine.loading = LoadStates.GAME;
-                _engine.baby = new GraphicsLibrary.Engine(canvas, true);
-                _engine.canvas = canvas;
-                this.logger.debug('Loading scene...');
+                this.loading = LoadStates.GAME;
+                babylonEngine = new GraphicsLibrary.Engine(canvas, true);
+                canvasElement = canvas;
+                logger.debug('Loading scene...');
                 return this.scene.mount(this);
             })
             .then(() => {
                 this.loading = LoadStates.DATA;
-                this.logger.info('Engine mounted.');
+                logger.info('Engine mounted.');
                 return this;
             });
     }
 
     dismount() {
-        this.logger.debug('Dismounting from to canvas...');
+        logger.debug('Dismounting from to canvas...');
         return new Promise(res => {
             if (this.running) {
-                Engine.stop();
+                this.stop();
             }
-            this.scene.dismount(this);
-            delete this.scene;
-            _.get(_engine, 'baby.dispose', _.noop)();
-            delete _engine.baby;
-            delete _engine.canvas;
-            this.logger.info('Engine dismounted.');
+            this.scene = this.scene.dismount(this);
+            _.get(babylonEngine, 'dispose', _.noop)();
+            babylonEngine = null;
+            canvasElement = null;
+            logger.info('Engine dismounted.');
             res(this);
         });
     }
 
     run(entities) {
-        const step = 1000 / 20;
+        const step = 1000 / 60;
         let count,
             time,
             accum = 0,
             defer = Promise.resolve(this);
 
-
         if (!this.running && this.loading === LoadStates.DATA) {
             if (entities) {
                 this.loading = LoadStates.PROC;
-                this.logger.debug('Adding initial entities to scene...');
+                logger.debug('Adding initial entities to scene...');
                 defer = this.scene.updateEntities(this, entities);
             }
-            defer.then(() => {
-                this.playerCtrl.setup(this.settings);
-                _.forEach(this.playerCtrl.DOM_EVENTS, (fn, name) =>
-                    this.canvas.addEventListener(name, e =>
-                        e.preventDefault() && false || this.playerCtrl[fn](e)));
+            defer = defer.then(() => {
+                this.ctrl.setup(this.settings);
+                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =>
+                    canvasElement.addEventListener(name, e =>
+                        e.preventDefault() && false || this.ctrl[fn](e)));
                 this.loading = LoadStates.REND;
-                this.logger.debug('Starting engine render loop. ENGINE: ', this);
-                this.baby.before
-                this.baby.runRenderLoop(() => {
+                logger.debug('Starting engine render loop. ENGINE: ', this);
+                babylonEngine.runRenderLoop(() => {
                     count = 0;
                     time = Date.now();
-                    accum = this.baby.getDeltaTime();
+                    accum = babylonEngine.getDeltaTime();
                     // accum += engine.baby.getDeltaTime();
                     // while (accum >= step) {
                     //     count++;
@@ -150,7 +160,7 @@ export default class Engine extends Singleton {
                     this.scene.tick(this, time, accum);
                     this.scene.baby.render();
                 });
-                setTimeout(() => this.loading = LoadStates.DONE, 1000);
+                this.loading = LoadStates.DONE;
                 setInterval(() => this.fps = Math.floor(this.baby.fps), 500);
                 this.running = true;
                 return this;
@@ -161,8 +171,8 @@ export default class Engine extends Singleton {
 
     stop() {
         if (this.running) {
-            this.logger.debug('Stopping engine render loop.');
-            this.baby.stopRenderLoop();
+            logger.debug('Stopping engine render loop.');
+            babylonEngine.stopRenderLoop();
             this.running = false;
             this.loading = LoadStates.DATA;
         }
@@ -170,7 +180,7 @@ export default class Engine extends Singleton {
     }
 
     resize() {
-        return _.get(_engine, 'baby.resize', _.noop)();
+        return _.get(babylonEngine, 'resize', _.noop)();
     }
 
     toVector({x=0, y=0, z=0}={}) {
@@ -186,7 +196,7 @@ export default class Engine extends Singleton {
     }
 
     emitEvent(scope, v, obj) {
-        return events.emit(`${scope}`, v, undefined, obj);
+        return events.emit(scope, v, obj);
     }
 
     onEvent(event, handler) {
@@ -234,19 +244,19 @@ export default class Engine extends Singleton {
                 }
                 if (click) {
                     am.registerAction(new ExecuteCodeAction(
-                        clickT, e => this.playerCtrl.entityClick(entity, e)));
+                        clickT, e => this.ctrl.entityClick(entity, e)));
                 }
                 if (altClick) {
                     am.registerAction(new ExecuteCodeAction(
-                        altClickT, e => this.playerCtrl.entityAltClick(entity, e)));
+                        altClickT, e => this.ctrl.entityAltClick(entity, e)));
                 }
                 if (over) {
                     am.registerAction(new ExecuteCodeAction(
-                        overT, e => this.playerCtrl.entityOver(entity, e)));
+                        overT, e => this.ctrl.entityOver(entity, e)));
                 }
                 if (out) {
                     am.registerAction(new ExecuteCodeAction(
-                        outT, e => this.playerCtrl.entityOut(entity, e)));
+                        outT, e => this.ctrl.entityOut(entity, e)));
                 }
             });
     }
@@ -259,4 +269,15 @@ export default class Engine extends Singleton {
             while (am.actions.length) { am.actions.pop(); }
         }
     }
-};
+}
+
+export const getPrivateDataForTest = () => ({
+    loader,
+    logger,
+    playerController,
+    GraphicsLibrary,
+    resourceProvider,
+    canvasElement,
+    babylonEngine,
+    terrainEntity
+});

@@ -73,7 +73,7 @@ describe('The Entity Class', () => {
                 expect(entity.mesh).to.exist;
                 expect(entity.mesh).to.equal(_comp);
             });
-            it.only(`should have a meshAsync property that is configurable until
+            it(`should have a meshAsync property that is configurable until
             it's returned promise resolves to the entity mesh once available, then
             redefining the property to resolve directly to the mesh, and no longer
             reconfigurable`, (done) => {
