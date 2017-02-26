@@ -10,12 +10,12 @@
 </p>
 <p><strong>Details</strong></p>
 <ul>
-    <li><strong>TESTS: 67 passing (1s) - 1 pending</strong></li>
+    <li><strong>TESTS: 94 passing (1s) - 1 pending</strong></li>
     <li>Added complete test coverage for Engine Class</li>
+    <li>Added complete test coverage for PlayerController Class</li>
 </ul>
 <p><strong>0.1 Todo</strong></p>
 <ul>
-    <li>Add complete test coverage for PlayerController class</li>
     <li>Finish test coverage for StateEventProxy</li>
     <li>Add documentation to code and generate API docs</li>
 </ul>

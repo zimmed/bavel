@@ -113,7 +113,7 @@ describe('The Engine Class', () => {
 
     describe('constructor', () => {
 
-        it(`should instantiate a new Engine instance with EventProxied properties
+        it(`should create a new Engine instance with EventProxied properties
         (fps, loading) and standard enumerable properties (scene, running,
         settings)`, () => {
             let engine;
