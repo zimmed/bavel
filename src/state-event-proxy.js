@@ -79,7 +79,6 @@ export class StateEventProxy extends Static {
                     return target[key];
                 },
                 set: (target, i, v) => {
-                    console.log(i, typeof i);
                     if (!_.isNaN(i)) {
                         v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||
                             _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;

@@ -1,13 +1,13 @@
-<h4> 0.1.4 - Unit Test Coverage </h4>
+<h4> 0.1.5 - Hotfix </h4>
 <p>
-    Added missing unit test coverage for project.
+    Fixed bad poly-fill for require.ensure in engine.js.
 </p>
 <p><strong>Details</strong></p>
 <ul>
     <li><strong>TESTS: 104 passing (1s)</strong></li>
-    <li>Added complete test coverage for Engine Class</li>
-    <li>Added complete test coverage for PlayerController Class</li>
-    <li>Added complete test coverage for StateEventProxy</li>
+    <li>Fixed bad require.ensure polyfill</li>
+    <li>Added test reports</li>
+    <li>Removed accidental console.log</li>
 </ul>
 <p><strong>0.1 Todo</strong></p>
 <ul>
@@ -24,6 +24,17 @@
 <br /><br />
 <h4> History </h4>
 <hr />
+<h4> 0.1.4 - Unit Test Coverage </h4>
+<p>
+    Added missing unit test coverage for project.
+</p>
+<p><strong>Details</strong></p>
+<ul>
+    <li><strong>TESTS: 104 passing (1s)</strong></li>
+    <li>Added complete test coverage for Engine Class</li>
+    <li>Added complete test coverage for PlayerController Class</li>
+    <li>Added complete test coverage for StateEventProxy</li>
+</ul>
 <h4> 0.1.3 - Hotfix </h4>
 <p>
     Fixed test+implementation for bad object-reconfiguration in Entity.meshAsync
