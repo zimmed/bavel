@@ -4,7 +4,7 @@
 </p>
 <p><strong>Details</strong></p>
 <ul>
-    <li><strong>TESTS: 94 passing (1s) - 1 pending</strong></li>
+    <li><strong>TESTS: 104 passing (1s)</strong></li>
     <li>Added complete test coverage for Engine Class</li>
     <li>Added complete test coverage for PlayerController Class</li>
     <li>Added complete test coverage for StateEventProxy</li>
