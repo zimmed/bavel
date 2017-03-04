@@ -1,13 +1,11 @@
-<h4> 0.1.5 - Hotfix </h4>
+<h4> 0.1.6 - Docstrings </h4>
 <p>
-    Fixed bad poly-fill for require.ensure in engine.js.
+    ...
 </p>
 <p><strong>Details</strong></p>
 <ul>
     <li><strong>TESTS: 104 passing (1s)</strong></li>
-    <li>Fixed bad require.ensure polyfill</li>
-    <li>Added test reports</li>
-    <li>Removed accidental console.log</li>
+    <li>...</li>
 </ul>
 <p><strong>0.1 Todo</strong></p>
 <ul>
@@ -23,6 +21,17 @@
 </ul>
 <br /><br />
 <h4> History </h4>
+<h4> 0.1.5 - Hotfix </h4>
+<p>
+    Fixed bad poly-fill for require.ensure in engine.js.
+</p>
+<p><strong>Details</strong></p>
+<ul>
+    <li><strong>TESTS: 104 passing (1s)</strong></li>
+    <li>Fixed bad require.ensure polyfill</li>
+    <li>Added test reports</li>
+    <li>Removed accidental console.log</li>
+</ul>
 <hr />
 <h4> 0.1.4 - Unit Test Coverage </h4>
 <p>
