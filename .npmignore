@@ -1,4 +1,6 @@
+.c9
+.idea
+.gitignore
 src
 test
 test-results.json
-.gitignore
