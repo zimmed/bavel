@@ -1,9 +1,67 @@
-import {_} from './utils';
-import Singleton from 'basic-singleton';
-import Promise from 'bluebird';
-import Scene from './scene';
-import EventProxy from './state-event-proxy';
-import events from './state-events';
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/engine.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/state-event-proxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-stateeventproxy">stateeventproxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/engine.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import {_} from &apos;./utils&apos;;
+import Singleton from &apos;basic-singleton&apos;;
+import Promise from &apos;bluebird&apos;;
+import Scene from &apos;./scene&apos;;
+import EventProxy from &apos;./state-event-proxy&apos;;
+import events from &apos;./state-events&apos;;
 
 /**
  * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.
@@ -26,7 +84,7 @@ import events from './state-events';
  * @property {function(id: string): ComponentClass} - Static component class for Component ID.
  */
 /**
- * @typedef {function(): Promise<ResourceProvider>} ResourceLoader
+ * @typedef {function(): Promise&lt;ResourceProvider&gt;} ResourceLoader
  */
 
 /**
@@ -57,8 +115,8 @@ import events from './state-events';
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
-if (typeof require.ensure !== 'function') {
-    require.ensure = (dep, cb) => cb(dep);
+if (typeof require.ensure !== &apos;function&apos;) {
+    require.ensure = (dep, cb) =&gt; cb(dep);
 }
 
 let // Local vars for read-only class members
@@ -74,13 +132,13 @@ let // Local vars for read-only class members
 /**
  * The game engine class (abstraction of BabylonJS Engine).
  *
- * @example <caption>Basic construction with default args</caption>
- * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider));
- * @example <caption>One-line runner</caption>
+ * @example &lt;caption&gt;Basic construction with default args&lt;/caption&gt;
+ * let engine = Engine.init(logger, () =&gt; Promise.resolve(resourceProvider));
+ * @example &lt;caption&gt;One-line runner&lt;/caption&gt;
  * Engine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)
- *     .mount(document.getElementById('my-canvas'))
- *     .then(engine => engine.run(entityData))
- *     .then(engine => window.addEventListener('resize', () => engine.resize()));
+ *     .mount(document.getElementById(&apos;my-canvas&apos;))
+ *     .then(engine =&gt; engine.run(entityData))
+ *     .then(engine =&gt; window.addEventListener(&apos;resize&apos;, () =&gt; engine.resize()));
  */
 export default class Engine extends Singleton {
 
@@ -107,7 +165,7 @@ export default class Engine extends Singleton {
             resourceProvider = canvasElement = babylonEngine = null;
         engine = new this(loggerService, PlayerController, settings);
         engine.loading = LoadStates.RES;
-        loader = resourceProviderLoader().then(provider => {
+        loader = resourceProviderLoader().then(provider =&gt; {
             resourceProvider = provider;
             engine.loading = LoadStates.INIT;
             engine.scene = new Scene(engine);
@@ -122,9 +180,9 @@ export default class Engine extends Singleton {
      */
     constructorHelper( loggerService, PlayerController, settings) {
         if (!PlayerController) {
-            PlayerController = require('./player-controller').default;
+            PlayerController = require(&apos;./player-controller&apos;).default;
         }
-        EventProxy(self, 'engine', ['fps', 'loading']);
+        EventProxy(self, &apos;engine&apos;, [&apos;fps&apos;, &apos;loading&apos;]);
         /**
          * The currently rendered frames-per-second.
          *
@@ -186,7 +244,7 @@ export default class Engine extends Singleton {
      */
     get logger() { return logger; }
     /**
-     * The scene's default terrain entity.
+     * The scene&apos;s default terrain entity.
      *
      * @type {?Entity}
      */
@@ -201,31 +259,31 @@ export default class Engine extends Singleton {
      *
      * @access public
      * @param {DOMElement} canvas
-     * @return {Promise<Engine>}
+     * @return {Promise&lt;Engine&gt;}
      */
     mount(canvas) {
         return loader
-            .then(() => {
-                logger.debug('Mounting engine to canvas...');
+            .then(() =&gt; {
+                logger.debug(&apos;Mounting engine to canvas...&apos;);
                 this.loading = LoadStates.GL;
-                return new Promise(res => {
-                    require.ensure(['babylonjs'], () => {
-                        res(require('babylonjs'));
-                    }, 'graphics');
+                return new Promise(res =&gt; {
+                    require.ensure([&apos;babylonjs&apos;], () =&gt; {
+                        res(require(&apos;babylonjs&apos;));
+                    }, &apos;graphics&apos;);
                 });
             })
-            .then(BabylonJS => {
+            .then(BabylonJS =&gt; {
                 GraphicsLibrary = BabylonJS;
 
                 this.loading = LoadStates.GAME;
                 babylonEngine = new GraphicsLibrary.Engine(canvas, true);
                 canvasElement = canvas;
-                logger.debug('Loading scene...');
+                logger.debug(&apos;Loading scene...&apos;);
                 return this.scene.mount(this);
             })
-            .then(() => {
+            .then(() =&gt; {
                 this.loading = LoadStates.DATA;
-                logger.info('Engine mounted.');
+                logger.info(&apos;Engine mounted.&apos;);
                 return this;
             });
     }
@@ -234,19 +292,19 @@ export default class Engine extends Singleton {
      * Dismount engine from canvas.
      *
      * @access public
-     * @return {Promise<Engine>}
+     * @return {Promise&lt;Engine&gt;}
      */
     dismount() {
-        logger.debug('Dismounting from to canvas...');
-        return new Promise(res => {
+        logger.debug(&apos;Dismounting from to canvas...&apos;);
+        return new Promise(res =&gt; {
             if (this.running) {
                 this.stop();
             }
             this.scene = this.scene.dismount(this);
-            _.get(babylonEngine, 'dispose', _.noop)();
+            _.get(babylonEngine, &apos;dispose&apos;, _.noop)();
             babylonEngine = null;
             canvasElement = null;
-            logger.info('Engine dismounted.');
+            logger.info(&apos;Engine dismounted.&apos;);
             res(this);
         });
     }
@@ -256,7 +314,7 @@ export default class Engine extends Singleton {
      *
      * @access public
      * @param {EntityMetaData[]} [entities]
-     * @return {Promise<Engine>}
+     * @return {Promise&lt;Engine&gt;}
      */
     run(entities) {
         const step = 1000 / 60;
@@ -265,35 +323,35 @@ export default class Engine extends Singleton {
             accum = 0,
             defer = Promise.resolve(this);
 
-        if (!this.running && this.loading === LoadStates.DATA) {
+        if (!this.running &amp;&amp; this.loading === LoadStates.DATA) {
             if (entities) {
                 this.loading = LoadStates.PROC;
-                logger.debug('Adding initial entities to scene...');
+                logger.debug(&apos;Adding initial entities to scene...&apos;);
                 defer = this.scene.updateEntities(this, entities);
             }
-            defer = defer.then(() => {
+            defer = defer.then(() =&gt; {
                 this.ctrl.setup(this.settings);
-                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =>
-                    canvasElement.addEventListener(name, e =>
-                        e.preventDefault() && false || this.ctrl[fn](e)));
+                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =&gt;
+                    canvasElement.addEventListener(name, e =&gt;
+                        e.preventDefault() &amp;&amp; false || this.ctrl[fn](e)));
                 this.loading = LoadStates.REND;
-                logger.debug('Starting engine render loop. ENGINE: ', this);
-                babylonEngine.runRenderLoop(() => {
+                logger.debug(&apos;Starting engine render loop. ENGINE: &apos;, this);
+                babylonEngine.runRenderLoop(() =&gt; {
                     count = 0;
                     time = Date.now();
                     accum = babylonEngine.getDeltaTime();
                     // accum += engine.baby.getDeltaTime();
-                    // while (accum >= step) {
+                    // while (accum &gt;= step) {
                     //     count++;
                     //     engine.scene.tick(engine, time, step);
                     //     accum -= step;
-                    //     if (count > 5) accum = 0;
+                    //     if (count &gt; 5) accum = 0;
                     // }
                     this.scene.tick(this, time, accum);
                     this.scene.baby.render();
                 });
                 this.loading = LoadStates.DONE;
-                setInterval(() => {
+                setInterval(() =&gt; {
                     this.fps = Math.floor(this.baby.fps)
                 }, 500);
                 this.running = true;
@@ -311,7 +369,7 @@ export default class Engine extends Singleton {
      */
     stop() {
         if (this.running) {
-            logger.debug('Stopping engine render loop.');
+            logger.debug(&apos;Stopping engine render loop.&apos;);
             babylonEngine.stopRenderLoop();
             this.running = false;
             this.loading = LoadStates.DATA;
@@ -326,7 +384,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     resize() {
-        return _.get(babylonEngine, 'resize', _.noop)();
+        return _.get(babylonEngine, &apos;resize&apos;, _.noop)();
     }
 
     /**
@@ -367,9 +425,9 @@ export default class Engine extends Singleton {
      * Emits the given state event.
      *
      * @access public
-     * @param {string} scope - The scoped event name (e.g., 'engine.fps').
+     * @param {string} scope - The scoped event name (e.g., &apos;engine.fps&apos;).
      * @param {*} v - The changed value.
-     * @param {Object} obj - The parent object who's property changed.
+     * @param {Object} obj - The parent object who&apos;s property changed.
      * @return {undefined}
      */
     emitEvent(scope, v, obj) {
@@ -392,7 +450,7 @@ export default class Engine extends Singleton {
      * Hooks a Keyboard Key action listener into the engine.
      *
      * @access public
-     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).
+     * @param {string} key - The event key to listen for (e.g., &apos;w&apos;, &apos;a&apos;, &apos;s&apos;, &apos;d&apos;, &apos; &apos;, etc.).
      * @param {Object} handlers
      * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.
      * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.
@@ -411,12 +469,12 @@ export default class Engine extends Singleton {
         if (handler || downHandler) {
             am.registerAction(new ExecuteCodeAction(
                 {trigger: kDn, parameter: key},
-                () => (handler || downHandler)(this, key, true)));
+                () =&gt; (handler || downHandler)(this, key, true)));
         }
         if (handler || upHandler) {
             am.registerAction(new ExecuteCodeAction(
                 {trigger: kUp, parameter: key},
-                () => (handler || upHandler)(this, key, false)));
+                () =&gt; (handler || upHandler)(this, key, false)));
         }
     }
 
@@ -441,8 +499,8 @@ export default class Engine extends Singleton {
         const outT = ActionManager.OnPointerOutTrigger;
 
         return entity.meshAsync
-            .then(mesh => mesh.ready())
-            .then(({baby}) => {
+            .then(mesh =&gt; mesh.ready())
+            .then(({baby}) =&gt; {
                 let am = baby.actionManager;
 
                 if (!am) {
@@ -453,19 +511,19 @@ export default class Engine extends Singleton {
                 }
                 if (click) {
                     am.registerAction(new ExecuteCodeAction(
-                        clickT, e => this.ctrl.entityClick(entity, e)));
+                        clickT, e =&gt; this.ctrl.entityClick(entity, e)));
                 }
                 if (altClick) {
                     am.registerAction(new ExecuteCodeAction(
-                        altClickT, e => this.ctrl.entityAltClick(entity, e)));
+                        altClickT, e =&gt; this.ctrl.entityAltClick(entity, e)));
                 }
                 if (over) {
                     am.registerAction(new ExecuteCodeAction(
-                        overT, e => this.ctrl.entityOver(entity, e)));
+                        overT, e =&gt; this.ctrl.entityOver(entity, e)));
                 }
                 if (out) {
                     am.registerAction(new ExecuteCodeAction(
-                        outT, e => this.ctrl.entityOut(entity, e)));
+                        outT, e =&gt; this.ctrl.entityOut(entity, e)));
                 }
             });
     }
@@ -480,7 +538,7 @@ export default class Engine extends Singleton {
         let am = entity.mesh.baby.actionManager;
 
         if (am) {
-            am.hoverCursor = 'default';
+            am.hoverCursor = &apos;default&apos;;
             while (am.actions.length) { am.actions.pop(); }
         }
     }
@@ -502,21 +560,21 @@ export default class Engine extends Singleton {
  * @property {null} DONE
  */
 export const LoadStates = {
-    BOOT: 'Booting Up',
-    RES: 'Loading Resources',
-    INIT: 'Initial Setup',
-    GL: 'Loading Graphics Libraries',
-    GAME: 'Loading Game Engine',
-    DATA: 'Waiting For Initial Data',
-    PROC: 'Processing Initial Data',
-    REND: 'Rendering To Canvas',
+    BOOT: &apos;Booting Up&apos;,
+    RES: &apos;Loading Resources&apos;,
+    INIT: &apos;Initial Setup&apos;,
+    GL: &apos;Loading Graphics Libraries&apos;,
+    GAME: &apos;Loading Game Engine&apos;,
+    DATA: &apos;Waiting For Initial Data&apos;,
+    PROC: &apos;Processing Initial Data&apos;,
+    REND: &apos;Rendering To Canvas&apos;,
     DONE: null
 };
 
 /**
  * @access private
  */
-export const getPrivateDataForTest = () => ({
+export const getPrivateDataForTest = () =&gt; ({
     loader,
     logger,
     playerController,
@@ -526,3 +584,20 @@ export const getPrivateDataForTest = () => ({
     babylonEngine,
     terrainEntity
 });
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

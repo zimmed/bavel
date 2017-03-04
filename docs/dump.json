@@ -1,0 +1,4167 @@
+[
+  {
+    "__docId__": 0,
+    "kind": "file",
+    "name": "src/engine.js",
+    "content": "import {_} from './utils';\nimport Singleton from 'basic-singleton';\nimport Promise from 'bluebird';\nimport Scene from './scene';\nimport EventProxy from './state-event-proxy';\nimport events from './state-events';\n\n/**\n * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.\n */\n\n/**\n * @typedef {Object} EntityData\n */\n/**\n * @typedef {EntityData} EntityMetaData\n * @property {string} id - the generic Entity ID.\n * @property {string} uid - the instance-specific identifier.\n */\n/**\n * @typedef {class} ComponentClass\n */\n/**\n * @typedef {Object} ResourceProvider\n * @property {function(id: string): EntityData} - Raw object containing default component definitions for Entity ID.\n * @property {function(id: string): ComponentClass} - Static component class for Component ID.\n */\n/**\n * @typedef {function(): Promise<ResourceProvider>} ResourceLoader\n */\n\n/**\n * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler\n */\n/**\n * @typedef {Object} KeyDefinition\n * @property {string} key\n * @property {KeyHandler} [handler] - The handler function for both key up and down.\n * @property {KeyHandler} [upHandler] - The handler specifically for key up.\n * @property {KeyHandler} [downHandler] - The handler specifically for key down.\n */\n/**\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n */\n\n/**\n * @typedef {{\n *  info: function,\n *  debug: function,\n *  warn: function,\n *  error: function\n * }} Logger\n */\n\n// Cannot use require.ensure when not using webpack (i.e., mocha environment)\n//  so this polyfill is required to not break run.\nif (typeof require.ensure !== 'function') {\n    require.ensure = (dep, cb) => cb(dep);\n}\n\nlet // Local vars for read-only class members\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity;\n\n/**\n * The game engine class (abstraction of BabylonJS Engine).\n *\n * @example <caption>Basic construction with default args</caption>\n * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider));\n * @example <caption>One-line runner</caption>\n * Engine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n *     .mount(document.getElementById('my-canvas'))\n *     .then(engine => engine.run(entityData))\n *     .then(engine => window.addEventListener('resize', () => engine.resize()));\n */\nexport default class Engine extends Singleton {\n\n    /**\n     * The general creation/initialization method for the class. Creates an\n     * engine instance or returns the existing one if already instantiated.\n     *\n     * @param {Logger} loggerService\n     * @param {ResourceLoader} resourceProviderLoader\n     * @param {class} [PlayerController]\n     * @param {Settings} [settings={}]\n     * @return {Engine}\n     */\n    static init(\n        loggerService,\n        resourceProviderLoader,\n        PlayerController,\n        settings={}\n    ) {\n        let engine = this.instance;\n\n        if (engine) return engine;\n        loader = logger = playerController = GraphicsLibrary = terrainEntity =\n            resourceProvider = canvasElement = babylonEngine = null;\n        engine = new this(loggerService, PlayerController, settings);\n        engine.loading = LoadStates.RES;\n        loader = resourceProviderLoader().then(provider => {\n            resourceProvider = provider;\n            engine.loading = LoadStates.INIT;\n            engine.scene = new Scene(engine);\n        });\n        return engine;\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    constructorHelper( loggerService, PlayerController, settings) {\n        if (!PlayerController) {\n            PlayerController = require('./player-controller').default;\n        }\n        EventProxy(self, 'engine', ['fps', 'loading']);\n        /**\n         * The currently rendered frames-per-second.\n         *\n         * @type {ProxyValue}\n         */\n        this.fps = 0;\n        /**\n         * The current loading state of the engine.\n         *\n         * @type {ProxyValue}\n         */\n        this.loading = LoadStates.BOOT;\n        /** @type {?Scene} **/\n        this.scene = null\n        /** @type {boolean} **/\n        this.running = false;\n        /** @type {Settings} **/\n        this.settings = settings;\n        logger = loggerService;\n        playerController = new PlayerController(self);\n    }\n\n    /**\n     * @access private\n     */\n    constructor(...args) {\n        super();\n        Engine.constructorHelper(...args);\n    }\n\n    /**\n     * The BabylonJS graphics library.\n     *\n     * @type {?BabylonJS}\n     */\n    get GL() { return GraphicsLibrary; }\n    /**\n     * The BabylonJS.Engine instance.\n     *\n     * @type {?BabylonJS.Engine}\n     */\n    get baby() { return babylonEngine; }\n    /**\n     * The canvas element to which the engine has been mounted.\n     *\n     * @type {?DOMElement}\n     */\n    get canvas() { return canvasElement; }\n    /**\n     * @type {?ResourceProvider}\n     */\n    get provider() { return resourceProvider; }\n    /**\n     * @type {?PlayerController}\n     */\n    get ctrl() { return playerController; }\n    /**\n     * @type {Logger}\n     */\n    get logger() { return logger; }\n    /**\n     * The scene's default terrain entity.\n     *\n     * @type {?Entity}\n     */\n    get terrain() { return terrainEntity; }\n    /**\n     * @type {Entity}\n     */\n    set terrain(v) { return terrainEntity = v; }\n\n    /**\n     * Mount the engine to the given canvas.\n     *\n     * @access public\n     * @param {DOMElement} canvas\n     * @return {Promise<Engine>}\n     */\n    mount(canvas) {\n        return loader\n            .then(() => {\n                logger.debug('Mounting engine to canvas...');\n                this.loading = LoadStates.GL;\n                return new Promise(res => {\n                    require.ensure(['babylonjs'], () => {\n                        res(require('babylonjs'));\n                    }, 'graphics');\n                });\n            })\n            .then(BabylonJS => {\n                GraphicsLibrary = BabylonJS;\n\n                this.loading = LoadStates.GAME;\n                babylonEngine = new GraphicsLibrary.Engine(canvas, true);\n                canvasElement = canvas;\n                logger.debug('Loading scene...');\n                return this.scene.mount(this);\n            })\n            .then(() => {\n                this.loading = LoadStates.DATA;\n                logger.info('Engine mounted.');\n                return this;\n            });\n    }\n\n    /**\n     * Dismount engine from canvas.\n     *\n     * @access public\n     * @return {Promise<Engine>}\n     */\n    dismount() {\n        logger.debug('Dismounting from to canvas...');\n        return new Promise(res => {\n            if (this.running) {\n                this.stop();\n            }\n            this.scene = this.scene.dismount(this);\n            _.get(babylonEngine, 'dispose', _.noop)();\n            babylonEngine = null;\n            canvasElement = null;\n            logger.info('Engine dismounted.');\n            res(this);\n        });\n    }\n\n    /**\n     * Initialize given entities (if any), then begin rendering to mounted canvas.\n     *\n     * @access public\n     * @param {EntityMetaData[]} [entities]\n     * @return {Promise<Engine>}\n     */\n    run(entities) {\n        const step = 1000 / 60;\n        let count,\n            time,\n            accum = 0,\n            defer = Promise.resolve(this);\n\n        if (!this.running && this.loading === LoadStates.DATA) {\n            if (entities) {\n                this.loading = LoadStates.PROC;\n                logger.debug('Adding initial entities to scene...');\n                defer = this.scene.updateEntities(this, entities);\n            }\n            defer = defer.then(() => {\n                this.ctrl.setup(this.settings);\n                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =>\n                    canvasElement.addEventListener(name, e =>\n                        e.preventDefault() && false || this.ctrl[fn](e)));\n                this.loading = LoadStates.REND;\n                logger.debug('Starting engine render loop. ENGINE: ', this);\n                babylonEngine.runRenderLoop(() => {\n                    count = 0;\n                    time = Date.now();\n                    accum = babylonEngine.getDeltaTime();\n                    // accum += engine.baby.getDeltaTime();\n                    // while (accum >= step) {\n                    //     count++;\n                    //     engine.scene.tick(engine, time, step);\n                    //     accum -= step;\n                    //     if (count > 5) accum = 0;\n                    // }\n                    this.scene.tick(this, time, accum);\n                    this.scene.baby.render();\n                });\n                this.loading = LoadStates.DONE;\n                setInterval(() => {\n                    this.fps = Math.floor(this.baby.fps)\n                }, 500);\n                this.running = true;\n                return this;\n            });\n        }\n        return defer;\n    }\n\n    /**\n     * Stop the rendering loop.\n     *\n     * @access public\n     * @return {Engine}\n     */\n    stop() {\n        if (this.running) {\n            logger.debug('Stopping engine render loop.');\n            babylonEngine.stopRenderLoop();\n            this.running = false;\n            this.loading = LoadStates.DATA;\n        }\n        return this;\n    }\n\n    /**\n     * Passthrough to BabylonJS.Engine#resize method.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    resize() {\n        return _.get(babylonEngine, 'resize', _.noop)();\n    }\n\n    /**\n     * Creates a new BabylonJS.Vector3.\n     *\n     * @access public\n     * @param {Object} param\n     * @param {number} [param.x=0]\n     * @param {number} [param.y=0]\n     * @param {number} [param.z=0]\n     * @return {BabylonJS.Vector3}\n     */\n    toVector({x=0, y=0, z=0}={}) {\n        return new this.GL.Vector3(..._.values({x, y, z}));\n    }\n\n    /**\n     * Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    emitDebugEvent(...args) {\n        return this.settings.debug ? this.emitEvent(...args) : false;\n    }\n\n    /**\n     * Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    onDebugEvent(...args) {\n        return this.settings.debug ? this.onEvent(...args) : false;\n    }\n\n    /**\n     * Emits the given state event.\n     *\n     * @access public\n     * @param {string} scope - The scoped event name (e.g., 'engine.fps').\n     * @param {*} v - The changed value.\n     * @param {Object} obj - The parent object who's property changed.\n     * @return {undefined}\n     */\n    emitEvent(scope, v, obj) {\n        return events.emit(scope, v, obj);\n    }\n\n    /**\n     * Registers a listener method for a state event.\n     *\n     * @access public\n     * @param {string} event - The scoped event name.\n     * @param {function(value: *, obj: Object)} handler - The event handler.\n     * @return {undefined}\n     */\n    onEvent(event, handler) {\n        return events.on(event, handler);\n    }\n\n    /**\n     * Hooks a Keyboard Key action listener into the engine.\n     *\n     * @access public\n     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).\n     * @param {Object} handlers\n     * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.\n     * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.\n     * @param {KeyHandler} [handlers.handler] - Handler method for both events.\n     * @return {undefined}\n     */\n    registerKeyAction(key, {downHandler, upHandler, handler}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const kUp = ActionManager.OnKeyUpTrigger;\n        const kDn = ActionManager.OnKeyDownTrigger;\n        let am = this.scene.baby.actionManager;\n\n        if (!am) {\n            am = this.scene.baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (handler || downHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                {trigger: kDn, parameter: key},\n                () => (handler || downHandler)(this, key, true)));\n        }\n        if (handler || upHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                {trigger: kUp, parameter: key},\n                () => (handler || upHandler)(this, key, false)));\n        }\n    }\n\n    /**\n     * Hooks Mouse action listener(s) into the engine for a given Entity.\n     *\n     * @access public\n     * @param {Entity} entity\n     * @param {Object} opts\n     * @param {bool} [opts.click] - Hooks the left-click (or equivalent) when true.\n     * @param {bool} [opts.altClick] - Hooks the right-click (or equivalent) when true.\n     * @param {bool} [opts.over] - Hooks the mouse-over when true.\n     * @param {bool} [opts.out] - Hooks the mouse-out when true.\n     * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.\n     * @return {undefined}\n     */\n    registerMouseEventsForEntity(entity, {click, altClick, over, out, cursor}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const clickT = ActionManager.OnLeftPickTrigger;\n        const altClickT = ActionManager.OnRightPickTrigger;\n        const overT = ActionManager.OnPointerOverTrigger;\n        const outT = ActionManager.OnPointerOutTrigger;\n\n        return entity.meshAsync\n            .then(mesh => mesh.ready())\n            .then(({baby}) => {\n                let am = baby.actionManager;\n\n                if (!am) {\n                    am = baby.actionManager = new ActionManager(this.scene.baby);\n                }\n                if (cursor) {\n                    am.hoverCursor = cursor;\n                }\n                if (click) {\n                    am.registerAction(new ExecuteCodeAction(\n                        clickT, e => this.ctrl.entityClick(entity, e)));\n                }\n                if (altClick) {\n                    am.registerAction(new ExecuteCodeAction(\n                        altClickT, e => this.ctrl.entityAltClick(entity, e)));\n                }\n                if (over) {\n                    am.registerAction(new ExecuteCodeAction(\n                        overT, e => this.ctrl.entityOver(entity, e)));\n                }\n                if (out) {\n                    am.registerAction(new ExecuteCodeAction(\n                        outT, e => this.ctrl.entityOut(entity, e)));\n                }\n            });\n    }\n\n    /**\n     * Removes all Mouse action listeners and mouse-over cursor for a given entity.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    deregisterMouseEventsForEntity(entity) {\n        let am = entity.mesh.baby.actionManager;\n\n        if (am) {\n            am.hoverCursor = 'default';\n            while (am.actions.length) { am.actions.pop(); }\n        }\n    }\n}\n\n/**\n * The various states of Engine#loading.\n *\n * @access protected\n * @type {Object}\n * @property {string} BOOT\n * @property {string} RES\n * @property {string} INIT\n * @property {string} GL\n * @property {string} GAME\n * @property {string} DATA\n * @property {string} PROC\n * @property {string} REND\n * @property {null} DONE\n */\nexport const LoadStates = {\n    BOOT: 'Booting Up',\n    RES: 'Loading Resources',\n    INIT: 'Initial Setup',\n    GL: 'Loading Graphics Libraries',\n    GAME: 'Loading Game Engine',\n    DATA: 'Waiting For Initial Data',\n    PROC: 'Processing Initial Data',\n    REND: 'Rendering To Canvas',\n    DONE: null\n};\n\n/**\n * @access private\n */\nexport const getPrivateDataForTest = () => ({\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity\n});\n",
+    "static": true,
+    "longname": "src/engine.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 1,
+    "kind": "typedef",
+    "name": "ProxyValue",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~ProxyValue",
+    "access": null,
+    "description": "",
+    "type": {
+      "types": [
+        "string",
+        "number",
+        "Object",
+        "boolean"
+      ],
+      "optional": false,
+      "name": "ProxyValue"
+    }
+  },
+  {
+    "__docId__": 2,
+    "kind": "typedef",
+    "name": "EntityData",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~EntityData",
+    "access": null,
+    "description": "",
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "EntityData"
+    }
+  },
+  {
+    "__docId__": 3,
+    "kind": "typedef",
+    "name": "EntityMetaData",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~EntityMetaData",
+    "access": null,
+    "description": "",
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "id",
+        "description": "the generic Entity ID."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "uid",
+        "description": "the instance-specific identifier."
+      }
+    ],
+    "type": {
+      "types": [
+        "EntityData"
+      ],
+      "optional": false,
+      "name": "EntityMetaData"
+    }
+  },
+  {
+    "__docId__": 4,
+    "kind": "typedef",
+    "name": "ComponentClass",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~ComponentClass",
+    "access": null,
+    "description": "",
+    "type": {
+      "types": [
+        "class"
+      ],
+      "optional": false,
+      "name": "ComponentClass"
+    }
+  },
+  {
+    "__docId__": 5,
+    "kind": "typedef",
+    "name": "ResourceProvider",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~ResourceProvider",
+    "access": null,
+    "description": "",
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "function(id: string): EntityData"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "-",
+        "description": "Raw object containing default component definitions for Entity ID."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "function(id: string): ComponentClass"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "-",
+        "description": "Static component class for Component ID."
+      }
+    ],
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "ResourceProvider"
+    }
+  },
+  {
+    "__docId__": 6,
+    "kind": "typedef",
+    "name": "ResourceLoader",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~ResourceLoader",
+    "access": null,
+    "description": "",
+    "type": {
+      "types": [
+        "function(): Promise<ResourceProvider>"
+      ],
+      "optional": false,
+      "name": "ResourceLoader"
+    }
+  },
+  {
+    "__docId__": 7,
+    "kind": "typedef",
+    "name": "KeyHandler",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~KeyHandler",
+    "access": null,
+    "description": "",
+    "type": {
+      "types": [
+        "function(engine: Engine, k: string, down: bool)"
+      ],
+      "optional": false,
+      "name": "KeyHandler"
+    }
+  },
+  {
+    "__docId__": 8,
+    "kind": "typedef",
+    "name": "KeyDefinition",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~KeyDefinition",
+    "access": null,
+    "description": "",
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "key",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyHandler"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "handler",
+        "description": "The handler function for both key up and down."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyHandler"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "upHandler",
+        "description": "The handler specifically for key up."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyHandler"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "downHandler",
+        "description": "The handler specifically for key down."
+      }
+    ],
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "KeyDefinition"
+    }
+  },
+  {
+    "__docId__": 9,
+    "kind": "typedef",
+    "name": "Settings",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~Settings",
+    "access": null,
+    "description": "",
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "false",
+        "defaultRaw": false,
+        "name": "debug",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "input",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyDefinition[]"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "input.keys",
+        "description": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "Settings"
+    }
+  },
+  {
+    "__docId__": 10,
+    "kind": "typedef",
+    "name": "Logger",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~Logger",
+    "access": null,
+    "description": "",
+    "lineNumber": 60,
+    "type": {
+      "types": [
+        "{\n info: function,\n debug: function,\n warn: function,\n error: function\n}"
+      ],
+      "optional": false,
+      "name": "Logger"
+    }
+  },
+  {
+    "__docId__": 11,
+    "kind": "class",
+    "name": "Engine",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~Engine",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/engine.js",
+    "importStyle": "Engine",
+    "description": "The game engine class (abstraction of BabylonJS Engine).",
+    "examples": [
+      "<caption>Basic construction with default args</caption>\nlet engine = Engine.init(logger, () => Promise.resolve(resourceProvider));",
+      "<caption>One-line runner</caption>\nEngine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n    .mount(document.getElementById('my-canvas'))\n    .then(engine => engine.run(entityData))\n    .then(engine => window.addEventListener('resize', () => engine.resize()));"
+    ],
+    "lineNumber": 85,
+    "interface": false,
+    "extends": [
+      "basic-singleton~Singleton"
+    ]
+  },
+  {
+    "__docId__": 12,
+    "kind": "method",
+    "name": "init",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/engine.js~Engine.init",
+    "access": null,
+    "description": "The general creation/initialization method for the class. Creates an\nengine instance or returns the existing one if already instantiated.",
+    "lineNumber": 97,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Logger"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "loggerService",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "ResourceLoader"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "resourceProviderLoader",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "class"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "PlayerController",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Settings"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "{}",
+        "defaultRaw": {},
+        "name": "settings",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Engine"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 13,
+    "kind": "method",
+    "name": "constructorHelper",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#constructorHelper",
+    "access": "private",
+    "description": "For testing purposes -- cannot stub constructor",
+    "lineNumber": 123,
+    "params": [
+      {
+        "name": "loggerService",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "PlayerController",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "settings",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 14,
+    "kind": "member",
+    "name": "fps",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#fps",
+    "access": null,
+    "description": "The currently rendered frames-per-second.",
+    "lineNumber": 133,
+    "type": {
+      "nullable": null,
+      "types": [
+        "ProxyValue"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 15,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": "The current loading state of the engine.",
+    "lineNumber": 139,
+    "type": {
+      "nullable": null,
+      "types": [
+        "ProxyValue"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 16,
+    "kind": "member",
+    "name": "scene",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#scene",
+    "access": null,
+    "description": null,
+    "lineNumber": 141,
+    "type": {
+      "nullable": true,
+      "types": [
+        "Scene"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 17,
+    "kind": "member",
+    "name": "running",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#running",
+    "access": null,
+    "description": null,
+    "lineNumber": 143,
+    "type": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 18,
+    "kind": "member",
+    "name": "settings",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#settings",
+    "access": null,
+    "description": null,
+    "lineNumber": 145,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Settings"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 19,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#constructor",
+    "access": "private",
+    "description": "",
+    "lineNumber": 153,
+    "params": [
+      {
+        "name": "args",
+        "types": [
+          "...*"
+        ],
+        "spread": true
+      }
+    ]
+  },
+  {
+    "__docId__": 20,
+    "kind": "get",
+    "name": "GL",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#GL",
+    "access": null,
+    "description": "The BabylonJS graphics library.",
+    "lineNumber": 163,
+    "type": {
+      "nullable": true,
+      "types": [
+        "BabylonJS"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 21,
+    "kind": "get",
+    "name": "baby",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#baby",
+    "access": null,
+    "description": "The BabylonJS.Engine instance.",
+    "lineNumber": 169,
+    "type": {
+      "nullable": true,
+      "types": [
+        "BabylonJS.Engine"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 22,
+    "kind": "get",
+    "name": "canvas",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#canvas",
+    "access": null,
+    "description": "The canvas element to which the engine has been mounted.",
+    "lineNumber": 175,
+    "type": {
+      "nullable": true,
+      "types": [
+        "DOMElement"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 23,
+    "kind": "get",
+    "name": "provider",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#provider",
+    "access": null,
+    "description": "",
+    "lineNumber": 179,
+    "type": {
+      "nullable": true,
+      "types": [
+        "ResourceProvider"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 24,
+    "kind": "get",
+    "name": "ctrl",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#ctrl",
+    "access": null,
+    "description": "",
+    "lineNumber": 183,
+    "type": {
+      "nullable": true,
+      "types": [
+        "PlayerController"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 25,
+    "kind": "get",
+    "name": "logger",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#logger",
+    "access": null,
+    "description": "",
+    "lineNumber": 187,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Logger"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 26,
+    "kind": "get",
+    "name": "terrain",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#terrain",
+    "access": null,
+    "description": "The scene's default terrain entity.",
+    "lineNumber": 193,
+    "type": {
+      "nullable": true,
+      "types": [
+        "Entity"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 27,
+    "kind": "set",
+    "name": "terrain",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#terrain",
+    "access": null,
+    "description": "",
+    "lineNumber": 197,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Entity"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 28,
+    "kind": "method",
+    "name": "mount",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#mount",
+    "access": "public",
+    "description": "Mount the engine to the given canvas.",
+    "lineNumber": 206,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "DOMElement"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "canvas",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<Engine>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 29,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 210,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 30,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 220,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 31,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 227,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 32,
+    "kind": "method",
+    "name": "dismount",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#dismount",
+    "access": "public",
+    "description": "Dismount engine from canvas.",
+    "lineNumber": 239,
+    "params": [],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<Engine>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 33,
+    "kind": "member",
+    "name": "scene",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#scene",
+    "access": null,
+    "description": null,
+    "lineNumber": 245,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 34,
+    "kind": "method",
+    "name": "run",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#run",
+    "access": "public",
+    "description": "Initialize given entities (if any), then begin rendering to mounted canvas.",
+    "lineNumber": 261,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "EntityMetaData[]"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "entities",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<Engine>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 35,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 270,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 36,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 279,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 37,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 295,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 38,
+    "kind": "member",
+    "name": "fps",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#fps",
+    "access": null,
+    "description": null,
+    "lineNumber": 297,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 39,
+    "kind": "member",
+    "name": "running",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#running",
+    "access": null,
+    "description": null,
+    "lineNumber": 299,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "boolean"
+      ]
+    }
+  },
+  {
+    "__docId__": 40,
+    "kind": "method",
+    "name": "stop",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#stop",
+    "access": "public",
+    "description": "Stop the rendering loop.",
+    "lineNumber": 312,
+    "params": [],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Engine"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 41,
+    "kind": "member",
+    "name": "running",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#running",
+    "access": null,
+    "description": null,
+    "lineNumber": 316,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "boolean"
+      ]
+    }
+  },
+  {
+    "__docId__": 42,
+    "kind": "member",
+    "name": "loading",
+    "memberof": "src/engine.js~Engine",
+    "static": false,
+    "longname": "src/engine.js~Engine#loading",
+    "access": null,
+    "description": null,
+    "lineNumber": 317,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 43,
+    "kind": "method",
+    "name": "resize",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#resize",
+    "access": "public",
+    "description": "Passthrough to BabylonJS.Engine#resize method.",
+    "lineNumber": 328,
+    "params": [],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 44,
+    "kind": "method",
+    "name": "toVector",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#toVector",
+    "access": "public",
+    "description": "Creates a new BabylonJS.Vector3.",
+    "lineNumber": 342,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "param",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
+        "name": "param.x",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
+        "name": "param.y",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
+        "name": "param.z",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "BabylonJS.Vector3"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 45,
+    "kind": "method",
+    "name": "emitDebugEvent",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#emitDebugEvent",
+    "access": "public",
+    "description": "Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.",
+    "lineNumber": 352,
+    "params": [
+      {
+        "name": "args",
+        "types": [
+          "...*"
+        ],
+        "spread": true
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 46,
+    "kind": "method",
+    "name": "onDebugEvent",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#onDebugEvent",
+    "access": "public",
+    "description": "Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.",
+    "lineNumber": 362,
+    "params": [
+      {
+        "name": "args",
+        "types": [
+          "...*"
+        ],
+        "spread": true
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 47,
+    "kind": "method",
+    "name": "emitEvent",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#emitEvent",
+    "access": "public",
+    "description": "Emits the given state event.",
+    "lineNumber": 375,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "scope",
+        "description": "The scoped event name (e.g., 'engine.fps')."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "v",
+        "description": "The changed value."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "obj",
+        "description": "The parent object who's property changed."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 48,
+    "kind": "method",
+    "name": "onEvent",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#onEvent",
+    "access": "public",
+    "description": "Registers a listener method for a state event.",
+    "lineNumber": 387,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": "The scoped event name."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "function(value: *, obj: Object)"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "handler",
+        "description": "The event handler."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 49,
+    "kind": "method",
+    "name": "registerKeyAction",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#registerKeyAction",
+    "access": "public",
+    "description": "Hooks a Keyboard Key action listener into the engine.",
+    "lineNumber": 402,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "key",
+        "description": "The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.)."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "handlers",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyHandler"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "handlers.downHandler",
+        "description": "Handler method for KeyDown event."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyHandler"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "handlers.upHandler",
+        "description": "Handler method for KeyUp event."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "KeyHandler"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "handlers.handler",
+        "description": "Handler method for both events."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 50,
+    "kind": "method",
+    "name": "registerMouseEventsForEntity",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#registerMouseEventsForEntity",
+    "access": "public",
+    "description": "Hooks Mouse action listener(s) into the engine for a given Entity.",
+    "lineNumber": 436,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Entity"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "entity",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "opts",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "opts.click",
+        "description": "Hooks the left-click (or equivalent) when true."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "opts.altClick",
+        "description": "Hooks the right-click (or equivalent) when true."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "opts.over",
+        "description": "Hooks the mouse-over when true."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "opts.out",
+        "description": "Hooks the mouse-out when true."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "opts.cursor",
+        "description": "Changes the mouse-over cursor when set."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 51,
+    "kind": "method",
+    "name": "deregisterMouseEventsForEntity",
+    "memberof": "src/engine.js~Engine",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/engine.js~Engine#deregisterMouseEventsForEntity",
+    "access": "public",
+    "description": "Removes all Mouse action listeners and mouse-over cursor for a given entity.",
+    "lineNumber": 479,
+    "params": [
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "undefined"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 52,
+    "kind": "variable",
+    "name": "LoadStates",
+    "memberof": "src/engine.js",
+    "static": true,
+    "longname": "src/engine.js~LoadStates",
+    "access": "protected",
+    "export": true,
+    "importPath": "bavel/src/engine.js",
+    "importStyle": "{LoadStates}",
+    "description": "The various states of Engine#loading.",
+    "lineNumber": 504,
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "BOOT",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "RES",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "INIT",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "GL",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "GAME",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "DATA",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "PROC",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "REND",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "null"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "DONE",
+        "description": ""
+      }
+    ],
+    "type": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "function",
+    "name": "getPrivateDataForTest",
+    "memberof": "src/engine.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/engine.js~getPrivateDataForTest",
+    "access": "private",
+    "export": true,
+    "importPath": "bavel/src/engine.js",
+    "importStyle": "{getPrivateDataForTest}",
+    "description": "",
+    "lineNumber": 519,
+    "params": []
+  },
+  {
+    "__docId__": 54,
+    "kind": "file",
+    "name": "src/player-controller.js",
+    "content": "import {_} from './utils';\nimport Singleton from 'basic-singleton';\nimport StateProxy from './state-event-proxy';\n\nexport default class PlayerController extends Singleton {\n\n    static getTime(date=new Date()) {\n        return `${_.padStart(date.getHours(), 2, '0')}:${_.padStart(date.getMinutes(), 2, '0')}:${_.padStart(date.getSeconds(), 2, '0')}`;\n    }\n\n    get DOM_EVENTS() {\n        return {\n            click: 'mClick',\n            contextmenu: 'mAltClick',\n            wheel: 'mWheel',\n            mouseover: 'mOver',\n            mouseout: 'mOut'\n        };\n    }\n\n    constructor(engine, uiData={}) {\n        super();\n        StateProxy(this, `engine.ctrl`, _.assign({\n            messages: [],\n            player: null,\n            target: null\n        }, uiData));\n        Object.defineProperty(this, 'engine', {\n            get: () => engine\n        });\n    }\n\n    setup(settings) {\n        this.registerKeyActions(_.get(settings, 'input.keys', []));\n    }\n\n    registerKeyActions(keyHandlers) {\n        _.forEach(keyHandlers, (desc) => {\n            this.engine.registerKeyAction(desc.key, desc);\n        });\n    }\n\n    message(type, sender, msg, max=this.constructor.MAX_MESSAGES) {\n        return this.messages = _.take(\n            _.concat(\n                {time: this.constructor.getTime(), type, sender, msg},\n                this.messages),\n            max);\n    }\n\n    mClick({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mClick');\n        }\n        this.engine.logger.debug(`Click at (${pageX}, ${pageY})`);\n    }\n\n    mAltClick({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug(`Alt Click at (${pageX}, ${pageY})`);\n    }\n\n    mWheel({deltaX, deltaY, deltaZ}) {\n        if (_.isUndefined(deltaY) && _.isUndefined(deltaX) && _.isUndefined(deltaX)) {\n            throw new Error('Improper event passed to mWheel');\n        }\n        if (deltaY) {\n            this.engine.logger.debug(`MouseWheel scroll ${deltaY > 0 ? 'out' : 'in'} ${deltaY}`);\n        }\n    }\n\n    mOver({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug('Pointer has entered canvas element.');\n    }\n\n    mOut({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug('Pointer has left cavnas element.');\n    }\n\n    entityOver(entity, evt) {\n        if (!entity || !evt) {\n            throw new Error('Improper arguments passed to entityOver');\n        }\n        this.target = entity;\n    }\n\n    entityOut(entity, evt) {\n        if (!entity || !evt) {\n            throw new Error('Improper arguments passed to entityOut');\n        }\n        if (!this.target || this.target.uid === entity.uid) {\n            this.target = null;\n        }\n    }\n\n    entityClick(entity, {pointerX, pointerY}) {\n        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {\n            throw new Error('Improper arguments passed to entityClick');\n        }\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.engine.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);\n    }\n\n    entityAltClick(entity, {pointerX, pointerY}) {\n        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {\n            throw new Error('Improper arguments passed to entityAltClick');\n        }\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.engine.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);\n    }\n}\n\nPlayerController.MAX_MESSAGES = 100;\n\nexport const round = (x) => Math.floor(x * 100 + .5) / 100;",
+    "static": true,
+    "longname": "src/player-controller.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 55,
+    "kind": "class",
+    "name": "PlayerController",
+    "memberof": "src/player-controller.js",
+    "static": true,
+    "longname": "src/player-controller.js~PlayerController",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/player-controller.js",
+    "importStyle": "PlayerController",
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "interface": false,
+    "extends": [
+      "basic-singleton~Singleton"
+    ]
+  },
+  {
+    "__docId__": 56,
+    "kind": "method",
+    "name": "getTime",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/player-controller.js~PlayerController.getTime",
+    "access": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "date",
+        "optional": true,
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "string"
+      ]
+    }
+  },
+  {
+    "__docId__": 57,
+    "kind": "get",
+    "name": "DOM_EVENTS",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#DOM_EVENTS",
+    "access": null,
+    "description": null,
+    "lineNumber": 11,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "{\"click\": string, \"contextmenu\": string, \"wheel\": string, \"mouseover\": string, \"mouseout\": string}"
+      ]
+    }
+  },
+  {
+    "__docId__": 58,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 21,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "uiData",
+        "optional": true,
+        "types": [
+          "{}"
+        ],
+        "defaultRaw": {},
+        "defaultValue": "{}"
+      }
+    ]
+  },
+  {
+    "__docId__": 59,
+    "kind": "method",
+    "name": "setup",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#setup",
+    "access": null,
+    "description": null,
+    "lineNumber": 33,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "settings",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 60,
+    "kind": "method",
+    "name": "registerKeyActions",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#registerKeyActions",
+    "access": null,
+    "description": null,
+    "lineNumber": 37,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "keyHandlers",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 61,
+    "kind": "method",
+    "name": "message",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#message",
+    "access": null,
+    "description": null,
+    "lineNumber": 43,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "type",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "sender",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "msg",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "max",
+        "optional": true,
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 62,
+    "kind": "method",
+    "name": "mClick",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mClick",
+    "access": null,
+    "description": null,
+    "lineNumber": 51,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "objectPattern",
+        "types": [
+          "{\"pageX\": *, \"pageY\": *}"
+        ],
+        "defaultRaw": {
+          "pageX": null,
+          "pageY": null
+        },
+        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 63,
+    "kind": "method",
+    "name": "mAltClick",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mAltClick",
+    "access": null,
+    "description": null,
+    "lineNumber": 58,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "objectPattern",
+        "types": [
+          "{\"pageX\": *, \"pageY\": *}"
+        ],
+        "defaultRaw": {
+          "pageX": null,
+          "pageY": null
+        },
+        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 64,
+    "kind": "method",
+    "name": "mWheel",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mWheel",
+    "access": null,
+    "description": null,
+    "lineNumber": 65,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "objectPattern",
+        "types": [
+          "{\"deltaX\": *, \"deltaY\": *, \"deltaZ\": *}"
+        ],
+        "defaultRaw": {
+          "deltaX": null,
+          "deltaY": null,
+          "deltaZ": null
+        },
+        "defaultValue": "{\"deltaX\":null,\"deltaY\":null,\"deltaZ\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 65,
+    "kind": "method",
+    "name": "mOver",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mOver",
+    "access": null,
+    "description": null,
+    "lineNumber": 74,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "objectPattern",
+        "types": [
+          "{\"pageX\": *, \"pageY\": *}"
+        ],
+        "defaultRaw": {
+          "pageX": null,
+          "pageY": null
+        },
+        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 66,
+    "kind": "method",
+    "name": "mOut",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mOut",
+    "access": null,
+    "description": null,
+    "lineNumber": 81,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "objectPattern",
+        "types": [
+          "{\"pageX\": *, \"pageY\": *}"
+        ],
+        "defaultRaw": {
+          "pageX": null,
+          "pageY": null
+        },
+        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 67,
+    "kind": "method",
+    "name": "entityOver",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#entityOver",
+    "access": null,
+    "description": null,
+    "lineNumber": 88,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "evt",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 68,
+    "kind": "member",
+    "name": "target",
+    "memberof": "src/player-controller.js~PlayerController",
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#target",
+    "access": null,
+    "description": null,
+    "lineNumber": 92,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 69,
+    "kind": "method",
+    "name": "entityOut",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#entityOut",
+    "access": null,
+    "description": null,
+    "lineNumber": 95,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "evt",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 70,
+    "kind": "member",
+    "name": "target",
+    "memberof": "src/player-controller.js~PlayerController",
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#target",
+    "access": null,
+    "description": null,
+    "lineNumber": 100,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 71,
+    "kind": "method",
+    "name": "entityClick",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#entityClick",
+    "access": null,
+    "description": null,
+    "lineNumber": 104,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "objectPattern1",
+        "types": [
+          "{\"pointerX\": *, \"pointerY\": *}"
+        ],
+        "defaultRaw": {
+          "pointerX": null,
+          "pointerY": null
+        },
+        "defaultValue": "{\"pointerX\":null,\"pointerY\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 72,
+    "kind": "method",
+    "name": "entityAltClick",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#entityAltClick",
+    "access": null,
+    "description": null,
+    "lineNumber": 113,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "objectPattern1",
+        "types": [
+          "{\"pointerX\": *, \"pointerY\": *}"
+        ],
+        "defaultRaw": {
+          "pointerX": null,
+          "pointerY": null
+        },
+        "defaultValue": "{\"pointerX\":null,\"pointerY\":null}"
+      }
+    ]
+  },
+  {
+    "__docId__": 73,
+    "kind": "function",
+    "name": "round",
+    "memberof": "src/player-controller.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/player-controller.js~round",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/player-controller.js",
+    "importStyle": "{round}",
+    "description": null,
+    "lineNumber": 125,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "x",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 74,
+    "kind": "file",
+    "name": "src/scene/entity/entity.js",
+    "content": "import {_} from '../../utils';\nimport Promise from 'bluebird';\nimport Static from 'basic-static';\nimport reducePromise from 'reduce-promise';\n\nconst nonCompKeys = ['id', 'uid', 'tick', 'mesh', '_primaryMesh'];\nconst asyncStep = 10;\nconst asyncTimeout = 2000;\n\nexport default class Entity extends Static {\n\n    static create(engine, data) {\n        const ticks = {};\n        const {id, uid} = data;\n        const polyData = _.merge(engine.provider.getEntity(id), data);\n        const componentData = _.omit(polyData, nonCompKeys);\n        const entity = Object.defineProperties({id, uid}, {\n            mesh: { get: () => _.get(entity, polyData._primaryMesh) },\n            tick: {\n                get: () => (eng, t, dt) =>\n                    _.forEach(ticks, (v, k) => { v(eng, entity, entity[k], t, dt); }),\n                set: ({id, tick}) => tick ? (ticks[id] = tick) : (delete ticks[id])\n            },\n            get: {\n                value: (path) => _.get(entity, path, false)\n            },\n            meshAsync: {\n                get: () => new Promise((res, rej) => {\n                    const t = Date.now();\n                    const stop = setInterval(() => {\n                        if (entity.mesh) {\n                            clearInterval(stop);\n                            if (Object.getOwnPropertyDescriptor(entity, 'meshAsync').get) {\n                                Object.defineProperty(entity, 'meshAsync', {\n                                    value: Promise.resolve(entity.mesh),\n                                    configurable: false,\n                                    writable: false\n                                });\n                            }\n                            res(entity.mesh);\n                        } else if (Date.now() - t > asyncTimeout) {\n                            clearInterval(stop);\n                            rej(new Error('Timed out waiting for mesh of entity: ' + uid));\n                        }\n                    }, asyncStep);\n                }),\n                configurable: true\n            }\n        });\n\n        return this.updateComponents(engine, entity, componentData);\n    }\n\n    static updateComponent(engine, entity, id, data) {\n        return engine.provider.getComponent(id)\n            .update(engine, entity, entity[id], id, data)\n            .then(comp => entity[id] = comp);\n    }\n\n    static updateComponents(engine, entity, componentData) {\n        return reducePromise(componentData, (v, k) => this.updateComponent(engine, entity, k, v))\n            .then(() => entity);\n    }\n\n    static dismountComponent(engine, entity, id) {\n        return entity[id] = engine.provider\n            .getComponent(id)\n            .dismount(engine, entity, entity[id]);\n    }\n\n    static update(engine, entity, data) {\n        if (!entity) {\n            return this.create(engine, data);\n        }\n        return this.updateComponents(engine, entity, _.omit(data, nonCompKeys));\n    }\n\n    static dismount(engine, entity) {\n        _.forEach(\n            _.omit(entity, nonCompKeys),\n            (v, k) => { this.dismountComponent(engine, entity, k); });\n        return null;\n    }\n\n    static tick(engine, entity, t, dt) {\n        entity.tick(engine, t, dt);\n    }\n}\n",
+    "static": true,
+    "longname": "src/scene/entity/entity.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 75,
+    "kind": "variable",
+    "name": "nonCompKeys",
+    "memberof": "src/scene/entity/entity.js",
+    "static": true,
+    "longname": "src/scene/entity/entity.js~nonCompKeys",
+    "access": null,
+    "export": false,
+    "importPath": "bavel/src/scene/entity/entity.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "string[]"
+      ]
+    }
+  },
+  {
+    "__docId__": 76,
+    "kind": "variable",
+    "name": "asyncStep",
+    "memberof": "src/scene/entity/entity.js",
+    "static": true,
+    "longname": "src/scene/entity/entity.js~asyncStep",
+    "access": null,
+    "export": false,
+    "importPath": "bavel/src/scene/entity/entity.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 77,
+    "kind": "variable",
+    "name": "asyncTimeout",
+    "memberof": "src/scene/entity/entity.js",
+    "static": true,
+    "longname": "src/scene/entity/entity.js~asyncTimeout",
+    "access": null,
+    "export": false,
+    "importPath": "bavel/src/scene/entity/entity.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 78,
+    "kind": "class",
+    "name": "Entity",
+    "memberof": "src/scene/entity/entity.js",
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/scene/entity/entity.js",
+    "importStyle": "Entity",
+    "description": null,
+    "lineNumber": 10,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "interface": false,
+    "extends": [
+      "basic-static~Static"
+    ]
+  },
+  {
+    "__docId__": 79,
+    "kind": "method",
+    "name": "create",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.create",
+    "access": null,
+    "description": null,
+    "lineNumber": 12,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "data",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 80,
+    "kind": "method",
+    "name": "updateComponent",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.updateComponent",
+    "access": null,
+    "description": null,
+    "lineNumber": 54,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "id",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "data",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 81,
+    "kind": "method",
+    "name": "updateComponents",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.updateComponents",
+    "access": null,
+    "description": null,
+    "lineNumber": 60,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "componentData",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 82,
+    "kind": "method",
+    "name": "dismountComponent",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.dismountComponent",
+    "access": null,
+    "description": null,
+    "lineNumber": 65,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "id",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 83,
+    "kind": "method",
+    "name": "update",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.update",
+    "access": null,
+    "description": null,
+    "lineNumber": 71,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "data",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 84,
+    "kind": "method",
+    "name": "dismount",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.dismount",
+    "access": null,
+    "description": null,
+    "lineNumber": 78,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 85,
+    "kind": "method",
+    "name": "tick",
+    "memberof": "src/scene/entity/entity.js~Entity",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/scene/entity/entity.js~Entity.tick",
+    "access": null,
+    "description": null,
+    "lineNumber": 85,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entity",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "t",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "dt",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 86,
+    "kind": "file",
+    "name": "src/scene/entity/index.js",
+    "content": "export {default} from './entity';\n",
+    "static": true,
+    "longname": "src/scene/entity/index.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 87,
+    "kind": "file",
+    "name": "src/scene/index.js",
+    "content": "export {default} from './scene';\n\n\n",
+    "static": true,
+    "longname": "src/scene/index.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 88,
+    "kind": "file",
+    "name": "src/scene/scene.js",
+    "content": "import {_} from '../utils';\nimport reducePromise from 'reduce-promise';\nimport Singleton from 'basic-singleton';\nimport Entity from './entity';\n\nexport default class Scene extends Singleton {\n\n    constructor() {\n        super();\n        Object.defineProperties(_.assign(this, {\n            children: {},\n            activeCamera: null\n        }), {\n            _baby: {\n                value: null,\n                writable: true\n            }\n        });\n    }\n\n    get baby() { return this._baby; }\n\n    mount(engine) {\n        this._baby = new engine.GL.Scene(engine.baby);\n    }\n\n    dismount(engine) {\n        this.children = _.pickBy(_.mapValues(this.children, e => Entity.dismount(engine, e)));\n        _.get(this, '_baby.dispose', _.noop)();\n        this._baby = null;\n        return null;\n    }\n\n    getEntity(uid) {\n        return _.get(this.children, uid);\n    }\n\n    updateEntity(engine, entityData) {\n        return Entity.update(engine, this.children[entityData.uid], entityData)\n            .then(e => this.children[entityData.uid] = e);\n    }\n\n    updateEntities(engine, entities) {\n        return reducePromise(entities, e => this.updateEntity(engine, e))\n            .then(() => this);\n    }\n\n    removeEntity(engine, entityUid) {\n        return this.children[entityUid] = Entity.dismount(engine, _.get(this.children, entityUid));\n    }\n\n    tick(engine, t, dt) {\n        _.forEach(this.children, e => { Entity.tick(engine, e, t, dt) });\n    }\n}\n",
+    "static": true,
+    "longname": "src/scene/scene.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 89,
+    "kind": "class",
+    "name": "Scene",
+    "memberof": "src/scene/scene.js",
+    "static": true,
+    "longname": "src/scene/scene.js~Scene",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/scene/scene.js",
+    "importStyle": "Scene",
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "interface": false,
+    "extends": [
+      "basic-singleton~Singleton"
+    ]
+  },
+  {
+    "__docId__": 90,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": []
+  },
+  {
+    "__docId__": 91,
+    "kind": "get",
+    "name": "baby",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#baby",
+    "access": null,
+    "description": null,
+    "lineNumber": 21,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 92,
+    "kind": "method",
+    "name": "mount",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#mount",
+    "access": null,
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 93,
+    "kind": "member",
+    "name": "_baby",
+    "memberof": "src/scene/scene.js~Scene",
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#_baby",
+    "access": null,
+    "description": null,
+    "lineNumber": 24,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 94,
+    "kind": "method",
+    "name": "dismount",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#dismount",
+    "access": null,
+    "description": null,
+    "lineNumber": 27,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 95,
+    "kind": "member",
+    "name": "children",
+    "memberof": "src/scene/scene.js~Scene",
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#children",
+    "access": null,
+    "description": null,
+    "lineNumber": 28,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 96,
+    "kind": "member",
+    "name": "_baby",
+    "memberof": "src/scene/scene.js~Scene",
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#_baby",
+    "access": null,
+    "description": null,
+    "lineNumber": 30,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 97,
+    "kind": "method",
+    "name": "getEntity",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#getEntity",
+    "access": null,
+    "description": null,
+    "lineNumber": 34,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "uid",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 98,
+    "kind": "method",
+    "name": "updateEntity",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#updateEntity",
+    "access": null,
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entityData",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 99,
+    "kind": "method",
+    "name": "updateEntities",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#updateEntities",
+    "access": null,
+    "description": null,
+    "lineNumber": 43,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entities",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 100,
+    "kind": "method",
+    "name": "removeEntity",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#removeEntity",
+    "access": null,
+    "description": null,
+    "lineNumber": 48,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "entityUid",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 101,
+    "kind": "method",
+    "name": "tick",
+    "memberof": "src/scene/scene.js~Scene",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/scene/scene.js~Scene#tick",
+    "access": null,
+    "description": null,
+    "lineNumber": 52,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "engine",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "t",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "dt",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 102,
+    "kind": "file",
+    "name": "src/state-event-proxy.js",
+    "content": "import {_} from './utils';\nimport Static from 'basic-static';\nimport events from './state-events';\n\nexport default (...args) => StateEventProxy.create(...args);\n\nexport const DISABLE = {};\n\nexport class StateEventProxy extends Static {\n\n    static create(obj, scope, properties, options) {\n        let self = obj || {};\n\n        _.forEach(properties, (prop, k) => {\n            let name = _.isNumber(k) ? prop : k,\n                value = _.isNumber(k) ? options.def : prop;\n\n            this.proxifyProperty(\n                `${scope}.${name}`,\n                obj,\n                name,\n                value,\n                options);\n        });\n        return self;\n    }\n\n    static proxifyProperty(scope, obj, prop, value, {\n        deep=false, enumerable=true\n    }={}) {\n        let p = value;\n\n        if (deep && _.isPlainObject(value)) {\n            p = this.buildProxyObject(scope, value, {deep, enumerable});\n        } else if (deep && _.isArray(value)) {\n            p = this.buildProxyArray(scope, obj, value, {deep, enumerable});\n        }\n        Object.defineProperty(obj, prop, {\n            get: () => p,\n            set: (v) => {\n                if (deep && _.isObject(v)) {\n                    v = _.isArray(v)\n                        ? this.buildProxyArray(scope, obj, v, {deep, enumerable})\n                        : this.buildProxyObject(scope, v, {deep, enumerable});\n                }\n                this.emit(scope, v, obj);\n                p = v;\n                return true;\n            },\n            configurable: true,\n            enumerable\n        });\n    }\n\n    static buildProxyObject(scope, obj, o) {\n        let p = {};\n\n        _.forEach(obj, (v, k) => this.proxifyProperty(`${scope}.${k}`, p, k, v, o));\n        return p;\n    }\n\n    static buildProxyArray(scope, parent, arr, o) {\n        const ret = new Proxy(\n            _.map(arr, (e, i) =>\n                _.isPlainObject(e) && this.buildProxyObject(`${scope}[${i}]`, e, o) ||\n                _.isArray(e) && this.buildProxyArray(`${scope}[${i}]`, ret, e, o) || e),\n            {\n                get: (target, key) => {\n                    if (this.isMutateFn(key)) {\n                        return (...args) => {\n                            DISABLE[scope] = true;\n                            let v = target[key](...args);\n\n                            delete DISABLE[scope];\n                            this.emit(scope, ret, parent);\n                            return v;\n                        };\n                    }\n                    return target[key];\n                },\n                set: (target, i, v) => {\n                    if (!_.isNaN(i)) {\n                        v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||\n                            _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;\n                        this.emit(`${scope}[${i}]`, v, ret);\n                    }\n                    target[i] = v;\n                    return true;\n                },\n                deleteProperty: (target, i) => {\n                    if (!_.isNaN(i)) {\n                        this.emit(`${scope}[${i}]`, undefined, ret);\n                    }\n                    delete target[i];\n                    return true;\n                }\n            }\n        );\n\n        return ret;\n    }\n\n    static emit(scope, v, obj) {\n        if (!DISABLE[scope]) {\n            setTimeout(() => events.emit(scope, v, obj));\n        }\n    }\n\n    static isMutateFn(key) {\n        return _.includes([\n            'copyWithin',\n            'fill',\n            'pop',\n            'push',\n            'reverse',\n            'shift',\n            'sort',\n            'splice',\n            'unshift'\n        ], key);\n    }\n}\n",
+    "static": true,
+    "longname": "src/state-event-proxy.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 103,
+    "kind": "function",
+    "name": "stateeventproxy",
+    "memberof": "src/state-event-proxy.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~stateeventproxy",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/state-event-proxy.js",
+    "importStyle": "stateeventproxy",
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "args",
+        "types": [
+          "...*"
+        ],
+        "spread": true
+      }
+    ]
+  },
+  {
+    "__docId__": 104,
+    "kind": "variable",
+    "name": "DISABLE",
+    "memberof": "src/state-event-proxy.js",
+    "static": true,
+    "longname": "src/state-event-proxy.js~DISABLE",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/state-event-proxy.js",
+    "importStyle": "{DISABLE}",
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "{}"
+      ]
+    }
+  },
+  {
+    "__docId__": 105,
+    "kind": "class",
+    "name": "StateEventProxy",
+    "memberof": "src/state-event-proxy.js",
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy",
+    "access": null,
+    "export": true,
+    "importPath": "bavel/src/state-event-proxy.js",
+    "importStyle": "{StateEventProxy}",
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "interface": false,
+    "extends": [
+      "basic-static~Static"
+    ]
+  },
+  {
+    "__docId__": 106,
+    "kind": "method",
+    "name": "create",
+    "memberof": "src/state-event-proxy.js~StateEventProxy",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy.create",
+    "access": null,
+    "description": null,
+    "lineNumber": 11,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "obj",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "scope",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "properties",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 107,
+    "kind": "method",
+    "name": "proxifyProperty",
+    "memberof": "src/state-event-proxy.js~StateEventProxy",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy.proxifyProperty",
+    "access": null,
+    "description": null,
+    "lineNumber": 28,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "scope",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "obj",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "prop",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "value",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "objectPattern4",
+        "optional": true,
+        "types": [
+          "{\"deep\": *, \"enumerable\": *}"
+        ],
+        "defaultRaw": {},
+        "defaultValue": "{}"
+      }
+    ]
+  },
+  {
+    "__docId__": 108,
+    "kind": "method",
+    "name": "buildProxyObject",
+    "memberof": "src/state-event-proxy.js~StateEventProxy",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy.buildProxyObject",
+    "access": null,
+    "description": null,
+    "lineNumber": 55,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "scope",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "obj",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "o",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 109,
+    "kind": "method",
+    "name": "buildProxyArray",
+    "memberof": "src/state-event-proxy.js~StateEventProxy",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy.buildProxyArray",
+    "access": null,
+    "description": null,
+    "lineNumber": 62,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "scope",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "parent",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "arr",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "o",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 110,
+    "kind": "method",
+    "name": "emit",
+    "memberof": "src/state-event-proxy.js~StateEventProxy",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy.emit",
+    "access": null,
+    "description": null,
+    "lineNumber": 103,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "scope",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "v",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "obj",
+        "types": [
+          "*"
+        ]
+      }
+    ]
+  },
+  {
+    "__docId__": 111,
+    "kind": "method",
+    "name": "isMutateFn",
+    "memberof": "src/state-event-proxy.js~StateEventProxy",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/state-event-proxy.js~StateEventProxy.isMutateFn",
+    "access": null,
+    "description": null,
+    "lineNumber": 109,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "params": [
+      {
+        "name": "key",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 112,
+    "kind": "file",
+    "name": "src/state-events.js",
+    "content": "import EventEmitter from 'events';\n\nconst events = new EventEmitter();\n\nexport default events;\n",
+    "static": true,
+    "longname": "src/state-events.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 114,
+    "kind": "external",
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 115,
+    "kind": "external",
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 116,
+    "kind": "external",
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 117,
+    "kind": "external",
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 118,
+    "kind": "external",
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 119,
+    "kind": "external",
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 120,
+    "kind": "external",
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 121,
+    "kind": "external",
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 122,
+    "kind": "external",
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 123,
+    "kind": "external",
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 124,
+    "kind": "external",
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 125,
+    "kind": "external",
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 126,
+    "kind": "external",
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 127,
+    "kind": "external",
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 128,
+    "kind": "external",
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 129,
+    "kind": "external",
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 130,
+    "kind": "external",
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 131,
+    "kind": "external",
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 132,
+    "kind": "external",
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 133,
+    "kind": "external",
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 134,
+    "kind": "external",
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 135,
+    "kind": "external",
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 136,
+    "kind": "external",
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 137,
+    "kind": "external",
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 138,
+    "kind": "external",
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 139,
+    "kind": "external",
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 140,
+    "kind": "external",
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 141,
+    "kind": "external",
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 142,
+    "kind": "external",
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 143,
+    "kind": "external",
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 144,
+    "kind": "external",
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 145,
+    "kind": "external",
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 146,
+    "kind": "external",
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 147,
+    "kind": "external",
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 148,
+    "kind": "external",
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 149,
+    "kind": "external",
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 150,
+    "kind": "external",
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 151,
+    "kind": "external",
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 152,
+    "kind": "external",
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 153,
+    "kind": "external",
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 154,
+    "kind": "external",
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 155,
+    "kind": "external",
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 156,
+    "kind": "external",
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 157,
+    "kind": "external",
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 158,
+    "kind": "external",
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 159,
+    "kind": "external",
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 160,
+    "kind": "external",
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": "",
+    "lineNumber": 193,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 162,
+    "kind": "external",
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 163,
+    "kind": "external",
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 164,
+    "kind": "external",
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 165,
+    "kind": "external",
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 166,
+    "kind": "external",
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 167,
+    "kind": "external",
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 168,
+    "kind": "external",
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 169,
+    "kind": "external",
+    "name": "AudioContext",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~AudioContext",
+    "access": null,
+    "description": "",
+    "lineNumber": 34,
+    "builtinExternal": true
+  }
+]

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/scene/scene.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/state-event-proxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-stateeventproxy">stateeventproxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/scene/scene.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import {_} from &apos;../utils&apos;;
+import reducePromise from &apos;reduce-promise&apos;;
+import Singleton from &apos;basic-singleton&apos;;
+import Entity from &apos;./entity&apos;;
+
+export default class Scene extends Singleton {
+
+    constructor() {
+        super();
+        Object.defineProperties(_.assign(this, {
+            children: {},
+            activeCamera: null
+        }), {
+            _baby: {
+                value: null,
+                writable: true
+            }
+        });
+    }
+
+    get baby() { return this._baby; }
+
+    mount(engine) {
+        this._baby = new engine.GL.Scene(engine.baby);
+    }
+
+    dismount(engine) {
+        this.children = _.pickBy(_.mapValues(this.children, e =&gt; Entity.dismount(engine, e)));
+        _.get(this, &apos;_baby.dispose&apos;, _.noop)();
+        this._baby = null;
+        return null;
+    }
+
+    getEntity(uid) {
+        return _.get(this.children, uid);
+    }
+
+    updateEntity(engine, entityData) {
+        return Entity.update(engine, this.children[entityData.uid], entityData)
+            .then(e =&gt; this.children[entityData.uid] = e);
+    }
+
+    updateEntities(engine, entities) {
+        return reducePromise(entities, e =&gt; this.updateEntity(engine, e))
+            .then(() =&gt; this);
+    }
+
+    removeEntity(engine, entityUid) {
+        return this.children[entityUid] = Entity.dismount(engine, _.get(this.children, entityUid));
+    }
+
+    tick(engine, t, dt) {
+        _.forEach(this.children, e =&gt; { Entity.tick(engine, e, t, dt) });
+    }
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

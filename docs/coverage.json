@@ -1,0 +1,82 @@
+{
+  "coverage": "38.66%",
+  "expectCount": 75,
+  "actualCount": 29,
+  "files": {
+    "src/state-event-proxy.js": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        9,
+        62,
+        55,
+        11,
+        103,
+        109,
+        28,
+        5
+      ]
+    },
+    "src/player-controller.js": {
+      "expectCount": 18,
+      "actualCount": 0,
+      "undocumentLines": [
+        11,
+        5,
+        21,
+        113,
+        104,
+        95,
+        88,
+        7,
+        58,
+        51,
+        81,
+        74,
+        65,
+        43,
+        37,
+        125,
+        33,
+        92
+      ]
+    },
+    "src/engine.js": {
+      "expectCount": 29,
+      "actualCount": 29,
+      "undocumentLines": []
+    },
+    "src/scene/entity/entity.js": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        10,
+        12,
+        78,
+        65,
+        85,
+        71,
+        54,
+        60
+      ]
+    },
+    "src/scene/scene.js": {
+      "expectCount": 11,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        21,
+        28,
+        8,
+        27,
+        34,
+        23,
+        48,
+        52,
+        43,
+        38
+      ]
+    }
+  }
+}
