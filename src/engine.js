@@ -5,23 +5,54 @@ import Scene from './scene';
 import EventProxy from './state-event-proxy';
 import events from './state-events';
 
+/**
+ * @typedef {Object} BabylonJS
+ * @typedef {Object} DOMElement
+ * @typedef {string} ProxiedString -- Emits the scoped event when this property changes.
+ * @typedef {number} ProxiedNumber - Emits the scoped event when this property changes.
+ */
+
+/**
+ * @typedef {Object} EntityData
+ * @typedef {EntityData} EntityMetaData
+ * @property {string} id - the generic Entity ID.
+ * @property {string} uid - the instance-specific identifier.
+ * @typedef {class} ComponentClass
+ * @typedef {Object} ResourceProvider
+ * @property {function(id: string): EntityData - Raw object containing default component definitions for Entity ID.
+ * @property {function(id: string): ComponentClass - Static component class for Component ID.
+ * @typedef {function(): Promise<ResourceProvider>} ResourceLoader
+ */
+
+/**
+ * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler
+ * @typedef {Object} KeyDefinition
+ * @property {string} key
+ * @property {KeyHandler} [handler] - The handler function for both key up and down.
+ * @property {KeyHandler} [upHandler] - The handler specifically for key up.
+ * @property {KeyHandler} [downHandler] - The handler specifically for key down.
+ * @typedef {Object} Settings
+ * @property {bool} [debug=false]
+ * @property {{keys: KeyDefinitions[]}} [input]
+ */
+
+/**
+ * @typedef {{
+ *  info: function,
+ *  debug: function,
+ *  warn: function,
+ *  error: function
+ * }} Logger
+ */
+
+// Cannot use require.ensure when not using webpack (i.e., mocha environment)
+//  so this polyfill is required to not break run.
 if (typeof require.ensure !== 'function') {
     require.ensure = (dep, cb) => cb(dep);
 }
 
-export const LoadStates = {
-    BOOT: 'Booting Up',
-    RES: 'Loading Resources',
-    INIT: 'Initial Setup',
-    GL: 'Loading Graphics Libraries',
-    GAME: 'Loading Game Engine',
-    DATA: 'Waiting For Initial Data',
-    PROC: 'Processing Initial Data',
-    REND: 'Rendering To Canvas',
-    DONE: false
-};
-
-let loader,
+let // Local vars for read-only class members
+    loader,
     logger,
     playerController,
     GraphicsLibrary,
@@ -30,8 +61,31 @@ let loader,
     babylonEngine,
     terrainEntity;
 
+/**
+ * The game engine class (abstraction of BabylonJS Engine).
+ *
+ * @access public
+ * @example
+ * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider))
+ */
 export default class Engine extends Singleton {
 
+    /**
+     * The general creation/initialization method for the class. Creates an
+     * engine instance or returns the existing one if already instantiated.
+     *
+     * @access public
+     * @param {Logger} loggerService
+     * @param {ResourceLoader} resourceProviderLoader
+     * @param {PlayerController} [PlayerController]
+     * @param {Settings} [settings={}]
+     * @return {Engine}
+     * @property {ProxyiedNumber} fps - The currently rendered frames-per-second.
+     * @property {ProxiedString} loading - The current loading state of the engine.
+     * @property {?Scene} scene
+     * @property {bool} running
+     * @property {Settings} settings
+     */
     static init(
         loggerService,
         resourceProviderLoader,
@@ -53,7 +107,11 @@ export default class Engine extends Singleton {
         return engine;
     }
 
-    // For testing purposes -- cannot stub constructor
+    /**
+     * For testing purposes -- cannot stub constructor
+     *
+     * @access private
+     */
     static constructorHelper(self, loggerService, PlayerController, settings) {
         if (!PlayerController) {
             PlayerController = require('./player-controller').default;
@@ -70,20 +128,54 @@ export default class Engine extends Singleton {
         playerController = new PlayerController(self);
     }
 
+    /**
+     * @access private
+     */
     constructor(...args) {
         super();
         Engine.constructorHelper(this, ...args);
     }
 
+    /**
+     * @property {?BabylonJS} GL - The BabylonJS graphics library.
+     */
     get GL() { return GraphicsLibrary; }
+    /**
+     * @property {?BabylonJS.Engine} baby - The BabylonJS.Engine instance.
+     */
     get baby() { return babylonEngine; }
+    /**
+     * @property {?DOMElement} canvas -- The canvas element to which the engine has been mounted.
+     */
     get canvas() { return canvasElement; }
+    /**
+     * @property {?ResourceProvider} provider
+     */
     get provider() { return resourceProvider; }
+    /**
+     * @property {?PlayerController} ctrl
+     */
     get ctrl() { return playerController; }
+    /**
+     * @property {Logger} logger
+     */
     get logger() { return logger; }
+    /**
+     * @property {?Entity} terrain - the scene's default terrain entity
+     */
     get terrain() { return terrainEntity; }
+    /**
+     * @type {Entity}
+     */
     set terrain(v) { return terrainEntity = v; }
 
+    /**
+     * Mount the engine to the given canvas.
+     *
+     * @access public
+     * @param {DOMElement} canvas
+     * @return {Promise<Engine>}
+     */
     mount(canvas) {
         return loader
             .then(() => {
@@ -111,6 +203,12 @@ export default class Engine extends Singleton {
             });
     }
 
+    /**
+     * Dismount engine from canvas.
+     *
+     * @access public
+     * @return {Promise<Engine>}
+     */
     dismount() {
         logger.debug('Dismounting from to canvas...');
         return new Promise(res => {
@@ -126,6 +224,13 @@ export default class Engine extends Singleton {
         });
     }
 
+    /**
+     * Initialize given entities (if any), then begin rendering to mounted canvas.
+     *
+     * @access public
+     * @param {EntityMetaData[]} [entities]
+     * @return {Promise<Engine>}
+     */
     run(entities) {
         const step = 1000 / 60;
         let count,
@@ -169,6 +274,12 @@ export default class Engine extends Singleton {
         return defer;
     }
 
+    /**
+     * Stop the rendering loop.
+     *
+     * @access public
+     * @return {Engine}
+     */
     stop() {
         if (this.running) {
             logger.debug('Stopping engine render loop.');
@@ -179,30 +290,80 @@ export default class Engine extends Singleton {
         return this;
     }
 
+    /**
+     * Passthrough to BabylonJS.Engine#resize method.
+     *
+     * @access public
+     */
     resize() {
         return _.get(babylonEngine, 'resize', _.noop)();
     }
 
+    /**
+     * Creates a new BabylonJS.Vector3.
+     *
+     * @access public
+     * @param {Object} param
+     * @param {number} [param.x=0]
+     * @param {number} [param.y=0]
+     * @param {number} [param.z=0]
+     * @return {BabylonJS.Vector3}
+     */
     toVector({x=0, y=0, z=0}={}) {
         return new this.GL.Vector3(..._.values({x, y, z}));
     }
 
+    /**
+     * Emits the given state event, only when settings.debug = true. See Engine.emitEvent.
+     *
+     * @access public
+     */
     emitDebugEvent(...args) {
         return this.settings.debug ? this.emitEvent(...args) : false;
     }
 
+    /**
+     * Adds state event listener only when settings.debug = true. See Engine.onEvent.
+     *
+     * @access public
+     */
     onDebugEvent(...args) {
         return this.settings.debug ? this.onEvent(...args) : false;
     }
 
+    /**
+     * Emits the given state event.
+     *
+     * @access public
+     * @param {string} scope - The scoped event name (e.g., 'engine.fps').
+     * @param {*} v - The changed value.
+     * @param {Object} The parent object who's property changed.
+     */
     emitEvent(scope, v, obj) {
         return events.emit(scope, v, obj);
     }
 
+    /**
+     * Registers a listener method for a state event.
+     *
+     * @access public
+     * @param {string} event - The scoped event name.
+     * @param {function(value: *, obj: Object)} handler - The event handler.
+     */
     onEvent(event, handler) {
         return events.on(event, handler);
     }
 
+    /**
+     * Hooks a Keyboard Key action listener into the engine.
+     *
+     * @access public
+     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).
+     * @param {Object} handlers
+     * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.
+     * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.
+     * @param {KeyHandler} [handlers.handler] - Handler method for both events.
+     */
     registerKeyAction(key, {downHandler, upHandler, handler}={}) {
         const {ActionManager, ExecuteCodeAction} = this.GL;
         const kUp = ActionManager.OnKeyUpTrigger;
@@ -224,6 +385,18 @@ export default class Engine extends Singleton {
         }
     }
 
+    /**
+     * Hooks Mouse action listener(s) into the engine for a given Entity.
+     *
+     * @access public
+     * @param {Entity} entity
+     * @param {Object} opts
+     * @param {bool} [opts.click] - Hooks the left-click (or equivalent) when true.
+     * @param {bool} [opts.altClick] - Hooks the right-click (or equivalent) when true.
+     * @param {bool} [opts.over] - Hooks the mouse-over when true.
+     * @param {bool} [opts.out] - Hooks the mouse-out when true.
+     * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.
+     */
     registerMouseEventsForEntity(entity, {click, altClick, over, out, cursor}={}) {
         const {ActionManager, ExecuteCodeAction} = this.GL;
         const clickT = ActionManager.OnLeftPickTrigger;
@@ -261,6 +434,11 @@ export default class Engine extends Singleton {
             });
     }
 
+    /**
+     * Removes all Mouse action listeners and mouse-over cursor for a given entity.
+     *
+     * @access public
+     */
     deregisterMouseEventsForEntity(entity) {
         let am = entity.mesh.baby.actionManager;
 
@@ -271,6 +449,36 @@ export default class Engine extends Singleton {
     }
 }
 
+/**
+ * The various states of Engine#loading.
+ *
+ * @access protected
+ * @type {Object}
+ * @property {string} BOOT
+ * @property {string} RES
+ * @property {string} INIT
+ * @property {string} GL
+ * @property {string} GAME
+ * @property {string} DATA
+ * @property {string} PROC
+ * @property {string} REND
+ * @property {null} DONE
+ */
+export const LoadStates = {
+    BOOT: 'Booting Up',
+    RES: 'Loading Resources',
+    INIT: 'Initial Setup',
+    GL: 'Loading Graphics Libraries',
+    GAME: 'Loading Game Engine',
+    DATA: 'Waiting For Initial Data',
+    PROC: 'Processing Initial Data',
+    REND: 'Rendering To Canvas',
+    DONE: null
+};
+
+/**
+ * @access private
+ */
 export const getPrivateDataForTest = () => ({
     loader,
     logger,
