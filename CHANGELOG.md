@@ -1,9 +1,5 @@
 # Changelog
 
-#### 0.2.0 - ...
-
-...
-
 ##### Details
  - ...
 
@@ -15,6 +11,10 @@
  - 0.2.x ... we'll see ...
 
 ## History
+
+### 0.1.7 - Hotfix
+
+Fixed bad references in src/index.
 
 ### 0.1.6 - Docstrings
 
