@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
-import events from '../src/state-events';
+import {Events as events} from '../src/state-events';
 import {StateEventProxy, DISABLE, default as StateProxy} from '../src/state-event-proxy';
 
 

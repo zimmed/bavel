@@ -11,9 +11,11 @@ const PlayerControllerMock = require('./player-controller.mock');
 const BabylonJSMock = require('./babylonjs.mock');
 const EventProxyMock = sinon.spy(function (obj, s, p) { return _.assign(obj, p); });
 const eventsMock = {
-    emit: sinon.spy(_.noop),
-    on: sinon.spy(_.noop),
-    reset: () => {eventsMock.emit.reset(); eventsMock.on.reset();}
+    Events: {
+        emit: sinon.spy(_.noop),
+        on: sinon.spy(_.noop),
+        reset: () => {eventsMock.Events.emit.reset(); eventsMock.Events.on.reset();}
+    }
 };
 
 proxyquire.noCallThru();
@@ -50,7 +52,7 @@ describe('The Engine Class', () => {
         playerCtrlSpy.reset();
         BabylonJSMock.reset();
         EventProxyMock.reset();
-        eventsMock.reset();
+        eventsMock.Events.reset();
     });
 
     it(`should be a singleton class`, () => {
@@ -510,8 +512,8 @@ describe('The Engine Class', () => {
 
             it(`should unconditionally emit a state event`, () => {
                 expect(() => engine.emitEvent('test', 40, {})).to.not.throw(Error);
-                expect(eventsMock.emit.callCount).to.equal(1);
-                expect(eventsMock.emit.calledWithExactly('test', 40, {})).to.equal(true);
+                expect(eventsMock.Events.emit.callCount).to.equal(1);
+                expect(eventsMock.Events.emit.calledWithExactly('test', 40, {})).to.equal(true);
             });
         });
 
@@ -519,8 +521,8 @@ describe('The Engine Class', () => {
 
             it(`should unconditionally listen to a state event`, () => {
                 expect(() => engine.onEvent('test', _.noop)).to.not.throw(Error);
-                expect(eventsMock.on.callCount).to.equal(1);
-                expect(eventsMock.on.calledWithExactly('test', _.noop)).to.equal(true);
+                expect(eventsMock.Events.on.callCount).to.equal(1);
+                expect(eventsMock.Events.on.calledWithExactly('test', _.noop)).to.equal(true);
             });
         });
 

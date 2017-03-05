@@ -1,6 +1,5 @@
 node_modules
 .idea
-build
 *.log
 .c9
 .git
