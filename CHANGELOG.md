@@ -1,13 +1,18 @@
 # Changelog
 
-### 0.1.7 - Hotfix
+### 0.1.8 Hotfix
 
-Fixed bad references in src/index.
+Default options parameter accidentially removed from StateEventProxy method. Re-added
+to method.
 
 #### Roadmap
  -  ... we'll see ...
 
 ## History
+
+### 0.1.7 - Hotfix
+
+Fixed bad references in src/index.
 
 ### 0.1.6 - Docstrings
 
