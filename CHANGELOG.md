@@ -1,13 +1,24 @@
 # Changelog
 
+#### 0.2.0 - ...
+
+...
+
+##### Details
+ - ...
+
+##### 0.2 Todo
+ ...
+
+#### Roadmap
+ - -0.2.x - Multiplayer networking support- *This will not be supported by the framework*
+ - 0.2.x ... we'll see ...
+ 
+## History
+
 ### 0.1.7 - Hotfix
 
 Fixed bad references in src/index.
-
-#### Roadmap
- -  ... we'll see ...
-
-## History
 
 ### 0.1.6 - Docstrings
 
