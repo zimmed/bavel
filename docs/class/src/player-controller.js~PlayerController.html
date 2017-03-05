@@ -34,11 +34,10 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/state-event-proxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-stateeventproxy">stateeventproxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
@@ -49,6 +48,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
 </ul>
@@ -56,13 +58,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import PlayerController from &apos;<span><a href="file/src/player-controller.js.html#lineNumber5">bavel/src/player-controller.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import PlayerController from &apos;<span><a href="file/src/player-controller.js.html#lineNumber38">bavel/src/player-controller.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/player-controller.js.html#lineNumber5">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/player-controller.js.html#lineNumber38">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -82,12 +84,40 @@
 
   
   
-  
+  <div class="description" data-ice="description"><p>Controller for player logic and interactions.</p>
+</div>
   
 
   
 
-  
+  <div data-ice="exampleDocs">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      <div class="example-caption" data-ice="exampleCaption">Definition</div>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">class MyGamePlayerController extends PlayerController {
+    get DOM_EVENTS() {
+        return {contextmenu: &apos;mAltClick&apos;, click: &apos;myClickMethod&apos;};
+    }
+    entityOver(entity, event) {
+        super.entityOver(entity, event);
+        entity.MyActionableComponent.doAction();
+    }
+    entityClick(entity, {pointerX, pointerY}) {
+        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
+
+        this.player.MyOtherActionableComponent.beginMovementTo(x, y, z);
+    }
+    myClickMethod(event) {
+        this.player.DestructionComponent.killAllHumans();
+    }
+}</code></pre>
+    </div>
+<div class="example-doc" data-ice="exampleDoc">
+      <div class="example-caption" data-ice="exampleCaption">Implementation</div>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">let engine = Engine.init(myLogger, myResourceLoader, MyGamePlayerController, {});</code></pre>
+    </div>
+</div>
 
   
 
@@ -112,13 +142,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#static-method-getTime">getTime</a></span></span><span data-ice="signature">(date: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#static-method-getTime">getTime</a></span></span><span data-ice="signature">(date: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Used for generating readable-timestamps in messages.</p>
+</div>
       </div>
     </td>
     <td>
@@ -146,7 +177,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(engine: <span>*</span>, uiData: {})</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>)</span>
         </p>
       </div>
       <div>
@@ -180,13 +211,15 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-get-DOM_EVENTS">DOM_EVENTS</a></span></span><span data-ice="signature">: {&quot;click&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;contextmenu&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;wheel&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;mouseover&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;mouseout&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>}</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-get-DOM_EVENTS">DOM_EVENTS</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Map of HTML DOM events to controller functions to be hooked into the window
+when engine is mounted.</p>
+</div>
       </div>
     </td>
     <td>
@@ -207,13 +240,70 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-member-target">target</a></span></span><span data-ice="signature">: <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-member-messages">messages</a></span></span><span data-ice="signature">: <span><span><a href="typedef/index.html#static-typedef-Message">Message</a></span><span>[]</span></span></span>
         </p>
       </div>
       <div>
         
         
+        <div data-ice="description"><p>The list of logged game messages.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-member-player">player</a></span></span><span data-ice="signature">: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span>
+        </p>
+      </div>
+      <div>
         
+        
+        <div data-ice="description"><p>The controlled player entity.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-member-target">target</a></span></span><span data-ice="signature">: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The currently-targeted entity (based on mouse-over).</p>
+</div>
       </div>
     </td>
     <td>
@@ -233,7 +323,7 @@
       <span class="access" data-ice="access">public</span>
       
       
-      
+      <span class="abstract" data-ice="abstract">abstract</span>
       <span class="override" data-ice="override"></span>
     </td>
     <td>
@@ -241,13 +331,42 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityAltClick">entityAltClick</a></span></span><span data-ice="signature">(entity: <span>*</span>, objectPattern1: {&quot;pointerX&quot;: <span>*</span>, &quot;pointerY&quot;: <span>*</span>})</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityAltClick">entityAltClick</a></span></span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
         </p>
       </div>
       <div>
         
         
+        <div data-ice="description"><p>Example event handler for a mouse right-click event on a game entity.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityClick">entityClick</a></span></span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
+        </p>
+      </div>
+      <div>
         
+        
+        <div data-ice="description"><p>Example event handler for a mouse left-click event on a game entity.</p>
+</div>
       </div>
     </td>
     <td>
@@ -268,13 +387,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityClick">entityClick</a></span></span><span data-ice="signature">(entity: <span>*</span>, objectPattern1: {&quot;pointerX&quot;: <span>*</span>, &quot;pointerY&quot;: <span>*</span>})</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityOut">entityOut</a></span></span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The event handler for a mouse cursor-out event on a game entity.</p>
+</div>
       </div>
     </td>
     <td>
@@ -295,13 +415,154 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityOut">entityOut</a></span></span><span data-ice="signature">(entity: <span>*</span>, evt: <span>*</span>)</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityOver">entityOver</a></span></span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
         </p>
       </div>
       <div>
         
         
+        <div data-ice="description"><p>The event handler for a mouse cursor-over event on a game entity.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mAltClick">mAltClick</a></span></span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
+        </p>
+      </div>
+      <div>
         
+        
+        <div data-ice="description"><p>Example event handler for the browser&apos;s right mouse click.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mClick">mClick</a></span></span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Example event handler for the browser&apos;s left mouse click.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mOut">mOut</a></span></span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Example event handler for the browser&apos;s mouse out event.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mOver">mOver</a></span></span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Example event handler for the browser&apos;s mouse over event.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      <span class="abstract" data-ice="abstract">abstract</span>
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mWheel">mWheel</a></span></span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Example event handler for the browser&apos;s mouse wheel event.</p>
+</div>
       </div>
     </td>
     <td>
@@ -322,13 +583,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-entityOver">entityOver</a></span></span><span data-ice="signature">(entity: <span>*</span>, evt: <span>*</span>)</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-message">message</a></span></span><span data-ice="signature">(type: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, sender: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, message: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, max: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><span><a href="typedef/index.html#static-typedef-Message">Message</a></span><span>[]</span></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Inserts new message into controller&apos;s messages array.</p>
+</div>
       </div>
     </td>
     <td>
@@ -349,13 +611,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mAltClick">mAltClick</a></span></span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-registerKeyActions">registerKeyActions</a></span></span><span data-ice="signature">(keyHandlers: <span><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span><span>[]</span></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Hooks the provided key handlers into the game&apos;s keystroke actions.</p>
+</div>
       </div>
     </td>
     <td>
@@ -376,175 +639,15 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mClick">mClick</a></span></span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
+          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-setup">setup</a></span></span><span data-ice="signature">(settings: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mOut">mOut</a></span></span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mOver">mOver</a></span></span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-mWheel">mWheel</a></span></span><span data-ice="signature">(objectPattern: {&quot;deltaX&quot;: <span>*</span>, &quot;deltaY&quot;: <span>*</span>, &quot;deltaZ&quot;: <span>*</span>})</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-message">message</a></span></span><span data-ice="signature">(type: <span>*</span>, sender: <span>*</span>, msg: <span>*</span>, max: <span>*</span>): <span>*</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-registerKeyActions">registerKeyActions</a></span></span><span data-ice="signature">(keyHandlers: <span>*</span>)</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html#instance-method-setup">setup</a></span></span><span data-ice="signature">(settings: <span>*</span>)</span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
+        <div data-ice="description"><p>Supplies the key listeners defined in the provided game settings to
+ <span><a href="class/src/player-controller.js~PlayerController.html#instance-method-registerKeyActions">PlayerController#registerKeyActions</a></span>.</p>
+</div>
       </div>
     </td>
     <td>
@@ -569,18 +672,19 @@
     
     
     
-    <span data-ice="name">getTime</span><span data-ice="signature">(date: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
+    <span data-ice="name">getTime</span><span data-ice="signature">(date: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber7">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber46">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Used for generating readable-timestamps in messages.</p>
+</div>
 
   
 
@@ -594,8 +698,9 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">date</td>
-      <td data-ice="type"><span>*</span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: new Date()</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 </tbody>
@@ -609,7 +714,8 @@
       <tbody>
         <tr>
           <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-          
+          <td class="return-desc" data-ice="returnDescription"><p>Current time in HH:mm:ss format.</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -643,11 +749,11 @@
     
     
     
-    <span data-ice="name">constructor</span><span data-ice="signature">(engine: <span>*</span>, uiData: {})</span>
+    <span data-ice="name">constructor</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber21">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber72">source</a></span></span>
     </span>
   </h3>
 
@@ -668,16 +774,10 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">uiData</td>
-      <td data-ice="type">{}</td>
-      <td data-ice="appendix"><ul><li>optional</li>
-<li>default: {}</li></ul></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>The reference to the parent game engine.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -712,18 +812,117 @@
     
     
     
-    <span data-ice="name">DOM_EVENTS</span><span data-ice="signature">: {&quot;click&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;contextmenu&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;wheel&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;mouseover&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, &quot;mouseout&quot;: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>}</span>
+    <span data-ice="name">DOM_EVENTS</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber11">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber59">source</a></span></span>
     </span>
   </h3>
 
   
   
   
+  <div data-ice="description"><p>Map of HTML DOM events to controller functions to be hooked into the window
+when engine is mounted.</p>
+</div>
+
   
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      <div class="example-caption" data-ice="exampleCaption">Override DOM_EVENTS</div>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">get DOM_EVENTS() { return {click: &apos;mClick&apos;}; }
+// Only the browser click action will trigger a Controller method.</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-messages">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">messages</span><span data-ice="signature">: <span><span><a href="typedef/index.html#static-typedef-Message">Message</a></span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber81">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The list of logged game messages. New messages are inserted into the
+beginning of the array.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-player">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">player</span><span data-ice="signature">: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber87">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The controlled player entity.</p>
+</div>
 
   
 
@@ -755,18 +954,19 @@
     
     
     
-    <span data-ice="name">target</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">target</span><span data-ice="signature">: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber92">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber93">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The currently-targeted entity (based on mouse-over).</p>
+</div>
 
   
 
@@ -798,21 +998,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">entityAltClick</span><span data-ice="signature">(entity: <span>*</span>, objectPattern1: {&quot;pointerX&quot;: <span>*</span>, &quot;pointerY&quot;: <span>*</span>})</span>
+    <span data-ice="name">entityAltClick</span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber113">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber189">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for a mouse right-click event on a game entity.</p>
+</div>
 
   
 
@@ -826,14 +1027,14 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entity</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern1</td>
-      <td data-ice="type">{&quot;pointerX&quot;: <span>*</span>, &quot;pointerY&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;pointerX&quot;:null,&quot;pointerY&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>BabylonJS.ActionEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 </tbody>
@@ -863,21 +1064,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">entityClick</span><span data-ice="signature">(entity: <span>*</span>, objectPattern1: {&quot;pointerX&quot;: <span>*</span>, &quot;pointerY&quot;: <span>*</span>})</span>
+    <span data-ice="name">entityClick</span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber104">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber173">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for a mouse left-click event on a game entity.</p>
+</div>
 
   
 
@@ -891,14 +1093,14 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entity</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern1</td>
-      <td data-ice="type">{&quot;pointerX&quot;: <span>*</span>, &quot;pointerY&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;pointerX&quot;:null,&quot;pointerY&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>BabylonJS.ActionEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 </tbody>
@@ -931,18 +1133,19 @@
     
     
     
-    <span data-ice="name">entityOut</span><span data-ice="signature">(entity: <span>*</span>, evt: <span>*</span>)</span>
+    <span data-ice="name">entityOut</span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber95">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber157">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The event handler for a mouse cursor-out event on a game entity.</p>
+</div>
 
   
 
@@ -956,13 +1159,13 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entity</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">evt</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>BabylonJS.ActionEvent</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -996,18 +1199,19 @@
     
     
     
-    <span data-ice="name">entityOver</span><span data-ice="signature">(entity: <span>*</span>, evt: <span>*</span>)</span>
+    <span data-ice="name">entityOver</span><span data-ice="signature">(entity: <span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span>, event: <span>BabylonJS.ActionEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber88">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber144">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The event handler for a mouse cursor-over event on a game entity.</p>
+</div>
 
   
 
@@ -1021,13 +1225,13 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entity</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">evt</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>BabylonJS.ActionEvent</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1058,21 +1262,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">mAltClick</span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
+    <span data-ice="name">mAltClick</span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber58">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber225">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for the browser&apos;s right mouse click.</p>
+</div>
 
   
 
@@ -1085,10 +1290,26 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern</td>
-      <td data-ice="type">{&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;pageX&quot;:null,&quot;pageY&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>SyntheticEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageX</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The X-position of the click relative to the
+ HTML document.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageY</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The Y-position of the click relative to the
+ HTML document.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1117,21 +1338,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">mClick</span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
+    <span data-ice="name">mClick</span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber51">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber208">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for the browser&apos;s left mouse click.</p>
+</div>
 
   
 
@@ -1144,10 +1366,26 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern</td>
-      <td data-ice="type">{&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;pageX&quot;:null,&quot;pageY&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>SyntheticEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageX</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The X-position of the click relative to the
+ HTML document.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageY</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The Y-position of the click relative to the
+ HTML document.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1176,21 +1414,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">mOut</span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
+    <span data-ice="name">mOut</span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber81">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber277">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for the browser&apos;s mouse out event.</p>
+</div>
 
   
 
@@ -1203,10 +1442,26 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern</td>
-      <td data-ice="type">{&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;pageX&quot;:null,&quot;pageY&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>SyntheticEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageX</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The X-position of the click relative to the
+ HTML document.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageY</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The Y-position of the click relative to the
+ HTML document.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1235,21 +1490,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">mOver</span><span data-ice="signature">(objectPattern: {&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>})</span>
+    <span data-ice="name">mOver</span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber74">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber260">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for the browser&apos;s mouse over event.</p>
+</div>
 
   
 
@@ -1262,10 +1518,26 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern</td>
-      <td data-ice="type">{&quot;pageX&quot;: <span>*</span>, &quot;pageY&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;pageX&quot;:null,&quot;pageY&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>SyntheticEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageX</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The X-position of the click relative to the
+ HTML document.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.pageY</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The Y-position of the click relative to the
+ HTML document.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1294,21 +1566,22 @@
     <span class="access" data-ice="access">public</span>
     
     
+    <span class="abstract" data-ice="abstract">abstract</span>
     
     
-    
-    <span data-ice="name">mWheel</span><span data-ice="signature">(objectPattern: {&quot;deltaX&quot;: <span>*</span>, &quot;deltaY&quot;: <span>*</span>, &quot;deltaZ&quot;: <span>*</span>})</span>
+    <span data-ice="name">mWheel</span><span data-ice="signature">(event: <span>SyntheticEvent</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber65">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber241">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Example event handler for the browser&apos;s mouse wheel event.</p>
+</div>
 
   
 
@@ -1321,10 +1594,31 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">objectPattern</td>
-      <td data-ice="type">{&quot;deltaX&quot;: <span>*</span>, &quot;deltaY&quot;: <span>*</span>, &quot;deltaZ&quot;: <span>*</span>}</td>
-      <td data-ice="appendix"><ul><li>default: {&quot;deltaX&quot;:null,&quot;deltaY&quot;:null,&quot;deltaZ&quot;:null}</li></ul></td>
+      <td data-ice="name" data-depth="0">event</td>
+      <td data-ice="type"><span>SyntheticEvent</span></td>
+      <td data-ice="appendix"></td>
       <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.deltaX</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The value scrolled along the X axis.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.deltaY</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The value scrolled along the Y axis.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">event.deltaZ</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The value scrolled along the Z axis.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1356,18 +1650,19 @@
     
     
     
-    <span data-ice="name">message</span><span data-ice="signature">(type: <span>*</span>, sender: <span>*</span>, msg: <span>*</span>, max: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">message</span><span data-ice="signature">(type: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, sender: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, message: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, max: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><span><a href="typedef/index.html#static-typedef-Message">Message</a></span><span>[]</span></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber43">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber130">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Inserts new message into controller&apos;s messages array.</p>
+</div>
 
   
 
@@ -1381,26 +1676,27 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">type</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">sender</td>
-      <td data-ice="type"><span>*</span></td>
-      <td data-ice="appendix"></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"><ul><li>nullable: true</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">msg</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="name" data-depth="0">message</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">max</td>
-      <td data-ice="type"><span>*</span></td>
-      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: PlayerController.MAX_MESSAGES</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 </tbody>
@@ -1413,8 +1709,9 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>*</span></td>
-          
+          <td class="return-type" data-ice="returnType"><span><span><a href="typedef/index.html#static-typedef-Message">Message</a></span><span>[]</span></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>The updated messages array.</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -1445,18 +1742,19 @@
     
     
     
-    <span data-ice="name">registerKeyActions</span><span data-ice="signature">(keyHandlers: <span>*</span>)</span>
+    <span data-ice="name">registerKeyActions</span><span data-ice="signature">(keyHandlers: <span><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span><span>[]</span></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber37">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber115">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Hooks the provided key handlers into the game&apos;s keystroke actions.</p>
+</div>
 
   
 
@@ -1470,7 +1768,7 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">keyHandlers</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span><span>[]</span></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1504,18 +1802,20 @@
     
     
     
-    <span data-ice="name">setup</span><span data-ice="signature">(settings: <span>*</span>)</span>
+    <span data-ice="name">setup</span><span data-ice="signature">(settings: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber33">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber106">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Supplies the key listeners defined in the provided game settings to
+ <span><a href="class/src/player-controller.js~PlayerController.html#instance-method-registerKeyActions">PlayerController#registerKeyActions</a></span>.</p>
+</div>
 
   
 
@@ -1529,7 +1829,7 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">settings</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>

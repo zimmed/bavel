@@ -3,7 +3,7 @@
     "__docId__": 0,
     "kind": "file",
     "name": "src/engine.js",
-    "content": "import {_} from './utils';\nimport Singleton from 'basic-singleton';\nimport Promise from 'bluebird';\nimport Scene from './scene';\nimport EventProxy from './state-event-proxy';\nimport events from './state-events';\n\n/**\n * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.\n */\n\n/**\n * @typedef {Object} EntityData\n */\n/**\n * @typedef {EntityData} EntityMetaData\n * @property {string} id - the generic Entity ID.\n * @property {string} uid - the instance-specific identifier.\n */\n/**\n * @typedef {class} ComponentClass\n */\n/**\n * @typedef {Object} ResourceProvider\n * @property {function(id: string): EntityData} - Raw object containing default component definitions for Entity ID.\n * @property {function(id: string): ComponentClass} - Static component class for Component ID.\n */\n/**\n * @typedef {function(): Promise<ResourceProvider>} ResourceLoader\n */\n\n/**\n * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler\n */\n/**\n * @typedef {Object} KeyDefinition\n * @property {string} key\n * @property {KeyHandler} [handler] - The handler function for both key up and down.\n * @property {KeyHandler} [upHandler] - The handler specifically for key up.\n * @property {KeyHandler} [downHandler] - The handler specifically for key down.\n */\n/**\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n */\n\n/**\n * @typedef {{\n *  info: function,\n *  debug: function,\n *  warn: function,\n *  error: function\n * }} Logger\n */\n\n// Cannot use require.ensure when not using webpack (i.e., mocha environment)\n//  so this polyfill is required to not break run.\nif (typeof require.ensure !== 'function') {\n    require.ensure = (dep, cb) => cb(dep);\n}\n\nlet // Local vars for read-only class members\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity;\n\n/**\n * The game engine class (abstraction of BabylonJS Engine).\n *\n * @example <caption>Basic construction with default args</caption>\n * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider));\n * @example <caption>One-line runner</caption>\n * Engine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n *     .mount(document.getElementById('my-canvas'))\n *     .then(engine => engine.run(entityData))\n *     .then(engine => window.addEventListener('resize', () => engine.resize()));\n */\nexport default class Engine extends Singleton {\n\n    /**\n     * The general creation/initialization method for the class. Creates an\n     * engine instance or returns the existing one if already instantiated.\n     *\n     * @param {Logger} loggerService\n     * @param {ResourceLoader} resourceProviderLoader\n     * @param {class} [PlayerController]\n     * @param {Settings} [settings={}]\n     * @return {Engine}\n     */\n    static init(\n        loggerService,\n        resourceProviderLoader,\n        PlayerController,\n        settings={}\n    ) {\n        let engine = this.instance;\n\n        if (engine) return engine;\n        loader = logger = playerController = GraphicsLibrary = terrainEntity =\n            resourceProvider = canvasElement = babylonEngine = null;\n        engine = new this(loggerService, PlayerController, settings);\n        engine.loading = LoadStates.RES;\n        loader = resourceProviderLoader().then(provider => {\n            resourceProvider = provider;\n            engine.loading = LoadStates.INIT;\n            engine.scene = new Scene(engine);\n        });\n        return engine;\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    constructorHelper( loggerService, PlayerController, settings) {\n        if (!PlayerController) {\n            PlayerController = require('./player-controller').default;\n        }\n        EventProxy(self, 'engine', ['fps', 'loading']);\n        /**\n         * The currently rendered frames-per-second.\n         *\n         * @type {ProxyValue}\n         */\n        this.fps = 0;\n        /**\n         * The current loading state of the engine.\n         *\n         * @type {ProxyValue}\n         */\n        this.loading = LoadStates.BOOT;\n        /** @type {?Scene} **/\n        this.scene = null\n        /** @type {boolean} **/\n        this.running = false;\n        /** @type {Settings} **/\n        this.settings = settings;\n        logger = loggerService;\n        playerController = new PlayerController(self);\n    }\n\n    /**\n     * @access private\n     */\n    constructor(...args) {\n        super();\n        Engine.constructorHelper(...args);\n    }\n\n    /**\n     * The BabylonJS graphics library.\n     *\n     * @type {?BabylonJS}\n     */\n    get GL() { return GraphicsLibrary; }\n    /**\n     * The BabylonJS.Engine instance.\n     *\n     * @type {?BabylonJS.Engine}\n     */\n    get baby() { return babylonEngine; }\n    /**\n     * The canvas element to which the engine has been mounted.\n     *\n     * @type {?DOMElement}\n     */\n    get canvas() { return canvasElement; }\n    /**\n     * @type {?ResourceProvider}\n     */\n    get provider() { return resourceProvider; }\n    /**\n     * @type {?PlayerController}\n     */\n    get ctrl() { return playerController; }\n    /**\n     * @type {Logger}\n     */\n    get logger() { return logger; }\n    /**\n     * The scene's default terrain entity.\n     *\n     * @type {?Entity}\n     */\n    get terrain() { return terrainEntity; }\n    /**\n     * @type {Entity}\n     */\n    set terrain(v) { return terrainEntity = v; }\n\n    /**\n     * Mount the engine to the given canvas.\n     *\n     * @access public\n     * @param {DOMElement} canvas\n     * @return {Promise<Engine>}\n     */\n    mount(canvas) {\n        return loader\n            .then(() => {\n                logger.debug('Mounting engine to canvas...');\n                this.loading = LoadStates.GL;\n                return new Promise(res => {\n                    require.ensure(['babylonjs'], () => {\n                        res(require('babylonjs'));\n                    }, 'graphics');\n                });\n            })\n            .then(BabylonJS => {\n                GraphicsLibrary = BabylonJS;\n\n                this.loading = LoadStates.GAME;\n                babylonEngine = new GraphicsLibrary.Engine(canvas, true);\n                canvasElement = canvas;\n                logger.debug('Loading scene...');\n                return this.scene.mount(this);\n            })\n            .then(() => {\n                this.loading = LoadStates.DATA;\n                logger.info('Engine mounted.');\n                return this;\n            });\n    }\n\n    /**\n     * Dismount engine from canvas.\n     *\n     * @access public\n     * @return {Promise<Engine>}\n     */\n    dismount() {\n        logger.debug('Dismounting from to canvas...');\n        return new Promise(res => {\n            if (this.running) {\n                this.stop();\n            }\n            this.scene = this.scene.dismount(this);\n            _.get(babylonEngine, 'dispose', _.noop)();\n            babylonEngine = null;\n            canvasElement = null;\n            logger.info('Engine dismounted.');\n            res(this);\n        });\n    }\n\n    /**\n     * Initialize given entities (if any), then begin rendering to mounted canvas.\n     *\n     * @access public\n     * @param {EntityMetaData[]} [entities]\n     * @return {Promise<Engine>}\n     */\n    run(entities) {\n        const step = 1000 / 60;\n        let count,\n            time,\n            accum = 0,\n            defer = Promise.resolve(this);\n\n        if (!this.running && this.loading === LoadStates.DATA) {\n            if (entities) {\n                this.loading = LoadStates.PROC;\n                logger.debug('Adding initial entities to scene...');\n                defer = this.scene.updateEntities(this, entities);\n            }\n            defer = defer.then(() => {\n                this.ctrl.setup(this.settings);\n                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =>\n                    canvasElement.addEventListener(name, e =>\n                        e.preventDefault() && false || this.ctrl[fn](e)));\n                this.loading = LoadStates.REND;\n                logger.debug('Starting engine render loop. ENGINE: ', this);\n                babylonEngine.runRenderLoop(() => {\n                    count = 0;\n                    time = Date.now();\n                    accum = babylonEngine.getDeltaTime();\n                    // accum += engine.baby.getDeltaTime();\n                    // while (accum >= step) {\n                    //     count++;\n                    //     engine.scene.tick(engine, time, step);\n                    //     accum -= step;\n                    //     if (count > 5) accum = 0;\n                    // }\n                    this.scene.tick(this, time, accum);\n                    this.scene.baby.render();\n                });\n                this.loading = LoadStates.DONE;\n                setInterval(() => {\n                    this.fps = Math.floor(this.baby.fps)\n                }, 500);\n                this.running = true;\n                return this;\n            });\n        }\n        return defer;\n    }\n\n    /**\n     * Stop the rendering loop.\n     *\n     * @access public\n     * @return {Engine}\n     */\n    stop() {\n        if (this.running) {\n            logger.debug('Stopping engine render loop.');\n            babylonEngine.stopRenderLoop();\n            this.running = false;\n            this.loading = LoadStates.DATA;\n        }\n        return this;\n    }\n\n    /**\n     * Passthrough to BabylonJS.Engine#resize method.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    resize() {\n        return _.get(babylonEngine, 'resize', _.noop)();\n    }\n\n    /**\n     * Creates a new BabylonJS.Vector3.\n     *\n     * @access public\n     * @param {Object} param\n     * @param {number} [param.x=0]\n     * @param {number} [param.y=0]\n     * @param {number} [param.z=0]\n     * @return {BabylonJS.Vector3}\n     */\n    toVector({x=0, y=0, z=0}={}) {\n        return new this.GL.Vector3(..._.values({x, y, z}));\n    }\n\n    /**\n     * Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    emitDebugEvent(...args) {\n        return this.settings.debug ? this.emitEvent(...args) : false;\n    }\n\n    /**\n     * Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    onDebugEvent(...args) {\n        return this.settings.debug ? this.onEvent(...args) : false;\n    }\n\n    /**\n     * Emits the given state event.\n     *\n     * @access public\n     * @param {string} scope - The scoped event name (e.g., 'engine.fps').\n     * @param {*} v - The changed value.\n     * @param {Object} obj - The parent object who's property changed.\n     * @return {undefined}\n     */\n    emitEvent(scope, v, obj) {\n        return events.emit(scope, v, obj);\n    }\n\n    /**\n     * Registers a listener method for a state event.\n     *\n     * @access public\n     * @param {string} event - The scoped event name.\n     * @param {function(value: *, obj: Object)} handler - The event handler.\n     * @return {undefined}\n     */\n    onEvent(event, handler) {\n        return events.on(event, handler);\n    }\n\n    /**\n     * Hooks a Keyboard Key action listener into the engine.\n     *\n     * @access public\n     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).\n     * @param {Object} handlers\n     * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.\n     * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.\n     * @param {KeyHandler} [handlers.handler] - Handler method for both events.\n     * @return {undefined}\n     */\n    registerKeyAction(key, {downHandler, upHandler, handler}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const kUp = ActionManager.OnKeyUpTrigger;\n        const kDn = ActionManager.OnKeyDownTrigger;\n        let am = this.scene.baby.actionManager;\n\n        if (!am) {\n            am = this.scene.baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (handler || downHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                {trigger: kDn, parameter: key},\n                () => (handler || downHandler)(this, key, true)));\n        }\n        if (handler || upHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                {trigger: kUp, parameter: key},\n                () => (handler || upHandler)(this, key, false)));\n        }\n    }\n\n    /**\n     * Hooks Mouse action listener(s) into the engine for a given Entity.\n     *\n     * @access public\n     * @param {Entity} entity\n     * @param {Object} opts\n     * @param {bool} [opts.click] - Hooks the left-click (or equivalent) when true.\n     * @param {bool} [opts.altClick] - Hooks the right-click (or equivalent) when true.\n     * @param {bool} [opts.over] - Hooks the mouse-over when true.\n     * @param {bool} [opts.out] - Hooks the mouse-out when true.\n     * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.\n     * @return {undefined}\n     */\n    registerMouseEventsForEntity(entity, {click, altClick, over, out, cursor}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const clickT = ActionManager.OnLeftPickTrigger;\n        const altClickT = ActionManager.OnRightPickTrigger;\n        const overT = ActionManager.OnPointerOverTrigger;\n        const outT = ActionManager.OnPointerOutTrigger;\n\n        return entity.meshAsync\n            .then(mesh => mesh.ready())\n            .then(({baby}) => {\n                let am = baby.actionManager;\n\n                if (!am) {\n                    am = baby.actionManager = new ActionManager(this.scene.baby);\n                }\n                if (cursor) {\n                    am.hoverCursor = cursor;\n                }\n                if (click) {\n                    am.registerAction(new ExecuteCodeAction(\n                        clickT, e => this.ctrl.entityClick(entity, e)));\n                }\n                if (altClick) {\n                    am.registerAction(new ExecuteCodeAction(\n                        altClickT, e => this.ctrl.entityAltClick(entity, e)));\n                }\n                if (over) {\n                    am.registerAction(new ExecuteCodeAction(\n                        overT, e => this.ctrl.entityOver(entity, e)));\n                }\n                if (out) {\n                    am.registerAction(new ExecuteCodeAction(\n                        outT, e => this.ctrl.entityOut(entity, e)));\n                }\n            });\n    }\n\n    /**\n     * Removes all Mouse action listeners and mouse-over cursor for a given entity.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    deregisterMouseEventsForEntity(entity) {\n        let am = entity.mesh.baby.actionManager;\n\n        if (am) {\n            am.hoverCursor = 'default';\n            while (am.actions.length) { am.actions.pop(); }\n        }\n    }\n}\n\n/**\n * The various states of Engine#loading.\n *\n * @access protected\n * @type {Object}\n * @property {string} BOOT\n * @property {string} RES\n * @property {string} INIT\n * @property {string} GL\n * @property {string} GAME\n * @property {string} DATA\n * @property {string} PROC\n * @property {string} REND\n * @property {null} DONE\n */\nexport const LoadStates = {\n    BOOT: 'Booting Up',\n    RES: 'Loading Resources',\n    INIT: 'Initial Setup',\n    GL: 'Loading Graphics Libraries',\n    GAME: 'Loading Game Engine',\n    DATA: 'Waiting For Initial Data',\n    PROC: 'Processing Initial Data',\n    REND: 'Rendering To Canvas',\n    DONE: null\n};\n\n/**\n * @access private\n */\nexport const getPrivateDataForTest = () => ({\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity\n});\n",
+    "content": "import {_} from './utils';\nimport Singleton from 'basic-singleton';\nimport Promise from 'bluebird';\nimport Scene from './scene';\nimport EventProxy from './state-event-proxy';\nimport events from './state-events';\n\n/**\n * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.\n */\n\n/**\n * @typedef {Object} EntityData\n */\n/**\n * @typedef {EntityData} EntityMetaData\n * @property {string} id - the generic Entity ID.\n * @property {string} uid - the instance-specific identifier.\n */\n/**\n * @typedef {class} ComponentClass\n */\n/**\n * @typedef {Object} ResourceProvider\n * @property {function(id: string): EntityData} - Raw object containing default component definitions for Entity ID.\n * @property {function(id: string): ComponentClass} - Static component class for Component ID.\n */\n/**\n * @typedef {function(): Promise<ResourceProvider>} ResourceLoader\n */\n\n/**\n * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler\n */\n/**\n * @typedef {Object} KeyDefinition\n * @property {string} key\n * @property {KeyHandler} [handler] - The handler function for both key up and down.\n * @property {KeyHandler} [upHandler] - The handler specifically for key up.\n * @property {KeyHandler} [downHandler] - The handler specifically for key down.\n */\n/**\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n */\n\n/**\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n */\n\n// Cannot use require.ensure when not using webpack (i.e., mocha environment)\n//  so this polyfill is required to not break run.\nif (typeof require.ensure !== 'function') {\n    require.ensure = (dep, cb) => cb(dep);\n}\n\nlet // Local vars for read-only class members\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity;\n\n/**\n * The game engine class (abstraction of BabylonJS Engine).\n *\n * @example <caption>Basic construction with default args</caption>\n * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider));\n * @example <caption>One-line runner</caption>\n * Engine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n *     .mount(document.getElementById('my-canvas'))\n *     .then(engine => engine.run(entityData))\n *     .then(engine => window.addEventListener('resize', () => engine.resize()));\n */\nexport default class Engine extends Singleton {\n\n    /**\n     * The general creation/initialization method for the class. Creates an\n     * engine instance or returns the existing one if already instantiated.\n     *\n     * @param {Logger} loggerService\n     * @param {ResourceLoader} resourceProviderLoader\n     * @param {class} [PlayerController]\n     * @param {Settings} [settings={}]\n     * @return {Engine}\n     */\n    static init(\n        loggerService,\n        resourceProviderLoader,\n        PlayerController,\n        settings={}\n    ) {\n        let engine = this.instance;\n\n        if (engine) return engine;\n        loader = logger = playerController = GraphicsLibrary = terrainEntity =\n            resourceProvider = canvasElement = babylonEngine = null;\n        engine = new this(loggerService, PlayerController, settings);\n        engine.loading = LoadStates.RES;\n        loader = resourceProviderLoader().then(provider => {\n            resourceProvider = provider;\n            engine.loading = LoadStates.INIT;\n            engine.scene = new Scene(engine);\n        });\n        return engine;\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    constructorHelper( loggerService, PlayerController, settings) {\n        if (!PlayerController) {\n            PlayerController = require('./player-controller').default;\n        }\n        EventProxy(self, 'engine', ['fps', 'loading']);\n        /**\n         * The currently rendered frames-per-second.\n         *\n         * @type {ProxyValue}\n         */\n        this.fps = 0;\n        /**\n         * The current loading state of the engine.\n         *\n         * @type {ProxyValue}\n         */\n        this.loading = LoadStates.BOOT;\n        /** @type {?Scene} **/\n        this.scene = null\n        /** @type {boolean} **/\n        this.running = false;\n        /** @type {Settings} **/\n        this.settings = settings;\n        logger = loggerService;\n        playerController = new PlayerController(self);\n    }\n\n    /**\n     * @access private\n     */\n    constructor(...args) {\n        super();\n        Engine.constructorHelper(...args);\n    }\n\n    /**\n     * The BabylonJS graphics library.\n     *\n     * @type {?BabylonJS}\n     */\n    get GL() { return GraphicsLibrary; }\n    /**\n     * The BabylonJS.Engine instance.\n     *\n     * @type {?BabylonJS.Engine}\n     */\n    get baby() { return babylonEngine; }\n    /**\n     * The canvas element to which the engine has been mounted.\n     *\n     * @type {?DOMElement}\n     */\n    get canvas() { return canvasElement; }\n    /**\n     * @type {?ResourceProvider}\n     */\n    get provider() { return resourceProvider; }\n    /**\n     * @type {?PlayerController}\n     */\n    get ctrl() { return playerController; }\n    /**\n     * @type {Logger}\n     */\n    get logger() { return logger; }\n    /**\n     * The scene's default terrain entity.\n     *\n     * @type {?Entity}\n     */\n    get terrain() { return terrainEntity; }\n    /**\n     * @type {Entity}\n     */\n    set terrain(v) { return terrainEntity = v; }\n\n    /**\n     * Mount the engine to the given canvas.\n     *\n     * @access public\n     * @param {DOMElement} canvas\n     * @return {Promise<Engine>}\n     */\n    mount(canvas) {\n        return loader\n            .then(() => {\n                logger.debug('Mounting engine to canvas...');\n                this.loading = LoadStates.GL;\n                return new Promise(res => {\n                    require.ensure(['babylonjs'], () => {\n                        res(require('babylonjs'));\n                    }, 'graphics');\n                });\n            })\n            .then(BabylonJS => {\n                GraphicsLibrary = BabylonJS;\n\n                this.loading = LoadStates.GAME;\n                babylonEngine = new GraphicsLibrary.Engine(canvas, true);\n                canvasElement = canvas;\n                logger.debug('Loading scene...');\n                return this.scene.mount(this);\n            })\n            .then(() => {\n                this.loading = LoadStates.DATA;\n                logger.info('Engine mounted.');\n                return this;\n            });\n    }\n\n    /**\n     * Dismount engine from canvas.\n     *\n     * @access public\n     * @return {Promise<Engine>}\n     */\n    dismount() {\n        logger.debug('Dismounting from to canvas...');\n        return new Promise(res => {\n            if (this.running) {\n                this.stop();\n            }\n            this.scene = this.scene.dismount(this);\n            _.get(babylonEngine, 'dispose', _.noop)();\n            babylonEngine = null;\n            canvasElement = null;\n            logger.info('Engine dismounted.');\n            res(this);\n        });\n    }\n\n    /**\n     * Initialize given entities (if any), then begin rendering to mounted canvas.\n     *\n     * @access public\n     * @param {EntityMetaData[]} [entities]\n     * @return {Promise<Engine>}\n     */\n    run(entities) {\n        const step = 1000 / 60;\n        let count,\n            time,\n            accum = 0,\n            defer = Promise.resolve(this);\n\n        if (!this.running && this.loading === LoadStates.DATA) {\n            if (entities) {\n                this.loading = LoadStates.PROC;\n                logger.debug('Adding initial entities to scene...');\n                defer = this.scene.updateEntities(this, entities);\n            }\n            defer = defer.then(() => {\n                this.ctrl.setup(this.settings);\n                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =>\n                    canvasElement.addEventListener(name, e =>\n                        e.preventDefault() && false || this.ctrl[fn](e)));\n                this.loading = LoadStates.REND;\n                logger.debug('Starting engine render loop. ENGINE: ', this);\n                babylonEngine.runRenderLoop(() => {\n                    count = 0;\n                    time = Date.now();\n                    accum = babylonEngine.getDeltaTime();\n                    // accum += engine.baby.getDeltaTime();\n                    // while (accum >= step) {\n                    //     count++;\n                    //     engine.scene.tick(engine, time, step);\n                    //     accum -= step;\n                    //     if (count > 5) accum = 0;\n                    // }\n                    this.scene.tick(this, time, accum);\n                    this.scene.baby.render();\n                });\n                this.loading = LoadStates.DONE;\n                setInterval(() => {\n                    this.fps = Math.floor(this.baby.fps)\n                }, 500);\n                this.running = true;\n                return this;\n            });\n        }\n        return defer;\n    }\n\n    /**\n     * Stop the rendering loop.\n     *\n     * @access public\n     * @return {Engine}\n     */\n    stop() {\n        if (this.running) {\n            logger.debug('Stopping engine render loop.');\n            babylonEngine.stopRenderLoop();\n            this.running = false;\n            this.loading = LoadStates.DATA;\n        }\n        return this;\n    }\n\n    /**\n     * Passthrough to BabylonJS.Engine#resize method.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    resize() {\n        return _.get(babylonEngine, 'resize', _.noop)();\n    }\n\n    /**\n     * Creates a new BabylonJS.Vector3.\n     *\n     * @access public\n     * @param {Object} param\n     * @param {number} [param.x=0]\n     * @param {number} [param.y=0]\n     * @param {number} [param.z=0]\n     * @return {BabylonJS.Vector3}\n     */\n    toVector({x=0, y=0, z=0}={}) {\n        return new this.GL.Vector3(..._.values({x, y, z}));\n    }\n\n    /**\n     * Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    emitDebugEvent(...args) {\n        return this.settings.debug ? this.emitEvent(...args) : false;\n    }\n\n    /**\n     * Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    onDebugEvent(...args) {\n        return this.settings.debug ? this.onEvent(...args) : false;\n    }\n\n    /**\n     * Emits the given state event.\n     *\n     * @access public\n     * @param {string} scope - The scoped event name (e.g., 'engine.fps').\n     * @param {*} v - The changed value.\n     * @param {Object} obj - The parent object who's property changed.\n     * @return {undefined}\n     */\n    emitEvent(scope, v, obj) {\n        return events.emit(scope, v, obj);\n    }\n\n    /**\n     * Registers a listener method for a state event.\n     *\n     * @access public\n     * @param {string} event - The scoped event name.\n     * @param {function(value: *, obj: Object)} handler - The event handler.\n     * @return {undefined}\n     */\n    onEvent(event, handler) {\n        return events.on(event, handler);\n    }\n\n    /**\n     * Hooks a Keyboard Key action listener into the engine.\n     *\n     * @access public\n     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).\n     * @param {Object} handlers\n     * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.\n     * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.\n     * @param {KeyHandler} [handlers.handler] - Handler method for both events.\n     * @return {undefined}\n     */\n    registerKeyAction(key, {downHandler, upHandler, handler}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const kUp = ActionManager.OnKeyUpTrigger;\n        const kDn = ActionManager.OnKeyDownTrigger;\n        let am = this.scene.baby.actionManager;\n\n        if (!am) {\n            am = this.scene.baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (handler || downHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                {trigger: kDn, parameter: key},\n                () => (handler || downHandler)(this, key, true)));\n        }\n        if (handler || upHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                {trigger: kUp, parameter: key},\n                () => (handler || upHandler)(this, key, false)));\n        }\n    }\n\n    /**\n     * Hooks Mouse action listener(s) into the engine for a given Entity.\n     *\n     * @access public\n     * @param {Entity} entity\n     * @param {Object} opts\n     * @param {bool} [opts.click] - Hooks the left-click (or equivalent) when true.\n     * @param {bool} [opts.altClick] - Hooks the right-click (or equivalent) when true.\n     * @param {bool} [opts.over] - Hooks the mouse-over when true.\n     * @param {bool} [opts.out] - Hooks the mouse-out when true.\n     * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.\n     * @return {undefined}\n     */\n    registerMouseEventsForEntity(entity, {click, altClick, over, out, cursor}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const clickT = ActionManager.OnLeftPickTrigger;\n        const altClickT = ActionManager.OnRightPickTrigger;\n        const overT = ActionManager.OnPointerOverTrigger;\n        const outT = ActionManager.OnPointerOutTrigger;\n\n        return entity.meshAsync\n            .then(mesh => mesh.ready())\n            .then(({baby}) => {\n                let am = baby.actionManager;\n\n                if (!am) {\n                    am = baby.actionManager = new ActionManager(this.scene.baby);\n                }\n                if (cursor) {\n                    am.hoverCursor = cursor;\n                }\n                if (click) {\n                    am.registerAction(new ExecuteCodeAction(\n                        clickT, e => this.ctrl.entityClick(entity, e)));\n                }\n                if (altClick) {\n                    am.registerAction(new ExecuteCodeAction(\n                        altClickT, e => this.ctrl.entityAltClick(entity, e)));\n                }\n                if (over) {\n                    am.registerAction(new ExecuteCodeAction(\n                        overT, e => this.ctrl.entityOver(entity, e)));\n                }\n                if (out) {\n                    am.registerAction(new ExecuteCodeAction(\n                        outT, e => this.ctrl.entityOut(entity, e)));\n                }\n            });\n    }\n\n    /**\n     * Removes all Mouse action listeners and mouse-over cursor for a given entity.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    deregisterMouseEventsForEntity(entity) {\n        let am = entity.mesh.baby.actionManager;\n\n        if (am) {\n            am.hoverCursor = 'default';\n            while (am.actions.length) { am.actions.pop(); }\n        }\n    }\n}\n\n/**\n * The various states of Engine#loading.\n *\n * @access protected\n * @type {Object}\n * @property {string} BOOT\n * @property {string} RES\n * @property {string} INIT\n * @property {string} GL\n * @property {string} GAME\n * @property {string} DATA\n * @property {string} PROC\n * @property {string} REND\n * @property {null} DONE\n */\nexport const LoadStates = {\n    BOOT: 'Booting Up',\n    RES: 'Loading Resources',\n    INIT: 'Initial Setup',\n    GL: 'Loading Graphics Libraries',\n    GAME: 'Loading Game Engine',\n    DATA: 'Waiting For Initial Data',\n    PROC: 'Processing Initial Data',\n    REND: 'Rendering To Canvas',\n    DONE: null\n};\n\n/**\n * @access private\n */\nexport const getPrivateDataForTest = () => ({\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity\n});\n",
     "static": true,
     "longname": "src/engine.js",
     "access": null,
@@ -295,10 +295,52 @@
     "longname": "src/engine.js~Logger",
     "access": null,
     "description": "",
-    "lineNumber": 60,
+    "lineNumber": 59,
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "info",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "debug",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "warn",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "error",
+        "description": ""
+      }
+    ],
     "type": {
       "types": [
-        "{\n info: function,\n debug: function,\n warn: function,\n error: function\n}"
+        "Object"
       ],
       "optional": false,
       "name": "Logger"
@@ -320,7 +362,7 @@
       "<caption>Basic construction with default args</caption>\nlet engine = Engine.init(logger, () => Promise.resolve(resourceProvider));",
       "<caption>One-line runner</caption>\nEngine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n    .mount(document.getElementById('my-canvas'))\n    .then(engine => engine.run(entityData))\n    .then(engine => window.addEventListener('resize', () => engine.resize()));"
     ],
-    "lineNumber": 85,
+    "lineNumber": 84,
     "interface": false,
     "extends": [
       "basic-singleton~Singleton"
@@ -337,7 +379,7 @@
     "longname": "src/engine.js~Engine.init",
     "access": null,
     "description": "The general creation/initialization method for the class. Creates an\nengine instance or returns the existing one if already instantiated.",
-    "lineNumber": 97,
+    "lineNumber": 96,
     "params": [
       {
         "nullable": null,
@@ -402,7 +444,7 @@
     "longname": "src/engine.js~Engine#constructorHelper",
     "access": "private",
     "description": "For testing purposes -- cannot stub constructor",
-    "lineNumber": 123,
+    "lineNumber": 122,
     "params": [
       {
         "name": "loggerService",
@@ -433,7 +475,7 @@
     "longname": "src/engine.js~Engine#fps",
     "access": null,
     "description": "The currently rendered frames-per-second.",
-    "lineNumber": 133,
+    "lineNumber": 132,
     "type": {
       "nullable": null,
       "types": [
@@ -452,7 +494,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": "The current loading state of the engine.",
-    "lineNumber": 139,
+    "lineNumber": 138,
     "type": {
       "nullable": null,
       "types": [
@@ -471,7 +513,7 @@
     "longname": "src/engine.js~Engine#scene",
     "access": null,
     "description": null,
-    "lineNumber": 141,
+    "lineNumber": 140,
     "type": {
       "nullable": true,
       "types": [
@@ -490,7 +532,7 @@
     "longname": "src/engine.js~Engine#running",
     "access": null,
     "description": null,
-    "lineNumber": 143,
+    "lineNumber": 142,
     "type": {
       "nullable": null,
       "types": [
@@ -509,7 +551,7 @@
     "longname": "src/engine.js~Engine#settings",
     "access": null,
     "description": null,
-    "lineNumber": 145,
+    "lineNumber": 144,
     "type": {
       "nullable": null,
       "types": [
@@ -530,7 +572,7 @@
     "longname": "src/engine.js~Engine#constructor",
     "access": "private",
     "description": "",
-    "lineNumber": 153,
+    "lineNumber": 152,
     "params": [
       {
         "name": "args",
@@ -552,7 +594,7 @@
     "longname": "src/engine.js~Engine#GL",
     "access": null,
     "description": "The BabylonJS graphics library.",
-    "lineNumber": 163,
+    "lineNumber": 162,
     "type": {
       "nullable": true,
       "types": [
@@ -573,7 +615,7 @@
     "longname": "src/engine.js~Engine#baby",
     "access": null,
     "description": "The BabylonJS.Engine instance.",
-    "lineNumber": 169,
+    "lineNumber": 168,
     "type": {
       "nullable": true,
       "types": [
@@ -594,7 +636,7 @@
     "longname": "src/engine.js~Engine#canvas",
     "access": null,
     "description": "The canvas element to which the engine has been mounted.",
-    "lineNumber": 175,
+    "lineNumber": 174,
     "type": {
       "nullable": true,
       "types": [
@@ -615,7 +657,7 @@
     "longname": "src/engine.js~Engine#provider",
     "access": null,
     "description": "",
-    "lineNumber": 179,
+    "lineNumber": 178,
     "type": {
       "nullable": true,
       "types": [
@@ -636,7 +678,7 @@
     "longname": "src/engine.js~Engine#ctrl",
     "access": null,
     "description": "",
-    "lineNumber": 183,
+    "lineNumber": 182,
     "type": {
       "nullable": true,
       "types": [
@@ -657,7 +699,7 @@
     "longname": "src/engine.js~Engine#logger",
     "access": null,
     "description": "",
-    "lineNumber": 187,
+    "lineNumber": 186,
     "type": {
       "nullable": null,
       "types": [
@@ -678,7 +720,7 @@
     "longname": "src/engine.js~Engine#terrain",
     "access": null,
     "description": "The scene's default terrain entity.",
-    "lineNumber": 193,
+    "lineNumber": 192,
     "type": {
       "nullable": true,
       "types": [
@@ -699,7 +741,7 @@
     "longname": "src/engine.js~Engine#terrain",
     "access": null,
     "description": "",
-    "lineNumber": 197,
+    "lineNumber": 196,
     "type": {
       "nullable": null,
       "types": [
@@ -720,7 +762,7 @@
     "longname": "src/engine.js~Engine#mount",
     "access": "public",
     "description": "Mount the engine to the given canvas.",
-    "lineNumber": 206,
+    "lineNumber": 205,
     "params": [
       {
         "nullable": null,
@@ -751,7 +793,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 210,
+    "lineNumber": 209,
     "undocument": true,
     "unknown": [
       {
@@ -774,7 +816,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 220,
+    "lineNumber": 219,
     "undocument": true,
     "unknown": [
       {
@@ -797,7 +839,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 227,
+    "lineNumber": 226,
     "undocument": true,
     "unknown": [
       {
@@ -822,7 +864,7 @@
     "longname": "src/engine.js~Engine#dismount",
     "access": "public",
     "description": "Dismount engine from canvas.",
-    "lineNumber": 239,
+    "lineNumber": 238,
     "params": [],
     "return": {
       "nullable": null,
@@ -842,7 +884,7 @@
     "longname": "src/engine.js~Engine#scene",
     "access": null,
     "description": null,
-    "lineNumber": 245,
+    "lineNumber": 244,
     "undocument": true,
     "unknown": [
       {
@@ -867,7 +909,7 @@
     "longname": "src/engine.js~Engine#run",
     "access": "public",
     "description": "Initialize given entities (if any), then begin rendering to mounted canvas.",
-    "lineNumber": 261,
+    "lineNumber": 260,
     "params": [
       {
         "nullable": null,
@@ -898,7 +940,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 270,
+    "lineNumber": 269,
     "undocument": true,
     "unknown": [
       {
@@ -921,7 +963,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 279,
+    "lineNumber": 278,
     "undocument": true,
     "unknown": [
       {
@@ -944,7 +986,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 295,
+    "lineNumber": 294,
     "undocument": true,
     "unknown": [
       {
@@ -967,7 +1009,7 @@
     "longname": "src/engine.js~Engine#fps",
     "access": null,
     "description": null,
-    "lineNumber": 297,
+    "lineNumber": 296,
     "undocument": true,
     "unknown": [
       {
@@ -990,7 +1032,7 @@
     "longname": "src/engine.js~Engine#running",
     "access": null,
     "description": null,
-    "lineNumber": 299,
+    "lineNumber": 298,
     "undocument": true,
     "unknown": [
       {
@@ -1015,7 +1057,7 @@
     "longname": "src/engine.js~Engine#stop",
     "access": "public",
     "description": "Stop the rendering loop.",
-    "lineNumber": 312,
+    "lineNumber": 311,
     "params": [],
     "return": {
       "nullable": null,
@@ -1035,7 +1077,7 @@
     "longname": "src/engine.js~Engine#running",
     "access": null,
     "description": null,
-    "lineNumber": 316,
+    "lineNumber": 315,
     "undocument": true,
     "unknown": [
       {
@@ -1058,7 +1100,7 @@
     "longname": "src/engine.js~Engine#loading",
     "access": null,
     "description": null,
-    "lineNumber": 317,
+    "lineNumber": 316,
     "undocument": true,
     "unknown": [
       {
@@ -1083,7 +1125,7 @@
     "longname": "src/engine.js~Engine#resize",
     "access": "public",
     "description": "Passthrough to BabylonJS.Engine#resize method.",
-    "lineNumber": 328,
+    "lineNumber": 327,
     "params": [],
     "return": {
       "nullable": null,
@@ -1105,7 +1147,7 @@
     "longname": "src/engine.js~Engine#toVector",
     "access": "public",
     "description": "Creates a new BabylonJS.Vector3.",
-    "lineNumber": 342,
+    "lineNumber": 341,
     "params": [
       {
         "nullable": null,
@@ -1174,7 +1216,7 @@
     "longname": "src/engine.js~Engine#emitDebugEvent",
     "access": "public",
     "description": "Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.",
-    "lineNumber": 352,
+    "lineNumber": 351,
     "params": [
       {
         "name": "args",
@@ -1204,7 +1246,7 @@
     "longname": "src/engine.js~Engine#onDebugEvent",
     "access": "public",
     "description": "Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.",
-    "lineNumber": 362,
+    "lineNumber": 361,
     "params": [
       {
         "name": "args",
@@ -1234,7 +1276,7 @@
     "longname": "src/engine.js~Engine#emitEvent",
     "access": "public",
     "description": "Emits the given state event.",
-    "lineNumber": 375,
+    "lineNumber": 374,
     "params": [
       {
         "nullable": null,
@@ -1287,7 +1329,7 @@
     "longname": "src/engine.js~Engine#onEvent",
     "access": "public",
     "description": "Registers a listener method for a state event.",
-    "lineNumber": 387,
+    "lineNumber": 386,
     "params": [
       {
         "nullable": null,
@@ -1330,7 +1372,7 @@
     "longname": "src/engine.js~Engine#registerKeyAction",
     "access": "public",
     "description": "Hooks a Keyboard Key action listener into the engine.",
-    "lineNumber": 402,
+    "lineNumber": 401,
     "params": [
       {
         "nullable": null,
@@ -1403,7 +1445,7 @@
     "longname": "src/engine.js~Engine#registerMouseEventsForEntity",
     "access": "public",
     "description": "Hooks Mouse action listener(s) into the engine for a given Entity.",
-    "lineNumber": 436,
+    "lineNumber": 435,
     "params": [
       {
         "nullable": null,
@@ -1496,7 +1538,7 @@
     "longname": "src/engine.js~Engine#deregisterMouseEventsForEntity",
     "access": "public",
     "description": "Removes all Mouse action listeners and mouse-over cursor for a given entity.",
-    "lineNumber": 479,
+    "lineNumber": 478,
     "params": [
       {
         "name": "entity",
@@ -1526,7 +1568,7 @@
     "importPath": "bavel/src/engine.js",
     "importStyle": "{LoadStates}",
     "description": "The various states of Engine#loading.",
-    "lineNumber": 504,
+    "lineNumber": 503,
     "properties": [
       {
         "nullable": null,
@@ -1642,14 +1684,14 @@
     "importPath": "bavel/src/engine.js",
     "importStyle": "{getPrivateDataForTest}",
     "description": "",
-    "lineNumber": 519,
+    "lineNumber": 518,
     "params": []
   },
   {
     "__docId__": 54,
     "kind": "file",
     "name": "src/player-controller.js",
-    "content": "import {_} from './utils';\nimport Singleton from 'basic-singleton';\nimport StateProxy from './state-event-proxy';\n\nexport default class PlayerController extends Singleton {\n\n    static getTime(date=new Date()) {\n        return `${_.padStart(date.getHours(), 2, '0')}:${_.padStart(date.getMinutes(), 2, '0')}:${_.padStart(date.getSeconds(), 2, '0')}`;\n    }\n\n    get DOM_EVENTS() {\n        return {\n            click: 'mClick',\n            contextmenu: 'mAltClick',\n            wheel: 'mWheel',\n            mouseover: 'mOver',\n            mouseout: 'mOut'\n        };\n    }\n\n    constructor(engine, uiData={}) {\n        super();\n        StateProxy(this, `engine.ctrl`, _.assign({\n            messages: [],\n            player: null,\n            target: null\n        }, uiData));\n        Object.defineProperty(this, 'engine', {\n            get: () => engine\n        });\n    }\n\n    setup(settings) {\n        this.registerKeyActions(_.get(settings, 'input.keys', []));\n    }\n\n    registerKeyActions(keyHandlers) {\n        _.forEach(keyHandlers, (desc) => {\n            this.engine.registerKeyAction(desc.key, desc);\n        });\n    }\n\n    message(type, sender, msg, max=this.constructor.MAX_MESSAGES) {\n        return this.messages = _.take(\n            _.concat(\n                {time: this.constructor.getTime(), type, sender, msg},\n                this.messages),\n            max);\n    }\n\n    mClick({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mClick');\n        }\n        this.engine.logger.debug(`Click at (${pageX}, ${pageY})`);\n    }\n\n    mAltClick({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug(`Alt Click at (${pageX}, ${pageY})`);\n    }\n\n    mWheel({deltaX, deltaY, deltaZ}) {\n        if (_.isUndefined(deltaY) && _.isUndefined(deltaX) && _.isUndefined(deltaX)) {\n            throw new Error('Improper event passed to mWheel');\n        }\n        if (deltaY) {\n            this.engine.logger.debug(`MouseWheel scroll ${deltaY > 0 ? 'out' : 'in'} ${deltaY}`);\n        }\n    }\n\n    mOver({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug('Pointer has entered canvas element.');\n    }\n\n    mOut({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug('Pointer has left cavnas element.');\n    }\n\n    entityOver(entity, evt) {\n        if (!entity || !evt) {\n            throw new Error('Improper arguments passed to entityOver');\n        }\n        this.target = entity;\n    }\n\n    entityOut(entity, evt) {\n        if (!entity || !evt) {\n            throw new Error('Improper arguments passed to entityOut');\n        }\n        if (!this.target || this.target.uid === entity.uid) {\n            this.target = null;\n        }\n    }\n\n    entityClick(entity, {pointerX, pointerY}) {\n        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {\n            throw new Error('Improper arguments passed to entityClick');\n        }\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.engine.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);\n    }\n\n    entityAltClick(entity, {pointerX, pointerY}) {\n        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {\n            throw new Error('Improper arguments passed to entityAltClick');\n        }\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.engine.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);\n    }\n}\n\nPlayerController.MAX_MESSAGES = 100;\n\nexport const round = (x) => Math.floor(x * 100 + .5) / 100;",
+    "content": "import {_} from './utils';\nimport Singleton from 'basic-singleton';\nimport StateProxy from './state-event-proxy';\n\n/**\n * @typedef {Object} Message\n * @property {string} time\n * @property {string} type\n * @property {?string} sender\n * @property {string} message\n */\n\n/**\n * Controller for player logic and interactions.\n *\n * @property {number} MAX_MESSAGES - The maximum number of messages to keep in the array.\n * @example <caption>Definition</caption>\n * class MyGamePlayerController extends PlayerController {\n *     get DOM_EVENTS() {\n *         return {contextmenu: 'mAltClick', click: 'myClickMethod'};\n *     }\n *     entityOver(entity, event) {\n *         super.entityOver(entity, event);\n *         entity.MyActionableComponent.doAction();\n *     }\n *     entityClick(entity, {pointerX, pointerY}) {\n *         let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n *\n *         this.player.MyOtherActionableComponent.beginMovementTo(x, y, z);\n *     }\n *     myClickMethod(event) {\n *         this.player.DestructionComponent.killAllHumans();\n *     }\n * }\n * @example <caption>Implementation</caption>\n * let engine = Engine.init(myLogger, myResourceLoader, MyGamePlayerController, {});\n */\nexport default class PlayerController extends Singleton {\n\n    /**\n     * Used for generating readable-timestamps in messages.\n     *\n     * @param {Date} [date=new Date()]\n     * @return {string} - Current time in HH:mm:ss format.\n     */\n    static getTime(date=new Date()) {\n        return `${_.padStart(date.getHours(), 2, '0')}:${_.padStart(date.getMinutes(), 2, '0')}:${_.padStart(date.getSeconds(), 2, '0')}`;\n    }\n\n    /**\n     * Map of HTML DOM events to controller functions to be hooked into the window\n     * when engine is mounted.\n     *\n     * @type {Object}\n     * @example <caption>Override DOM_EVENTS</caption>\n     * get DOM_EVENTS() { return {click: 'mClick'}; }\n     * // Only the browser click action will trigger a Controller method.\n     */\n    get DOM_EVENTS() {\n        return {\n            click: 'mClick',\n            contextmenu: 'mAltClick',\n            wheel: 'mWheel',\n            mouseover: 'mOver',\n            mouseout: 'mOut'\n        };\n    }\n\n    /**\n     * @param {Engine} engine - The reference to the parent game engine.\n     */\n    constructor(engine) {\n        super();\n        StateProxy(this, `engine.ctrl`, ['messages', 'player', 'target']);\n        /**\n         * The list of logged game messages. New messages are inserted into the\n         * beginning of the array.\n         *\n         * @type {Message[]}\n         */\n        this.messages = [];\n        /**\n         * The controlled player entity.\n         *\n         * @type {?Entity}\n         */\n        this.player = null;\n        /**\n         * The currently-targeted entity (based on mouse-over).\n         *\n         * @type {?Entity}\n         */\n        this.target = null;\n        /** @type {Engine} **/\n        Object.defineProperty(this, 'engine', {\n            get: () => engine\n        });\n    }\n\n    /**\n     * Supplies the key listeners defined in the provided game settings to\n     *  {@link PlayerController#registerKeyActions}.\n     *\n     * @param {Settings} settings\n     */\n    setup(settings) {\n        this.registerKeyActions(_.get(settings, 'input.keys', []));\n    }\n\n    /**\n     * Hooks the provided key handlers into the game's keystroke actions.\n     *\n     * @param {KeyDefinition[]} keyHandlers\n     */\n    registerKeyActions(keyHandlers) {\n        _.forEach(keyHandlers, (desc) => {\n            this.engine.registerKeyAction(desc.key, desc);\n        });\n    }\n\n    /**\n     * Inserts new message into controller's messages array.\n     *\n     * @param {string} type\n     * @param {?string} sender\n     * @param {string} message\n     * @param {number} [max=PlayerController.MAX_MESSAGES]\n     * @return {Message[]} - The updated messages array.\n     */\n    message(type, sender, message, max=this.constructor.MAX_MESSAGES) {\n        return this.messages = _.take(\n            _.concat(\n                {time: this.constructor.getTime(), type, sender, message},\n                this.messages),\n            max);\n    }\n\n    /**\n     * The event handler for a mouse cursor-over event on a game entity.\n     *\n     * @param {Entity} entity\n     * @param {BabylonJS.ActionEvent} event\n     */\n    entityOver(entity, event) {\n        if (!entity || !event) {\n            throw new Error('Improper arguments passed to entityOver');\n        }\n        this.target = entity;\n    }\n\n    /**\n     * The event handler for a mouse cursor-out event on a game entity.\n     *\n     * @param {Entity} entity\n     * @param {BabylonJS.ActionEvent} event\n     */\n    entityOut(entity, event) {\n        if (!entity || !event) {\n            throw new Error('Improper arguments passed to entityOut');\n        }\n        if (!this.target || this.target.uid === entity.uid) {\n            this.target = null;\n        }\n    }\n\n    /**\n     * Example event handler for a mouse left-click event on a game entity.\n     *\n     * @abstract\n     * @param {Entity} entity\n     * @param {BabylonJS.ActionEvent} event\n     */\n    entityClick(entity, {pointerX, pointerY}) {\n        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {\n            throw new Error('Improper arguments passed to entityClick');\n        }\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.engine.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);\n    }\n\n    /**\n     * Example event handler for a mouse right-click event on a game entity.\n     *\n     * @abstract\n     * @param {Entity} entity\n     * @param {BabylonJS.ActionEvent} event\n     */\n    entityAltClick(entity, {pointerX, pointerY}) {\n        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {\n            throw new Error('Improper arguments passed to entityAltClick');\n        }\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.engine.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);\n    }\n\n    /**\n     * Example event handler for the browser's left mouse click.\n     *\n     * @abstract\n     * @param {SyntheticEvent} event\n     * @param {number} event.pageX - The X-position of the click relative to the\n     *  HTML document.\n     * @param {number} event.pageY - The Y-position of the click relative to the\n     *  HTML document.\n     */\n    mClick({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mClick');\n        }\n        this.engine.logger.debug(`Click at (${pageX}, ${pageY})`);\n    }\n\n    /**\n     * Example event handler for the browser's right mouse click.\n     *\n     * @abstract\n     * @param {SyntheticEvent} event\n     * @param {number} event.pageX - The X-position of the click relative to the\n     *  HTML document.\n     * @param {number} event.pageY - The Y-position of the click relative to the\n     *  HTML document.\n     */\n    mAltClick({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug(`Alt Click at (${pageX}, ${pageY})`);\n    }\n\n    /**\n     * Example event handler for the browser's mouse wheel event.\n     *\n     * @abstract\n     * @param {SyntheticEvent} event\n     * @param {number} event.deltaX - The value scrolled along the X axis.\n     * @param {number} event.deltaY - The value scrolled along the Y axis.\n     * @param {number} event.deltaZ - The value scrolled along the Z axis.\n     */\n    mWheel({deltaX, deltaY, deltaZ}) {\n        if (_.isUndefined(deltaY) && _.isUndefined(deltaX) && _.isUndefined(deltaX)) {\n            throw new Error('Improper event passed to mWheel');\n        }\n        if (deltaY) {\n            this.engine.logger.debug(`MouseWheel scroll ${deltaY > 0 ? 'out' : 'in'} ${deltaY}`);\n        }\n    }\n\n    /**\n     * Example event handler for the browser's mouse over event.\n     *\n     * @abstract\n     * @param {SyntheticEvent} event\n     * @param {number} event.pageX - The X-position of the click relative to the\n     *  HTML document.\n     * @param {number} event.pageY - The Y-position of the click relative to the\n     *  HTML document.\n     */\n    mOver({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug('Pointer has entered canvas element.');\n    }\n\n    /**\n     * Example event handler for the browser's mouse out event.\n     *\n     * @abstract\n     * @param {SyntheticEvent} event\n     * @param {number} event.pageX - The X-position of the click relative to the\n     *  HTML document.\n     * @param {number} event.pageY - The Y-position of the click relative to the\n     *  HTML document.\n     */\n    mOut({pageX, pageY}) {\n        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {\n            throw new Error('Improper event passed to mAltClick');\n        }\n        this.engine.logger.debug('Pointer has left cavnas element.');\n    }\n}\n\n/** @type {number} **/\nPlayerController.MAX_MESSAGES = 100;\n\n/**\n * Simple decimal cut-off utility function that rounds a number to the nearest\n *  second decimal place.\n *\n * @param {number} x - The number to round.\n * @return {number} - The rounded number.\n * @example\n * console.assert(round(Math.PI) === 3.14);\n */\nexport const round = (x) => Math.floor(x * 100 + .5) / 100;",
     "static": true,
     "longname": "src/player-controller.js",
     "access": null,
@@ -1658,6 +1700,65 @@
   },
   {
     "__docId__": 55,
+    "kind": "typedef",
+    "name": "Message",
+    "memberof": "src/player-controller.js",
+    "static": true,
+    "longname": "src/player-controller.js~Message",
+    "access": null,
+    "description": "",
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "time",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "type",
+        "description": ""
+      },
+      {
+        "nullable": true,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "sender",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "message",
+        "description": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "Message"
+    }
+  },
+  {
+    "__docId__": 56,
     "kind": "class",
     "name": "PlayerController",
     "memberof": "src/player-controller.js",
@@ -1667,13 +1768,22 @@
     "export": true,
     "importPath": "bavel/src/player-controller.js",
     "importStyle": "PlayerController",
-    "description": null,
-    "lineNumber": 5,
-    "undocument": true,
-    "unknown": [
+    "description": "Controller for player logic and interactions.",
+    "examples": [
+      "<caption>Definition</caption>\nclass MyGamePlayerController extends PlayerController {\n    get DOM_EVENTS() {\n        return {contextmenu: 'mAltClick', click: 'myClickMethod'};\n    }\n    entityOver(entity, event) {\n        super.entityOver(entity, event);\n        entity.MyActionableComponent.doAction();\n    }\n    entityClick(entity, {pointerX, pointerY}) {\n        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;\n\n        this.player.MyOtherActionableComponent.beginMovementTo(x, y, z);\n    }\n    myClickMethod(event) {\n        this.player.DestructionComponent.killAllHumans();\n    }\n}",
+      "<caption>Implementation</caption>\nlet engine = Engine.init(myLogger, myResourceLoader, MyGamePlayerController, {});"
+    ],
+    "lineNumber": 38,
+    "properties": [
       {
-        "tagName": "@_undocument",
-        "tagValue": ""
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "MAX_MESSAGES",
+        "description": "The maximum number of messages to keep in the array."
       }
     ],
     "interface": false,
@@ -1682,7 +1792,7 @@
     ]
   },
   {
-    "__docId__": 56,
+    "__docId__": 57,
     "kind": "method",
     "name": "getTime",
     "memberof": "src/player-controller.js~PlayerController",
@@ -1691,32 +1801,33 @@
     "static": true,
     "longname": "src/player-controller.js~PlayerController.getTime",
     "access": null,
-    "description": null,
-    "lineNumber": 7,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Used for generating readable-timestamps in messages.",
+    "lineNumber": 46,
     "params": [
       {
-        "name": "date",
-        "optional": true,
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Date"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "new Date()",
+        "defaultRaw": "new Date()",
+        "name": "date",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
         "string"
-      ]
+      ],
+      "spread": false,
+      "description": "Current time in HH:mm:ss format."
     }
   },
   {
-    "__docId__": 57,
+    "__docId__": 58,
     "kind": "get",
     "name": "DOM_EVENTS",
     "memberof": "src/player-controller.js~PlayerController",
@@ -1725,23 +1836,22 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#DOM_EVENTS",
     "access": null,
-    "description": null,
-    "lineNumber": 11,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
+    "description": "Map of HTML DOM events to controller functions to be hooked into the window\nwhen engine is mounted.",
+    "examples": [
+      "<caption>Override DOM_EVENTS</caption>\nget DOM_EVENTS() { return {click: 'mClick'}; }\n// Only the browser click action will trigger a Controller method."
     ],
+    "lineNumber": 59,
     "type": {
+      "nullable": null,
       "types": [
-        "{\"click\": string, \"contextmenu\": string, \"wheel\": string, \"mouseover\": string, \"mouseout\": string}"
-      ]
+        "Object"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
-    "__docId__": 58,
+    "__docId__": 59,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/player-controller.js~PlayerController",
@@ -1750,35 +1860,80 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#constructor",
     "access": null,
-    "description": null,
-    "lineNumber": 21,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "",
+    "lineNumber": 72,
     "params": [
       {
-        "name": "engine",
+        "nullable": null,
         "types": [
-          "*"
-        ]
-      },
-      {
-        "name": "uiData",
-        "optional": true,
-        "types": [
-          "{}"
+          "Engine"
         ],
-        "defaultRaw": {},
-        "defaultValue": "{}"
+        "spread": false,
+        "optional": false,
+        "name": "engine",
+        "description": "The reference to the parent game engine."
       }
     ]
   },
   {
-    "__docId__": 59,
+    "__docId__": 60,
+    "kind": "member",
+    "name": "messages",
+    "memberof": "src/player-controller.js~PlayerController",
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#messages",
+    "access": null,
+    "description": "The list of logged game messages. New messages are inserted into the\nbeginning of the array.",
+    "lineNumber": 81,
+    "type": {
+      "nullable": null,
+      "types": [
+        "Message[]"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 61,
+    "kind": "member",
+    "name": "player",
+    "memberof": "src/player-controller.js~PlayerController",
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#player",
+    "access": null,
+    "description": "The controlled player entity.",
+    "lineNumber": 87,
+    "type": {
+      "nullable": true,
+      "types": [
+        "Entity"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 62,
+    "kind": "member",
+    "name": "target",
+    "memberof": "src/player-controller.js~PlayerController",
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#target",
+    "access": null,
+    "description": "The currently-targeted entity (based on mouse-over).",
+    "lineNumber": 93,
+    "type": {
+      "nullable": true,
+      "types": [
+        "Entity"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 63,
     "kind": "method",
     "name": "setup",
     "memberof": "src/player-controller.js~PlayerController",
@@ -1787,26 +1942,23 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#setup",
     "access": null,
-    "description": null,
-    "lineNumber": 33,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Supplies the key listeners defined in the provided game settings to\n {@link PlayerController#registerKeyActions}.",
+    "lineNumber": 106,
     "params": [
       {
-        "name": "settings",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Settings"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "settings",
+        "description": ""
       }
     ]
   },
   {
-    "__docId__": 60,
+    "__docId__": 64,
     "kind": "method",
     "name": "registerKeyActions",
     "memberof": "src/player-controller.js~PlayerController",
@@ -1815,26 +1967,23 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#registerKeyActions",
     "access": null,
-    "description": null,
-    "lineNumber": 37,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Hooks the provided key handlers into the game's keystroke actions.",
+    "lineNumber": 115,
     "params": [
       {
-        "name": "keyHandlers",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "KeyDefinition[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "keyHandlers",
+        "description": ""
       }
     ]
   },
   {
-    "__docId__": 61,
+    "__docId__": 65,
     "kind": "method",
     "name": "message",
     "memberof": "src/player-controller.js~PlayerController",
@@ -1843,216 +1992,63 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#message",
     "access": null,
-    "description": null,
-    "lineNumber": 43,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Inserts new message into controller's messages array.",
+    "lineNumber": 130,
     "params": [
       {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "type",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
+        "nullable": true,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "sender",
-        "types": [
-          "*"
-        ]
+        "description": ""
       },
       {
-        "name": "msg",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "message",
+        "description": ""
       },
       {
-        "name": "max",
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
         "optional": true,
-        "types": [
-          "*"
-        ]
+        "defaultValue": "PlayerController.MAX_MESSAGES",
+        "defaultRaw": "PlayerController.MAX_MESSAGES",
+        "name": "max",
+        "description": ""
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Message[]"
+      ],
+      "spread": false,
+      "description": "The updated messages array."
     }
   },
   {
-    "__docId__": 62,
-    "kind": "method",
-    "name": "mClick",
-    "memberof": "src/player-controller.js~PlayerController",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/player-controller.js~PlayerController#mClick",
-    "access": null,
-    "description": null,
-    "lineNumber": 51,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "params": [
-      {
-        "name": "objectPattern",
-        "types": [
-          "{\"pageX\": *, \"pageY\": *}"
-        ],
-        "defaultRaw": {
-          "pageX": null,
-          "pageY": null
-        },
-        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
-      }
-    ]
-  },
-  {
-    "__docId__": 63,
-    "kind": "method",
-    "name": "mAltClick",
-    "memberof": "src/player-controller.js~PlayerController",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/player-controller.js~PlayerController#mAltClick",
-    "access": null,
-    "description": null,
-    "lineNumber": 58,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "params": [
-      {
-        "name": "objectPattern",
-        "types": [
-          "{\"pageX\": *, \"pageY\": *}"
-        ],
-        "defaultRaw": {
-          "pageX": null,
-          "pageY": null
-        },
-        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
-      }
-    ]
-  },
-  {
-    "__docId__": 64,
-    "kind": "method",
-    "name": "mWheel",
-    "memberof": "src/player-controller.js~PlayerController",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/player-controller.js~PlayerController#mWheel",
-    "access": null,
-    "description": null,
-    "lineNumber": 65,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "params": [
-      {
-        "name": "objectPattern",
-        "types": [
-          "{\"deltaX\": *, \"deltaY\": *, \"deltaZ\": *}"
-        ],
-        "defaultRaw": {
-          "deltaX": null,
-          "deltaY": null,
-          "deltaZ": null
-        },
-        "defaultValue": "{\"deltaX\":null,\"deltaY\":null,\"deltaZ\":null}"
-      }
-    ]
-  },
-  {
-    "__docId__": 65,
-    "kind": "method",
-    "name": "mOver",
-    "memberof": "src/player-controller.js~PlayerController",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/player-controller.js~PlayerController#mOver",
-    "access": null,
-    "description": null,
-    "lineNumber": 74,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "params": [
-      {
-        "name": "objectPattern",
-        "types": [
-          "{\"pageX\": *, \"pageY\": *}"
-        ],
-        "defaultRaw": {
-          "pageX": null,
-          "pageY": null
-        },
-        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
-      }
-    ]
-  },
-  {
     "__docId__": 66,
-    "kind": "method",
-    "name": "mOut",
-    "memberof": "src/player-controller.js~PlayerController",
-    "generator": false,
-    "async": false,
-    "static": false,
-    "longname": "src/player-controller.js~PlayerController#mOut",
-    "access": null,
-    "description": null,
-    "lineNumber": 81,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
-    "params": [
-      {
-        "name": "objectPattern",
-        "types": [
-          "{\"pageX\": *, \"pageY\": *}"
-        ],
-        "defaultRaw": {
-          "pageX": null,
-          "pageY": null
-        },
-        "defaultValue": "{\"pageX\":null,\"pageY\":null}"
-      }
-    ]
-  },
-  {
-    "__docId__": 67,
     "kind": "method",
     "name": "entityOver",
     "memberof": "src/player-controller.js~PlayerController",
@@ -2061,32 +2057,33 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#entityOver",
     "access": null,
-    "description": null,
-    "lineNumber": 88,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "The event handler for a mouse cursor-over event on a game entity.",
+    "lineNumber": 144,
     "params": [
       {
-        "name": "entity",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Entity"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "entity",
+        "description": ""
       },
       {
-        "name": "evt",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "BabylonJS.ActionEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
       }
     ]
   },
   {
-    "__docId__": 68,
+    "__docId__": 67,
     "kind": "member",
     "name": "target",
     "memberof": "src/player-controller.js~PlayerController",
@@ -2094,7 +2091,7 @@
     "longname": "src/player-controller.js~PlayerController#target",
     "access": null,
     "description": null,
-    "lineNumber": 92,
+    "lineNumber": 148,
     "undocument": true,
     "unknown": [
       {
@@ -2109,7 +2106,7 @@
     }
   },
   {
-    "__docId__": 69,
+    "__docId__": 68,
     "kind": "method",
     "name": "entityOut",
     "memberof": "src/player-controller.js~PlayerController",
@@ -2118,32 +2115,33 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#entityOut",
     "access": null,
-    "description": null,
-    "lineNumber": 95,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "The event handler for a mouse cursor-out event on a game entity.",
+    "lineNumber": 157,
     "params": [
       {
-        "name": "entity",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Entity"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "entity",
+        "description": ""
       },
       {
-        "name": "evt",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "BabylonJS.ActionEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
       }
     ]
   },
   {
-    "__docId__": 70,
+    "__docId__": 69,
     "kind": "member",
     "name": "target",
     "memberof": "src/player-controller.js~PlayerController",
@@ -2151,7 +2149,7 @@
     "longname": "src/player-controller.js~PlayerController#target",
     "access": null,
     "description": null,
-    "lineNumber": 100,
+    "lineNumber": 162,
     "undocument": true,
     "unknown": [
       {
@@ -2166,7 +2164,7 @@
     }
   },
   {
-    "__docId__": 71,
+    "__docId__": 70,
     "kind": "method",
     "name": "entityClick",
     "memberof": "src/player-controller.js~PlayerController",
@@ -2175,37 +2173,34 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#entityClick",
     "access": null,
-    "description": null,
-    "lineNumber": 104,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Example event handler for a mouse left-click event on a game entity.",
+    "lineNumber": 173,
     "params": [
       {
-        "name": "entity",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Entity"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "entity",
+        "description": ""
       },
       {
-        "name": "objectPattern1",
+        "nullable": null,
         "types": [
-          "{\"pointerX\": *, \"pointerY\": *}"
+          "BabylonJS.ActionEvent"
         ],
-        "defaultRaw": {
-          "pointerX": null,
-          "pointerY": null
-        },
-        "defaultValue": "{\"pointerX\":null,\"pointerY\":null}"
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
       }
-    ]
+    ],
+    "abstract": true
   },
   {
-    "__docId__": 72,
+    "__docId__": 71,
     "kind": "method",
     "name": "entityAltClick",
     "memberof": "src/player-controller.js~PlayerController",
@@ -2214,37 +2209,274 @@
     "static": false,
     "longname": "src/player-controller.js~PlayerController#entityAltClick",
     "access": null,
-    "description": null,
-    "lineNumber": 113,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "Example event handler for a mouse right-click event on a game entity.",
+    "lineNumber": 189,
     "params": [
       {
-        "name": "entity",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Entity"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "entity",
+        "description": ""
       },
       {
-        "name": "objectPattern1",
+        "nullable": null,
         "types": [
-          "{\"pointerX\": *, \"pointerY\": *}"
+          "BabylonJS.ActionEvent"
         ],
-        "defaultRaw": {
-          "pointerX": null,
-          "pointerY": null
-        },
-        "defaultValue": "{\"pointerX\":null,\"pointerY\":null}"
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
       }
-    ]
+    ],
+    "abstract": true
+  },
+  {
+    "__docId__": 72,
+    "kind": "method",
+    "name": "mClick",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mClick",
+    "access": null,
+    "description": "Example event handler for the browser's left mouse click.",
+    "lineNumber": 208,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SyntheticEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageX",
+        "description": "The X-position of the click relative to the\n HTML document."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageY",
+        "description": "The Y-position of the click relative to the\n HTML document."
+      }
+    ],
+    "abstract": true
   },
   {
     "__docId__": 73,
+    "kind": "method",
+    "name": "mAltClick",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mAltClick",
+    "access": null,
+    "description": "Example event handler for the browser's right mouse click.",
+    "lineNumber": 225,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SyntheticEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageX",
+        "description": "The X-position of the click relative to the\n HTML document."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageY",
+        "description": "The Y-position of the click relative to the\n HTML document."
+      }
+    ],
+    "abstract": true
+  },
+  {
+    "__docId__": 74,
+    "kind": "method",
+    "name": "mWheel",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mWheel",
+    "access": null,
+    "description": "Example event handler for the browser's mouse wheel event.",
+    "lineNumber": 241,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SyntheticEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.deltaX",
+        "description": "The value scrolled along the X axis."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.deltaY",
+        "description": "The value scrolled along the Y axis."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.deltaZ",
+        "description": "The value scrolled along the Z axis."
+      }
+    ],
+    "abstract": true
+  },
+  {
+    "__docId__": 75,
+    "kind": "method",
+    "name": "mOver",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mOver",
+    "access": null,
+    "description": "Example event handler for the browser's mouse over event.",
+    "lineNumber": 260,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SyntheticEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageX",
+        "description": "The X-position of the click relative to the\n HTML document."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageY",
+        "description": "The Y-position of the click relative to the\n HTML document."
+      }
+    ],
+    "abstract": true
+  },
+  {
+    "__docId__": 76,
+    "kind": "method",
+    "name": "mOut",
+    "memberof": "src/player-controller.js~PlayerController",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/player-controller.js~PlayerController#mOut",
+    "access": null,
+    "description": "Example event handler for the browser's mouse out event.",
+    "lineNumber": 277,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SyntheticEvent"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageX",
+        "description": "The X-position of the click relative to the\n HTML document."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "event.pageY",
+        "description": "The Y-position of the click relative to the\n HTML document."
+      }
+    ],
+    "abstract": true
+  },
+  {
+    "__docId__": 77,
     "kind": "function",
     "name": "round",
     "memberof": "src/player-controller.js",
@@ -2256,26 +2488,34 @@
     "export": true,
     "importPath": "bavel/src/player-controller.js",
     "importStyle": "{round}",
-    "description": null,
-    "lineNumber": 125,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
+    "description": "Simple decimal cut-off utility function that rounds a number to the nearest\n second decimal place.",
+    "examples": [
+      "console.assert(round(Math.PI) === 3.14);"
     ],
+    "lineNumber": 297,
     "params": [
       {
-        "name": "x",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "x",
+        "description": "The number to round."
       }
-    ]
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "number"
+      ],
+      "spread": false,
+      "description": "The rounded number."
+    }
   },
   {
-    "__docId__": 74,
+    "__docId__": 78,
     "kind": "file",
     "name": "src/scene/entity/entity.js",
     "content": "import {_} from '../../utils';\nimport Promise from 'bluebird';\nimport Static from 'basic-static';\nimport reducePromise from 'reduce-promise';\n\nconst nonCompKeys = ['id', 'uid', 'tick', 'mesh', '_primaryMesh'];\nconst asyncStep = 10;\nconst asyncTimeout = 2000;\n\nexport default class Entity extends Static {\n\n    static create(engine, data) {\n        const ticks = {};\n        const {id, uid} = data;\n        const polyData = _.merge(engine.provider.getEntity(id), data);\n        const componentData = _.omit(polyData, nonCompKeys);\n        const entity = Object.defineProperties({id, uid}, {\n            mesh: { get: () => _.get(entity, polyData._primaryMesh) },\n            tick: {\n                get: () => (eng, t, dt) =>\n                    _.forEach(ticks, (v, k) => { v(eng, entity, entity[k], t, dt); }),\n                set: ({id, tick}) => tick ? (ticks[id] = tick) : (delete ticks[id])\n            },\n            get: {\n                value: (path) => _.get(entity, path, false)\n            },\n            meshAsync: {\n                get: () => new Promise((res, rej) => {\n                    const t = Date.now();\n                    const stop = setInterval(() => {\n                        if (entity.mesh) {\n                            clearInterval(stop);\n                            if (Object.getOwnPropertyDescriptor(entity, 'meshAsync').get) {\n                                Object.defineProperty(entity, 'meshAsync', {\n                                    value: Promise.resolve(entity.mesh),\n                                    configurable: false,\n                                    writable: false\n                                });\n                            }\n                            res(entity.mesh);\n                        } else if (Date.now() - t > asyncTimeout) {\n                            clearInterval(stop);\n                            rej(new Error('Timed out waiting for mesh of entity: ' + uid));\n                        }\n                    }, asyncStep);\n                }),\n                configurable: true\n            }\n        });\n\n        return this.updateComponents(engine, entity, componentData);\n    }\n\n    static updateComponent(engine, entity, id, data) {\n        return engine.provider.getComponent(id)\n            .update(engine, entity, entity[id], id, data)\n            .then(comp => entity[id] = comp);\n    }\n\n    static updateComponents(engine, entity, componentData) {\n        return reducePromise(componentData, (v, k) => this.updateComponent(engine, entity, k, v))\n            .then(() => entity);\n    }\n\n    static dismountComponent(engine, entity, id) {\n        return entity[id] = engine.provider\n            .getComponent(id)\n            .dismount(engine, entity, entity[id]);\n    }\n\n    static update(engine, entity, data) {\n        if (!entity) {\n            return this.create(engine, data);\n        }\n        return this.updateComponents(engine, entity, _.omit(data, nonCompKeys));\n    }\n\n    static dismount(engine, entity) {\n        _.forEach(\n            _.omit(entity, nonCompKeys),\n            (v, k) => { this.dismountComponent(engine, entity, k); });\n        return null;\n    }\n\n    static tick(engine, entity, t, dt) {\n        entity.tick(engine, t, dt);\n    }\n}\n",
@@ -2286,7 +2526,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 75,
+    "__docId__": 79,
     "kind": "variable",
     "name": "nonCompKeys",
     "memberof": "src/scene/entity/entity.js",
@@ -2312,7 +2552,7 @@
     }
   },
   {
-    "__docId__": 76,
+    "__docId__": 80,
     "kind": "variable",
     "name": "asyncStep",
     "memberof": "src/scene/entity/entity.js",
@@ -2338,7 +2578,7 @@
     }
   },
   {
-    "__docId__": 77,
+    "__docId__": 81,
     "kind": "variable",
     "name": "asyncTimeout",
     "memberof": "src/scene/entity/entity.js",
@@ -2364,7 +2604,7 @@
     }
   },
   {
-    "__docId__": 78,
+    "__docId__": 82,
     "kind": "class",
     "name": "Entity",
     "memberof": "src/scene/entity/entity.js",
@@ -2389,7 +2629,7 @@
     ]
   },
   {
-    "__docId__": 79,
+    "__docId__": 83,
     "kind": "method",
     "name": "create",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2428,7 +2668,7 @@
     }
   },
   {
-    "__docId__": 80,
+    "__docId__": 84,
     "kind": "method",
     "name": "updateComponent",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2479,7 +2719,7 @@
     }
   },
   {
-    "__docId__": 81,
+    "__docId__": 85,
     "kind": "method",
     "name": "updateComponents",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2524,7 +2764,7 @@
     }
   },
   {
-    "__docId__": 82,
+    "__docId__": 86,
     "kind": "method",
     "name": "dismountComponent",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2569,7 +2809,7 @@
     }
   },
   {
-    "__docId__": 83,
+    "__docId__": 87,
     "kind": "method",
     "name": "update",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2614,7 +2854,7 @@
     }
   },
   {
-    "__docId__": 84,
+    "__docId__": 88,
     "kind": "method",
     "name": "dismount",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2653,7 +2893,7 @@
     }
   },
   {
-    "__docId__": 85,
+    "__docId__": 89,
     "kind": "method",
     "name": "tick",
     "memberof": "src/scene/entity/entity.js~Entity",
@@ -2699,7 +2939,7 @@
     ]
   },
   {
-    "__docId__": 86,
+    "__docId__": 90,
     "kind": "file",
     "name": "src/scene/entity/index.js",
     "content": "export {default} from './entity';\n",
@@ -2710,7 +2950,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 87,
+    "__docId__": 91,
     "kind": "file",
     "name": "src/scene/index.js",
     "content": "export {default} from './scene';\n\n\n",
@@ -2721,7 +2961,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 88,
+    "__docId__": 92,
     "kind": "file",
     "name": "src/scene/scene.js",
     "content": "import {_} from '../utils';\nimport reducePromise from 'reduce-promise';\nimport Singleton from 'basic-singleton';\nimport Entity from './entity';\n\nexport default class Scene extends Singleton {\n\n    constructor() {\n        super();\n        Object.defineProperties(_.assign(this, {\n            children: {},\n            activeCamera: null\n        }), {\n            _baby: {\n                value: null,\n                writable: true\n            }\n        });\n    }\n\n    get baby() { return this._baby; }\n\n    mount(engine) {\n        this._baby = new engine.GL.Scene(engine.baby);\n    }\n\n    dismount(engine) {\n        this.children = _.pickBy(_.mapValues(this.children, e => Entity.dismount(engine, e)));\n        _.get(this, '_baby.dispose', _.noop)();\n        this._baby = null;\n        return null;\n    }\n\n    getEntity(uid) {\n        return _.get(this.children, uid);\n    }\n\n    updateEntity(engine, entityData) {\n        return Entity.update(engine, this.children[entityData.uid], entityData)\n            .then(e => this.children[entityData.uid] = e);\n    }\n\n    updateEntities(engine, entities) {\n        return reducePromise(entities, e => this.updateEntity(engine, e))\n            .then(() => this);\n    }\n\n    removeEntity(engine, entityUid) {\n        return this.children[entityUid] = Entity.dismount(engine, _.get(this.children, entityUid));\n    }\n\n    tick(engine, t, dt) {\n        _.forEach(this.children, e => { Entity.tick(engine, e, t, dt) });\n    }\n}\n",
@@ -2732,7 +2972,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 89,
+    "__docId__": 93,
     "kind": "class",
     "name": "Scene",
     "memberof": "src/scene/scene.js",
@@ -2757,7 +2997,7 @@
     ]
   },
   {
-    "__docId__": 90,
+    "__docId__": 94,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/scene/scene.js~Scene",
@@ -2778,7 +3018,7 @@
     "params": []
   },
   {
-    "__docId__": 91,
+    "__docId__": 95,
     "kind": "get",
     "name": "baby",
     "memberof": "src/scene/scene.js~Scene",
@@ -2803,7 +3043,7 @@
     }
   },
   {
-    "__docId__": 92,
+    "__docId__": 96,
     "kind": "method",
     "name": "mount",
     "memberof": "src/scene/scene.js~Scene",
@@ -2831,7 +3071,7 @@
     ]
   },
   {
-    "__docId__": 93,
+    "__docId__": 97,
     "kind": "member",
     "name": "_baby",
     "memberof": "src/scene/scene.js~Scene",
@@ -2854,7 +3094,7 @@
     }
   },
   {
-    "__docId__": 94,
+    "__docId__": 98,
     "kind": "method",
     "name": "dismount",
     "memberof": "src/scene/scene.js~Scene",
@@ -2887,7 +3127,7 @@
     }
   },
   {
-    "__docId__": 95,
+    "__docId__": 99,
     "kind": "member",
     "name": "children",
     "memberof": "src/scene/scene.js~Scene",
@@ -2910,7 +3150,7 @@
     }
   },
   {
-    "__docId__": 96,
+    "__docId__": 100,
     "kind": "member",
     "name": "_baby",
     "memberof": "src/scene/scene.js~Scene",
@@ -2933,7 +3173,7 @@
     }
   },
   {
-    "__docId__": 97,
+    "__docId__": 101,
     "kind": "method",
     "name": "getEntity",
     "memberof": "src/scene/scene.js~Scene",
@@ -2966,7 +3206,7 @@
     }
   },
   {
-    "__docId__": 98,
+    "__docId__": 102,
     "kind": "method",
     "name": "updateEntity",
     "memberof": "src/scene/scene.js~Scene",
@@ -3005,7 +3245,7 @@
     }
   },
   {
-    "__docId__": 99,
+    "__docId__": 103,
     "kind": "method",
     "name": "updateEntities",
     "memberof": "src/scene/scene.js~Scene",
@@ -3044,7 +3284,7 @@
     }
   },
   {
-    "__docId__": 100,
+    "__docId__": 104,
     "kind": "method",
     "name": "removeEntity",
     "memberof": "src/scene/scene.js~Scene",
@@ -3083,7 +3323,7 @@
     }
   },
   {
-    "__docId__": 101,
+    "__docId__": 105,
     "kind": "method",
     "name": "tick",
     "memberof": "src/scene/scene.js~Scene",
@@ -3123,10 +3363,10 @@
     ]
   },
   {
-    "__docId__": 102,
+    "__docId__": 106,
     "kind": "file",
     "name": "src/state-event-proxy.js",
-    "content": "import {_} from './utils';\nimport Static from 'basic-static';\nimport events from './state-events';\n\nexport default (...args) => StateEventProxy.create(...args);\n\nexport const DISABLE = {};\n\nexport class StateEventProxy extends Static {\n\n    static create(obj, scope, properties, options) {\n        let self = obj || {};\n\n        _.forEach(properties, (prop, k) => {\n            let name = _.isNumber(k) ? prop : k,\n                value = _.isNumber(k) ? options.def : prop;\n\n            this.proxifyProperty(\n                `${scope}.${name}`,\n                obj,\n                name,\n                value,\n                options);\n        });\n        return self;\n    }\n\n    static proxifyProperty(scope, obj, prop, value, {\n        deep=false, enumerable=true\n    }={}) {\n        let p = value;\n\n        if (deep && _.isPlainObject(value)) {\n            p = this.buildProxyObject(scope, value, {deep, enumerable});\n        } else if (deep && _.isArray(value)) {\n            p = this.buildProxyArray(scope, obj, value, {deep, enumerable});\n        }\n        Object.defineProperty(obj, prop, {\n            get: () => p,\n            set: (v) => {\n                if (deep && _.isObject(v)) {\n                    v = _.isArray(v)\n                        ? this.buildProxyArray(scope, obj, v, {deep, enumerable})\n                        : this.buildProxyObject(scope, v, {deep, enumerable});\n                }\n                this.emit(scope, v, obj);\n                p = v;\n                return true;\n            },\n            configurable: true,\n            enumerable\n        });\n    }\n\n    static buildProxyObject(scope, obj, o) {\n        let p = {};\n\n        _.forEach(obj, (v, k) => this.proxifyProperty(`${scope}.${k}`, p, k, v, o));\n        return p;\n    }\n\n    static buildProxyArray(scope, parent, arr, o) {\n        const ret = new Proxy(\n            _.map(arr, (e, i) =>\n                _.isPlainObject(e) && this.buildProxyObject(`${scope}[${i}]`, e, o) ||\n                _.isArray(e) && this.buildProxyArray(`${scope}[${i}]`, ret, e, o) || e),\n            {\n                get: (target, key) => {\n                    if (this.isMutateFn(key)) {\n                        return (...args) => {\n                            DISABLE[scope] = true;\n                            let v = target[key](...args);\n\n                            delete DISABLE[scope];\n                            this.emit(scope, ret, parent);\n                            return v;\n                        };\n                    }\n                    return target[key];\n                },\n                set: (target, i, v) => {\n                    if (!_.isNaN(i)) {\n                        v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||\n                            _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;\n                        this.emit(`${scope}[${i}]`, v, ret);\n                    }\n                    target[i] = v;\n                    return true;\n                },\n                deleteProperty: (target, i) => {\n                    if (!_.isNaN(i)) {\n                        this.emit(`${scope}[${i}]`, undefined, ret);\n                    }\n                    delete target[i];\n                    return true;\n                }\n            }\n        );\n\n        return ret;\n    }\n\n    static emit(scope, v, obj) {\n        if (!DISABLE[scope]) {\n            setTimeout(() => events.emit(scope, v, obj));\n        }\n    }\n\n    static isMutateFn(key) {\n        return _.includes([\n            'copyWithin',\n            'fill',\n            'pop',\n            'push',\n            'reverse',\n            'shift',\n            'sort',\n            'splice',\n            'unshift'\n        ], key);\n    }\n}\n",
+    "content": "import {_} from './utils';\nimport Static from 'basic-static';\nimport events from './state-events';\n\n/**\n * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener\n * @typedef {string} ScopedEvent - Handled by {@link ScopedEventListener}.\n */\n/**\n * @typedef {Object} ProxifiedObject\n * @emits {ScopedEvent} - emits event name scoped to property change for proxied\n *  properties.\n */\n\n/**\n * Convenience function that passes through to {@link StateEventProxy.create}.\n *\n * @return {ProxifiedObject}\n * @example <caption>Setup</caption>\n * const EventProxy = require('state-event-proxy');\n * let myObject = {};\n * @example <caption>Property Keys</caption>\n * EventProxy(myObject, 'myObject', ['myPropA', 'myPropB']);\n * console.log(myObject) // {myPropA: undefined, myPropB: undeinfed}\n * myObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject\n * myObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject\n * console.log(myObject) // {myPropA: 10, myPropB: {}}\n * @example <caption>Property Map</caption>\n * EventProxy(myObject, 'myObject', {\n *     myPropA: 42,\n *     myPropB: {foo: 'bar'}\n * });\n * console.log(myObject) // {myPropA: 42, myPropB: {foo: 'bar'}}\n * myObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject\n * myObject.myPropB.foo = 'foo'; // Does not emit an event.\n * console.log(myObject) // {myPropA: 10, myPropB: {foo: 'foo'}}\n * @example <caption>Property Map w/ Deep Proxy</caption>\n * EventProxy(myObject, 'myObject', {\n *     myPropA: [{id: 'foo'}, {id: 'bar'}],\n *     myPropB: {a: 1, b: 2, c: 3}\n * }, {deep: true});\n * console.log(myObject) // {myPropA: [{id: 'foo'}, {id: 'bar'}], myPropB: {a: 1, b: 2, c: 3}}\n * myObject.myPropB.a = 0; // Emits event w/ args: 'myObject.myPropB.a', 0, myObject.myPropB\n * myObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject\n * myObject.myPropA[0].id = 42; // Emits event w/ args: 'myObject.myPropA[0].id', 42, myObject.myPropA[0]\n * myObject.myPropA.push('foobar'); // Emits event w/ args: 'myObject.myPropA', myObject.myPropA, myObject\n * console.log(myObject) // {myPropA: [{id: 42}, {id: 'bar'}, 'foobar'], myPropB: {}}\n */\nexport default function EventProxy(obj, scope, properties, options) {\n    return StateEventProxy.create(obj, scope, properties, options);\n}\n\n/**\n * @access private\n */\nexport const DISABLE = {};\n\n/**\n * The StateEventProxy class.\n *\n * @access private\n */\nexport class StateEventProxy extends Static {\n\n    static create(obj, scope, properties, options) {\n        let self = obj || {};\n\n        _.forEach(properties, (prop, k) => {\n            let name = _.isNumber(k) ? prop : k,\n                value = _.isNumber(k) ? options.def : prop;\n\n            this.proxifyProperty(\n                `${scope}.${name}`,\n                obj,\n                name,\n                value,\n                options);\n        });\n        return self;\n    }\n\n    static proxifyProperty(scope, obj, prop, value, {\n        deep=false, enumerable=true\n    }={}) {\n        let p = value;\n\n        if (deep && _.isPlainObject(value)) {\n            p = this.buildProxyObject(scope, value, {deep, enumerable});\n        } else if (deep && _.isArray(value)) {\n            p = this.buildProxyArray(scope, obj, value, {deep, enumerable});\n        }\n        Object.defineProperty(obj, prop, {\n            get: () => p,\n            set: (v) => {\n                if (deep && _.isObject(v)) {\n                    v = _.isArray(v)\n                        ? this.buildProxyArray(scope, obj, v, {deep, enumerable})\n                        : this.buildProxyObject(scope, v, {deep, enumerable});\n                }\n                this.emit(scope, v, obj);\n                p = v;\n                return true;\n            },\n            configurable: true,\n            enumerable\n        });\n    }\n\n    static buildProxyObject(scope, obj, o) {\n        let p = {};\n\n        _.forEach(obj, (v, k) => this.proxifyProperty(`${scope}.${k}`, p, k, v, o));\n        return p;\n    }\n\n    static buildProxyArray(scope, parent, arr, o) {\n        const ret = new Proxy(\n            _.map(arr, (e, i) =>\n                _.isPlainObject(e) && this.buildProxyObject(`${scope}[${i}]`, e, o) ||\n                _.isArray(e) && this.buildProxyArray(`${scope}[${i}]`, ret, e, o) || e),\n            {\n                get: (target, key) => {\n                    if (this.isMutateFn(key)) {\n                        return (...args) => {\n                            DISABLE[scope] = true;\n                            let v = target[key](...args);\n\n                            delete DISABLE[scope];\n                            this.emit(scope, ret, parent);\n                            return v;\n                        };\n                    }\n                    return target[key];\n                },\n                set: (target, i, v) => {\n                    if (!_.isNaN(i)) {\n                        v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||\n                            _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;\n                        this.emit(`${scope}[${i}]`, v, ret);\n                    }\n                    target[i] = v;\n                    return true;\n                },\n                deleteProperty: (target, i) => {\n                    if (!_.isNaN(i)) {\n                        this.emit(`${scope}[${i}]`, undefined, ret);\n                    }\n                    delete target[i];\n                    return true;\n                }\n            }\n        );\n\n        return ret;\n    }\n\n    static emit(scope, v, obj) {\n        if (!DISABLE[scope]) {\n            setTimeout(() => events.emit(scope, v, obj));\n        }\n    }\n\n    static isMutateFn(key) {\n        return _.includes([\n            'copyWithin',\n            'fill',\n            'pop',\n            'push',\n            'reverse',\n            'shift',\n            'sort',\n            'splice',\n            'unshift'\n        ], key);\n    }\n}\n",
     "static": true,
     "longname": "src/state-event-proxy.js",
     "access": null,
@@ -3134,57 +3374,116 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 103,
+    "__docId__": 107,
+    "kind": "typedef",
+    "name": "ScopedEvent",
+    "memberof": "src/state-event-proxy.js",
+    "static": true,
+    "longname": "src/state-event-proxy.js~ScopedEvent",
+    "access": null,
+    "description": "",
+    "type": {
+      "types": [
+        "string"
+      ],
+      "optional": false,
+      "name": "ScopedEvent"
+    }
+  },
+  {
+    "__docId__": 108,
+    "kind": "typedef",
+    "name": "ProxifiedObject",
+    "memberof": "src/state-event-proxy.js",
+    "static": true,
+    "longname": "src/state-event-proxy.js~ProxifiedObject",
+    "access": null,
+    "description": "",
+    "emits": [
+      {
+        "types": [
+          "ScopedEvent"
+        ],
+        "description": "emits event name scoped to property change for proxied\n properties."
+      }
+    ],
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "ProxifiedObject"
+    }
+  },
+  {
+    "__docId__": 109,
     "kind": "function",
-    "name": "stateeventproxy",
+    "name": "EventProxy",
     "memberof": "src/state-event-proxy.js",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/state-event-proxy.js~stateeventproxy",
+    "longname": "src/state-event-proxy.js~EventProxy",
     "access": null,
     "export": true,
     "importPath": "bavel/src/state-event-proxy.js",
-    "importStyle": "stateeventproxy",
-    "description": null,
-    "lineNumber": 5,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
+    "importStyle": "EventProxy",
+    "description": "Convenience function that passes through to {@link StateEventProxy.create}.",
+    "examples": [
+      "<caption>Setup</caption>\nconst EventProxy = require('state-event-proxy');\nlet myObject = {};",
+      "<caption>Property Keys</caption>\nEventProxy(myObject, 'myObject', ['myPropA', 'myPropB']);\nconsole.log(myObject) // {myPropA: undefined, myPropB: undeinfed}\nmyObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject\nmyObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject\nconsole.log(myObject) // {myPropA: 10, myPropB: {}}",
+      "<caption>Property Map</caption>\nEventProxy(myObject, 'myObject', {\n    myPropA: 42,\n    myPropB: {foo: 'bar'}\n});\nconsole.log(myObject) // {myPropA: 42, myPropB: {foo: 'bar'}}\nmyObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject\nmyObject.myPropB.foo = 'foo'; // Does not emit an event.\nconsole.log(myObject) // {myPropA: 10, myPropB: {foo: 'foo'}}",
+      "<caption>Property Map w/ Deep Proxy</caption>\nEventProxy(myObject, 'myObject', {\n    myPropA: [{id: 'foo'}, {id: 'bar'}],\n    myPropB: {a: 1, b: 2, c: 3}\n}, {deep: true});\nconsole.log(myObject) // {myPropA: [{id: 'foo'}, {id: 'bar'}], myPropB: {a: 1, b: 2, c: 3}}\nmyObject.myPropB.a = 0; // Emits event w/ args: 'myObject.myPropB.a', 0, myObject.myPropB\nmyObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject\nmyObject.myPropA[0].id = 42; // Emits event w/ args: 'myObject.myPropA[0].id', 42, myObject.myPropA[0]\nmyObject.myPropA.push('foobar'); // Emits event w/ args: 'myObject.myPropA', myObject.myPropA, myObject\nconsole.log(myObject) // {myPropA: [{id: 42}, {id: 'bar'}, 'foobar'], myPropB: {}}"
     ],
+    "lineNumber": 49,
     "params": [
       {
-        "name": "args",
+        "name": "obj",
         "types": [
-          "...*"
-        ],
-        "spread": true
+          "*"
+        ]
+      },
+      {
+        "name": "scope",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "properties",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "options",
+        "types": [
+          "*"
+        ]
       }
-    ]
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "ProxifiedObject"
+      ],
+      "spread": false,
+      "description": ""
+    }
   },
   {
-    "__docId__": 104,
+    "__docId__": 110,
     "kind": "variable",
     "name": "DISABLE",
     "memberof": "src/state-event-proxy.js",
     "static": true,
     "longname": "src/state-event-proxy.js~DISABLE",
-    "access": null,
+    "access": "private",
     "export": true,
     "importPath": "bavel/src/state-event-proxy.js",
     "importStyle": "{DISABLE}",
-    "description": null,
-    "lineNumber": 7,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "",
+    "lineNumber": 56,
     "type": {
       "types": [
         "{}"
@@ -3192,32 +3491,25 @@
     }
   },
   {
-    "__docId__": 105,
+    "__docId__": 111,
     "kind": "class",
     "name": "StateEventProxy",
     "memberof": "src/state-event-proxy.js",
     "static": true,
     "longname": "src/state-event-proxy.js~StateEventProxy",
-    "access": null,
+    "access": "private",
     "export": true,
     "importPath": "bavel/src/state-event-proxy.js",
     "importStyle": "{StateEventProxy}",
-    "description": null,
-    "lineNumber": 9,
-    "undocument": true,
-    "unknown": [
-      {
-        "tagName": "@_undocument",
-        "tagValue": ""
-      }
-    ],
+    "description": "The StateEventProxy class.",
+    "lineNumber": 63,
     "interface": false,
     "extends": [
       "basic-static~Static"
     ]
   },
   {
-    "__docId__": 106,
+    "__docId__": 112,
     "kind": "method",
     "name": "create",
     "memberof": "src/state-event-proxy.js~StateEventProxy",
@@ -3227,7 +3519,7 @@
     "longname": "src/state-event-proxy.js~StateEventProxy.create",
     "access": null,
     "description": null,
-    "lineNumber": 11,
+    "lineNumber": 65,
     "undocument": true,
     "unknown": [
       {
@@ -3268,7 +3560,7 @@
     }
   },
   {
-    "__docId__": 107,
+    "__docId__": 113,
     "kind": "method",
     "name": "proxifyProperty",
     "memberof": "src/state-event-proxy.js~StateEventProxy",
@@ -3278,7 +3570,7 @@
     "longname": "src/state-event-proxy.js~StateEventProxy.proxifyProperty",
     "access": null,
     "description": null,
-    "lineNumber": 28,
+    "lineNumber": 82,
     "undocument": true,
     "unknown": [
       {
@@ -3323,7 +3615,7 @@
     ]
   },
   {
-    "__docId__": 108,
+    "__docId__": 114,
     "kind": "method",
     "name": "buildProxyObject",
     "memberof": "src/state-event-proxy.js~StateEventProxy",
@@ -3333,7 +3625,7 @@
     "longname": "src/state-event-proxy.js~StateEventProxy.buildProxyObject",
     "access": null,
     "description": null,
-    "lineNumber": 55,
+    "lineNumber": 109,
     "undocument": true,
     "unknown": [
       {
@@ -3368,7 +3660,7 @@
     }
   },
   {
-    "__docId__": 109,
+    "__docId__": 115,
     "kind": "method",
     "name": "buildProxyArray",
     "memberof": "src/state-event-proxy.js~StateEventProxy",
@@ -3378,7 +3670,7 @@
     "longname": "src/state-event-proxy.js~StateEventProxy.buildProxyArray",
     "access": null,
     "description": null,
-    "lineNumber": 62,
+    "lineNumber": 116,
     "undocument": true,
     "unknown": [
       {
@@ -3419,7 +3711,7 @@
     }
   },
   {
-    "__docId__": 110,
+    "__docId__": 116,
     "kind": "method",
     "name": "emit",
     "memberof": "src/state-event-proxy.js~StateEventProxy",
@@ -3429,7 +3721,7 @@
     "longname": "src/state-event-proxy.js~StateEventProxy.emit",
     "access": null,
     "description": null,
-    "lineNumber": 103,
+    "lineNumber": 157,
     "undocument": true,
     "unknown": [
       {
@@ -3459,7 +3751,7 @@
     ]
   },
   {
-    "__docId__": 111,
+    "__docId__": 117,
     "kind": "method",
     "name": "isMutateFn",
     "memberof": "src/state-event-proxy.js~StateEventProxy",
@@ -3469,7 +3761,7 @@
     "longname": "src/state-event-proxy.js~StateEventProxy.isMutateFn",
     "access": null,
     "description": null,
-    "lineNumber": 109,
+    "lineNumber": 163,
     "undocument": true,
     "unknown": [
       {
@@ -3492,10 +3784,10 @@
     }
   },
   {
-    "__docId__": 112,
+    "__docId__": 118,
     "kind": "file",
     "name": "src/state-events.js",
-    "content": "import EventEmitter from 'events';\n\nconst events = new EventEmitter();\n\nexport default events;\n",
+    "content": "import EventEmitter from 'events';\n\n/**\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n */\nexport const Events = new EventEmitter();\n\n",
     "static": true,
     "longname": "src/state-events.js",
     "access": null,
@@ -3503,7 +3795,29 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 114,
+    "__docId__": 119,
+    "kind": "variable",
+    "name": "Events",
+    "memberof": "src/state-events.js",
+    "static": true,
+    "longname": "src/state-events.js~Events",
+    "access": "public",
+    "export": true,
+    "importPath": "bavel/src/state-events.js",
+    "importStyle": "{Events}",
+    "description": "The EventEmitter for proxified object state changes.",
+    "lineNumber": 9,
+    "type": {
+      "nullable": null,
+      "types": [
+        "EventEmitter"
+      ],
+      "spread": false,
+      "description": null
+    }
+  },
+  {
+    "__docId__": 121,
     "kind": "external",
     "name": "Infinity",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
@@ -3515,7 +3829,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 115,
+    "__docId__": 122,
     "kind": "external",
     "name": "NaN",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
@@ -3527,7 +3841,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 116,
+    "__docId__": 123,
     "kind": "external",
     "name": "undefined",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
@@ -3539,7 +3853,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 117,
+    "__docId__": 124,
     "kind": "external",
     "name": "null",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
@@ -3551,7 +3865,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 118,
+    "__docId__": 125,
     "kind": "external",
     "name": "Object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -3563,7 +3877,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 119,
+    "__docId__": 126,
     "kind": "external",
     "name": "object",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
@@ -3575,7 +3889,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 127,
     "kind": "external",
     "name": "Function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -3587,7 +3901,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 121,
+    "__docId__": 128,
     "kind": "external",
     "name": "function",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
@@ -3599,7 +3913,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 122,
+    "__docId__": 129,
     "kind": "external",
     "name": "Boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -3611,7 +3925,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 130,
     "kind": "external",
     "name": "boolean",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
@@ -3623,7 +3937,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 124,
+    "__docId__": 131,
     "kind": "external",
     "name": "Symbol",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
@@ -3635,7 +3949,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 125,
+    "__docId__": 132,
     "kind": "external",
     "name": "Error",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
@@ -3647,7 +3961,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 126,
+    "__docId__": 133,
     "kind": "external",
     "name": "EvalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
@@ -3659,7 +3973,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 127,
+    "__docId__": 134,
     "kind": "external",
     "name": "InternalError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
@@ -3671,7 +3985,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 135,
     "kind": "external",
     "name": "RangeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
@@ -3683,7 +3997,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 136,
     "kind": "external",
     "name": "ReferenceError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
@@ -3695,7 +4009,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 130,
+    "__docId__": 137,
     "kind": "external",
     "name": "SyntaxError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
@@ -3707,7 +4021,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 131,
+    "__docId__": 138,
     "kind": "external",
     "name": "TypeError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
@@ -3719,7 +4033,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 132,
+    "__docId__": 139,
     "kind": "external",
     "name": "URIError",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
@@ -3731,7 +4045,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 133,
+    "__docId__": 140,
     "kind": "external",
     "name": "Number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -3743,7 +4057,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 134,
+    "__docId__": 141,
     "kind": "external",
     "name": "number",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
@@ -3755,7 +4069,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 135,
+    "__docId__": 142,
     "kind": "external",
     "name": "Date",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
@@ -3767,7 +4081,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 136,
+    "__docId__": 143,
     "kind": "external",
     "name": "String",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -3779,7 +4093,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 137,
+    "__docId__": 144,
     "kind": "external",
     "name": "string",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
@@ -3791,7 +4105,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 138,
+    "__docId__": 145,
     "kind": "external",
     "name": "RegExp",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
@@ -3803,7 +4117,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 139,
+    "__docId__": 146,
     "kind": "external",
     "name": "Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
@@ -3815,7 +4129,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 140,
+    "__docId__": 147,
     "kind": "external",
     "name": "Int8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
@@ -3827,7 +4141,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 141,
+    "__docId__": 148,
     "kind": "external",
     "name": "Uint8Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
@@ -3839,7 +4153,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 142,
+    "__docId__": 149,
     "kind": "external",
     "name": "Uint8ClampedArray",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
@@ -3851,7 +4165,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 143,
+    "__docId__": 150,
     "kind": "external",
     "name": "Int16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
@@ -3863,7 +4177,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 144,
+    "__docId__": 151,
     "kind": "external",
     "name": "Uint16Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
@@ -3875,7 +4189,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 145,
+    "__docId__": 152,
     "kind": "external",
     "name": "Int32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
@@ -3887,7 +4201,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 146,
+    "__docId__": 153,
     "kind": "external",
     "name": "Uint32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
@@ -3899,7 +4213,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 147,
+    "__docId__": 154,
     "kind": "external",
     "name": "Float32Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
@@ -3911,7 +4225,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 148,
+    "__docId__": 155,
     "kind": "external",
     "name": "Float64Array",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
@@ -3923,7 +4237,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 149,
+    "__docId__": 156,
     "kind": "external",
     "name": "Map",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
@@ -3935,7 +4249,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 150,
+    "__docId__": 157,
     "kind": "external",
     "name": "Set",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
@@ -3947,7 +4261,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 151,
+    "__docId__": 158,
     "kind": "external",
     "name": "WeakMap",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
@@ -3959,7 +4273,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 152,
+    "__docId__": 159,
     "kind": "external",
     "name": "WeakSet",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
@@ -3971,7 +4285,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 153,
+    "__docId__": 160,
     "kind": "external",
     "name": "ArrayBuffer",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
@@ -3983,7 +4297,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 154,
+    "__docId__": 161,
     "kind": "external",
     "name": "DataView",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
@@ -3995,7 +4309,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 155,
+    "__docId__": 162,
     "kind": "external",
     "name": "JSON",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
@@ -4007,7 +4321,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 156,
+    "__docId__": 163,
     "kind": "external",
     "name": "Promise",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -4019,7 +4333,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 157,
+    "__docId__": 164,
     "kind": "external",
     "name": "Generator",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
@@ -4031,7 +4345,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 158,
+    "__docId__": 165,
     "kind": "external",
     "name": "GeneratorFunction",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
@@ -4043,7 +4357,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 159,
+    "__docId__": 166,
     "kind": "external",
     "name": "Reflect",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
@@ -4055,7 +4369,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 160,
+    "__docId__": 167,
     "kind": "external",
     "name": "Proxy",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
@@ -4068,7 +4382,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 162,
+    "__docId__": 169,
     "kind": "external",
     "name": "CanvasRenderingContext2D",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
@@ -4080,7 +4394,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 163,
+    "__docId__": 170,
     "kind": "external",
     "name": "DocumentFragment",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
@@ -4092,7 +4406,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 164,
+    "__docId__": 171,
     "kind": "external",
     "name": "Element",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
@@ -4104,7 +4418,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 165,
+    "__docId__": 172,
     "kind": "external",
     "name": "Event",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
@@ -4116,7 +4430,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 166,
+    "__docId__": 173,
     "kind": "external",
     "name": "Node",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
@@ -4128,7 +4442,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 167,
+    "__docId__": 174,
     "kind": "external",
     "name": "NodeList",
     "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
@@ -4140,7 +4454,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 168,
+    "__docId__": 175,
     "kind": "external",
     "name": "XMLHttpRequest",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
@@ -4152,7 +4466,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 169,
+    "__docId__": 176,
     "kind": "external",
     "name": "AudioContext",
     "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",

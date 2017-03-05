@@ -161,7 +161,8 @@
       <div>
         
         
-        
+        <div data-ice="description"><p>Controller for player logic and interactions.</p>
+</div>
       </div>
     </td>
     <td>
@@ -196,33 +197,6 @@
       
     </td>
   </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="class/src/state-event-proxy.js~StateEventProxy.html">StateEventProxy</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
 </tbody>
 </table>
 </div>
@@ -244,13 +218,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span><span data-ice="signature">(x: <span>*</span>)</span>
+          <span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span><span data-ice="signature">(obj: <span>*</span>, scope: <span>*</span>, properties: <span>*</span>, options: <span>*</span>): <span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Convenience function that passes through to <span>StateEventProxy.create</span>.</p>
+</div>
       </div>
     </td>
     <td>
@@ -271,13 +246,15 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="function/index.html#static-function-stateeventproxy">stateeventproxy</a></span></span><span data-ice="signature">(args: ...<span>*</span>)</span>
+          <span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span><span data-ice="signature">(x: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Simple decimal cut-off utility function that rounds a number to the nearest
+ second decimal place.</p>
+</div>
       </div>
     </td>
     <td>
@@ -305,13 +282,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span><span data-ice="signature">: {}</span>
+          <span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span><span data-ice="signature">: <span>EventEmitter</span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The EventEmitter for proxified object state changes.</p>
+</div>
       </div>
     </td>
     <td>
@@ -508,12 +486,61 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span><span data-ice="signature">: <span>{
- info: function,
- debug: function,
- warn: function,
- error: function
-}</span></span>
+          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
@@ -595,6 +622,33 @@
           
           
           <span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
         </p>
       </div>
       <div>

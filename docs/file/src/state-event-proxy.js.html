@@ -34,11 +34,10 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/state-event-proxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-stateeventproxy">stateeventproxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
@@ -49,6 +48,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
 </ul>
@@ -60,10 +62,64 @@
 import Static from &apos;basic-static&apos;;
 import events from &apos;./state-events&apos;;
 
-export default (...args) =&gt; StateEventProxy.create(...args);
+/**
+ * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener
+ * @typedef {string} ScopedEvent - Handled by {@link ScopedEventListener}.
+ */
+/**
+ * @typedef {Object} ProxifiedObject
+ * @emits {ScopedEvent} - emits event name scoped to property change for proxied
+ *  properties.
+ */
 
+/**
+ * Convenience function that passes through to {@link StateEventProxy.create}.
+ *
+ * @return {ProxifiedObject}
+ * @example &lt;caption&gt;Setup&lt;/caption&gt;
+ * const EventProxy = require(&apos;state-event-proxy&apos;);
+ * let myObject = {};
+ * @example &lt;caption&gt;Property Keys&lt;/caption&gt;
+ * EventProxy(myObject, &apos;myObject&apos;, [&apos;myPropA&apos;, &apos;myPropB&apos;]);
+ * console.log(myObject) // {myPropA: undefined, myPropB: undeinfed}
+ * myObject.myPropA = 10; // Emits event w/ args: &apos;myObject.myPropA&apos;, 10, myObject
+ * myObject.myPropB = {}; // Emits event w/ args: &apos;myObject.myPropB&apos;, {}, myObject
+ * console.log(myObject) // {myPropA: 10, myPropB: {}}
+ * @example &lt;caption&gt;Property Map&lt;/caption&gt;
+ * EventProxy(myObject, &apos;myObject&apos;, {
+ *     myPropA: 42,
+ *     myPropB: {foo: &apos;bar&apos;}
+ * });
+ * console.log(myObject) // {myPropA: 42, myPropB: {foo: &apos;bar&apos;}}
+ * myObject.myPropA = 10; // Emits event w/ args: &apos;myObject.myPropA&apos;, 10, myObject
+ * myObject.myPropB.foo = &apos;foo&apos;; // Does not emit an event.
+ * console.log(myObject) // {myPropA: 10, myPropB: {foo: &apos;foo&apos;}}
+ * @example &lt;caption&gt;Property Map w/ Deep Proxy&lt;/caption&gt;
+ * EventProxy(myObject, &apos;myObject&apos;, {
+ *     myPropA: [{id: &apos;foo&apos;}, {id: &apos;bar&apos;}],
+ *     myPropB: {a: 1, b: 2, c: 3}
+ * }, {deep: true});
+ * console.log(myObject) // {myPropA: [{id: &apos;foo&apos;}, {id: &apos;bar&apos;}], myPropB: {a: 1, b: 2, c: 3}}
+ * myObject.myPropB.a = 0; // Emits event w/ args: &apos;myObject.myPropB.a&apos;, 0, myObject.myPropB
+ * myObject.myPropB = {}; // Emits event w/ args: &apos;myObject.myPropB&apos;, {}, myObject
+ * myObject.myPropA[0].id = 42; // Emits event w/ args: &apos;myObject.myPropA[0].id&apos;, 42, myObject.myPropA[0]
+ * myObject.myPropA.push(&apos;foobar&apos;); // Emits event w/ args: &apos;myObject.myPropA&apos;, myObject.myPropA, myObject
+ * console.log(myObject) // {myPropA: [{id: 42}, {id: &apos;bar&apos;}, &apos;foobar&apos;], myPropB: {}}
+ */
+export default function EventProxy(obj, scope, properties, options) {
+    return StateEventProxy.create(obj, scope, properties, options);
+}
+
+/**
+ * @access private
+ */
 export const DISABLE = {};
 
+/**
+ * The StateEventProxy class.
+ *
+ * @access private
+ */
 export class StateEventProxy extends Static {
 
     static create(obj, scope, properties, options) {

@@ -1,11 +1,5 @@
 window.esdocSearchIndex = [
   [
-    "bavel/src/state-event-proxy.js~disable",
-    "variable/index.html#static-variable-DISABLE",
-    "<span>DISABLE</span> <span class=\"search-result-import-path\">bavel/src/state-event-proxy.js</span>",
-    "variable"
-  ],
-  [
     "bavel/src/engine.js~engine",
     "class/src/engine.js~Engine.html",
     "<span>Engine</span> <span class=\"search-result-import-path\">bavel/src/engine.js</span>",
@@ -16,6 +10,18 @@ window.esdocSearchIndex = [
     "class/src/scene/entity/entity.js~Entity.html",
     "<span>Entity</span> <span class=\"search-result-import-path\">bavel/src/scene/entity/entity.js</span>",
     "class"
+  ],
+  [
+    "bavel/src/state-event-proxy.js~eventproxy",
+    "function/index.html#static-function-EventProxy",
+    "<span>EventProxy</span> <span class=\"search-result-import-path\">bavel/src/state-event-proxy.js</span>",
+    "function"
+  ],
+  [
+    "bavel/src/state-events.js~events",
+    "variable/index.html#static-variable-Events",
+    "<span>Events</span> <span class=\"search-result-import-path\">bavel/src/state-events.js</span>",
+    "variable"
   ],
   [
     "bavel/src/engine.js~loadstates",
@@ -36,21 +42,9 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "bavel/src/state-event-proxy.js~stateeventproxy",
-    "class/src/state-event-proxy.js~StateEventProxy.html",
-    "<span>StateEventProxy</span> <span class=\"search-result-import-path\">bavel/src/state-event-proxy.js</span>",
-    "class"
-  ],
-  [
     "bavel/src/player-controller.js~round",
     "function/index.html#static-function-round",
     "<span>round</span> <span class=\"search-result-import-path\">bavel/src/player-controller.js</span>",
-    "function"
-  ],
-  [
-    "bavel/src/state-event-proxy.js~stateeventproxy",
-    "function/index.html#static-function-stateeventproxy",
-    "<span>stateeventproxy</span> <span class=\"search-result-import-path\">bavel/src/state-event-proxy.js</span>",
     "function"
   ],
   [
@@ -618,6 +612,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/player-controller.js~message",
+    "typedef/index.html#static-typedef-Message",
+    "src/player-controller.js~Message",
+    "typedef"
+  ],
+  [
     "src/player-controller.js~playercontroller#dom_events",
     "class/src/player-controller.js~PlayerController.html#instance-get-DOM_EVENTS",
     "src/player-controller.js~PlayerController#DOM_EVENTS",
@@ -688,6 +688,18 @@ window.esdocSearchIndex = [
     "class/src/player-controller.js~PlayerController.html#instance-method-message",
     "src/player-controller.js~PlayerController#message",
     "method"
+  ],
+  [
+    "src/player-controller.js~playercontroller#messages",
+    "class/src/player-controller.js~PlayerController.html#instance-member-messages",
+    "src/player-controller.js~PlayerController#messages",
+    "member"
+  ],
+  [
+    "src/player-controller.js~playercontroller#player",
+    "class/src/player-controller.js~PlayerController.html#instance-member-player",
+    "src/player-controller.js~PlayerController#player",
+    "member"
   ],
   [
     "src/player-controller.js~playercontroller#registerkeyactions",
@@ -846,40 +858,16 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/state-event-proxy.js~stateeventproxy.buildproxyarray",
-    "class/src/state-event-proxy.js~StateEventProxy.html#static-method-buildProxyArray",
-    "src/state-event-proxy.js~StateEventProxy.buildProxyArray",
-    "method"
+    "src/state-event-proxy.js~proxifiedobject",
+    "typedef/index.html#static-typedef-ProxifiedObject",
+    "src/state-event-proxy.js~ProxifiedObject",
+    "typedef"
   ],
   [
-    "src/state-event-proxy.js~stateeventproxy.buildproxyobject",
-    "class/src/state-event-proxy.js~StateEventProxy.html#static-method-buildProxyObject",
-    "src/state-event-proxy.js~StateEventProxy.buildProxyObject",
-    "method"
-  ],
-  [
-    "src/state-event-proxy.js~stateeventproxy.create",
-    "class/src/state-event-proxy.js~StateEventProxy.html#static-method-create",
-    "src/state-event-proxy.js~StateEventProxy.create",
-    "method"
-  ],
-  [
-    "src/state-event-proxy.js~stateeventproxy.emit",
-    "class/src/state-event-proxy.js~StateEventProxy.html#static-method-emit",
-    "src/state-event-proxy.js~StateEventProxy.emit",
-    "method"
-  ],
-  [
-    "src/state-event-proxy.js~stateeventproxy.ismutatefn",
-    "class/src/state-event-proxy.js~StateEventProxy.html#static-method-isMutateFn",
-    "src/state-event-proxy.js~StateEventProxy.isMutateFn",
-    "method"
-  ],
-  [
-    "src/state-event-proxy.js~stateeventproxy.proxifyproperty",
-    "class/src/state-event-proxy.js~StateEventProxy.html#static-method-proxifyProperty",
-    "src/state-event-proxy.js~StateEventProxy.proxifyProperty",
-    "method"
+    "src/state-event-proxy.js~scopedevent",
+    "typedef/index.html#static-typedef-ScopedEvent",
+    "src/state-event-proxy.js~ScopedEvent",
+    "typedef"
   ],
   [
     "src/state-events.js",

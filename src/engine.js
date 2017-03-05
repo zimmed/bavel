@@ -3,7 +3,7 @@ import Singleton from 'basic-singleton';
 import Promise from 'bluebird';
 import Scene from './scene';
 import EventProxy from './state-event-proxy';
-import events from './state-events';
+import {Events} from './state-events';
 
 /**
  * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.
@@ -47,12 +47,11 @@ import events from './state-events';
  */
 
 /**
- * @typedef {{
- *  info: function,
- *  debug: function,
- *  warn: function,
- *  error: function
- * }} Logger
+ * @typedef {Object} Logger
+ * @property {function} info
+ * @property {function} debug
+ * @property {function} warn
+ * @property {function} error
  */
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
@@ -373,7 +372,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     emitEvent(scope, v, obj) {
-        return events.emit(scope, v, obj);
+        return Events.emit(scope, v, obj);
     }
 
     /**
@@ -385,7 +384,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     onEvent(event, handler) {
-        return events.on(event, handler);
+        return Events.on(event, handler);
     }
 
     /**

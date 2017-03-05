@@ -34,11 +34,10 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/state-event-proxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-stateeventproxy">stateeventproxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
@@ -49,6 +48,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
 </ul>
@@ -56,13 +58,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Engine from &apos;<span><a href="file/src/engine.js.html#lineNumber85">bavel/src/engine.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Engine from &apos;<span><a href="file/src/engine.js.html#lineNumber84">bavel/src/engine.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/engine.js.html#lineNumber85">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/engine.js.html#lineNumber84">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -899,7 +901,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber97">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber96">source</a></span></span>
     </span>
   </h3>
 
@@ -995,7 +997,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber163">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber162">source</a></span></span>
     </span>
   </h3>
 
@@ -1039,7 +1041,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber169">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber168">source</a></span></span>
     </span>
   </h3>
 
@@ -1083,7 +1085,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber175">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber174">source</a></span></span>
     </span>
   </h3>
 
@@ -1127,7 +1129,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber183">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber182">source</a></span></span>
     </span>
   </h3>
 
@@ -1170,7 +1172,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber133">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber132">source</a></span></span>
     </span>
   </h3>
 
@@ -1214,7 +1216,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber139">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber138">source</a></span></span>
     </span>
   </h3>
 
@@ -1258,7 +1260,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber187">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber186">source</a></span></span>
     </span>
   </h3>
 
@@ -1301,7 +1303,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber179">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber178">source</a></span></span>
     </span>
   </h3>
 
@@ -1344,7 +1346,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber143">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber142">source</a></span></span>
     </span>
   </h3>
 
@@ -1387,7 +1389,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber141">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber140">source</a></span></span>
     </span>
   </h3>
 
@@ -1430,7 +1432,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber145">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber144">source</a></span></span>
     </span>
   </h3>
 
@@ -1473,7 +1475,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber193">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber192">source</a></span></span>
     </span>
   </h3>
 
@@ -1517,7 +1519,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber197">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber196">source</a></span></span>
     </span>
   </h3>
 
@@ -1563,7 +1565,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber479">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber478">source</a></span></span>
     </span>
   </h3>
 
@@ -1635,7 +1637,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber239">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber238">source</a></span></span>
     </span>
   </h3>
 
@@ -1691,7 +1693,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber352">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber351">source</a></span></span>
     </span>
   </h3>
 
@@ -1763,7 +1765,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber375">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber374">source</a></span></span>
     </span>
   </h3>
 
@@ -1850,7 +1852,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber206">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber205">source</a></span></span>
     </span>
   </h3>
 
@@ -1922,7 +1924,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber362">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber361">source</a></span></span>
     </span>
   </h3>
 
@@ -1994,7 +1996,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber387">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber386">source</a></span></span>
     </span>
   </h3>
 
@@ -2074,7 +2076,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber402">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber401">source</a></span></span>
     </span>
   </h3>
 
@@ -2174,7 +2176,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber436">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber435">source</a></span></span>
     </span>
   </h3>
 
@@ -2287,7 +2289,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber328">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber327">source</a></span></span>
     </span>
   </h3>
 
@@ -2343,7 +2345,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber261">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber260">source</a></span></span>
     </span>
   </h3>
 
@@ -2415,7 +2417,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber312">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber311">source</a></span></span>
     </span>
   </h3>
 
@@ -2471,7 +2473,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber342">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/engine.js.html#lineNumber341">source</a></span></span>
     </span>
   </h3>
 
