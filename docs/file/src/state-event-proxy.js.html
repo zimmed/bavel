@@ -109,7 +109,7 @@ import {Events} from &apos;./state-events&apos;;
  * myObject.myPropA.push(&apos;foobar&apos;); // Emits event w/ args: &apos;myObject.myPropA&apos;, myObject.myPropA, myObject
  * console.log(myObject) // {myPropA: [{id: 42}, {id: &apos;bar&apos;}, &apos;foobar&apos;], myPropB: {}}
  */
-export default function EventProxy(obj, scope, properties, options) {
+export default function EventProxy(obj, scope, properties, options={}) {
     return StateEventProxy.create(obj, scope, properties, options);
 }
 

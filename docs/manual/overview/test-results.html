@@ -37,9 +37,10 @@
     <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;" data-link="manual/overview/README.html"><a href="manual/overview/README.html" data-ice="link">Bavel</a></li>
 <li data-ice="manualNav" class="indent-h3" data-link="manual/overview/README.html"><a href="manual/overview/README.html#babylonjs-game-framework-with-proper-entity-component-structure-" data-ice="link">BabylonJS game framework with proper entity/component structure.</a></li>
 <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html" data-ice="link">Changelog</a></li>
-<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-7-hotfix" data-ice="link">0.1.7 - Hotfix</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-8-hotfix" data-ice="link">0.1.8 Hotfix</a></li>
 <li data-ice="manualNav" class="indent-h4" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#roadmap" data-ice="link">Roadmap</a></li>
 <li data-ice="manualNav" class="indent-h2" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#history" data-ice="link">History</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-7-hotfix" data-ice="link">0.1.7 - Hotfix</a></li>
 <li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-6-docstrings" data-ice="link">0.1.6 - Docstrings</a></li>
 <li data-ice="manualNav" class="indent-h5" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#details" data-ice="link">Details</a></li>
 <li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-5-hotfix" data-ice="link">0.1.5 - Hotfix</a></li>
@@ -210,9 +211,9 @@
     <span data-ice="title">Overview</span>
   </div>
   <div data-ice="content"><h1 id="test-results">Test Results</h1>
-<p><strong>Ran 103 Tests (70 Suites) in 1106ms.</strong></p>
+<p><strong>Ran 103 Tests (70 Suites) in 1067ms.</strong></p>
 <ul>
-<li>Run Date/Time: 2017-03-05T21:20:25.405Z</li>
+<li>Run Date/Time: 2017-03-05T21:36:02.702Z</li>
 <li>103 tests passed</li>
 <li>0 tests failed</li>
 <li>0 tests skipped</li>
@@ -223,16 +224,16 @@
 </ul>
 <h4 id="the-engine-class-init-method">The Engine Class init method</h4>
 <ul>
-<li>should initialize a new Engine instance if none exist by calling the Engine constructor, and kicking off the resourceLoader(23ms) ... OK</li>
-<li>should return the engine instance if it has already been initialized(1ms) ... OK</li>
+<li>should initialize a new Engine instance if none exist by calling the Engine constructor, and kicking off the resourceLoader(16ms) ... OK</li>
+<li>should return the engine instance if it has already been initialized(2ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-constructor">The Engine Class constructor</h4>
 <ul>
-<li>should create a new Engine instance with EventProxied properties (fps, loading) and standard enumerable properties (scene, running, settings)(6ms) ... OK</li>
+<li>should create a new Engine instance with EventProxied properties (fps, loading) and standard enumerable properties (scene, running, settings)(10ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-gl-getter-method">The Engine Class Engine instance GL getter method</h4>
 <ul>
-<li>should return the read-only GraphicsLibary once loaded(5ms) ... OK</li>
+<li>should return the read-only GraphicsLibary once loaded(3ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-baby-getter-method">The Engine Class Engine instance baby getter method</h4>
 <ul>
@@ -244,7 +245,7 @@
 </ul>
 <h4 id="the-engine-class-engine-instance-provider-getter-method">The Engine Class Engine instance provider getter method</h4>
 <ul>
-<li>should return the read-only ResourceProvider once loaded(1ms) ... OK</li>
+<li>should return the read-only ResourceProvider once loaded(0ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-ctrl-getter-method">The Engine Class Engine instance ctrl getter method</h4>
 <ul>
@@ -271,17 +272,17 @@
 <ul>
 <li>should return a promise that initializes the scene with the provided entities, attaches event listeners to the canvas element, and begins the main render/update loop before resolving to self(<strong>512</strong>ms) ... OK</li>
 <li>should return a promise that attaches event listeners to the canvas element and begins the main render/update loop without adding new entites, when none provided, before resolving to self(2ms) ... OK</li>
-<li>should return a promise that resolves to self with engine is already running(1ms) ... OK</li>
+<li>should return a promise that resolves to self with engine is already running(0ms) ... OK</li>
 <li>should return a promise that resolves to self with engine is not in the correct loading state(0ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-stop-method">The Engine Class Engine instance stop method</h4>
 <ul>
-<li>should stop the render/update loop if running(0ms) ... OK</li>
+<li>should stop the render/update loop if running(1ms) ... OK</li>
 <li>should just return self when engine is not running(0ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-resize-method">The Engine Class Engine instance resize method</h4>
 <ul>
-<li>should call the resize method of the GraphicsLibrary engine instance(1ms) ... OK</li>
+<li>should call the resize method of the GraphicsLibrary engine instance(0ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-tovector-method">The Engine Class Engine instance toVector method</h4>
 <ul>
@@ -295,8 +296,8 @@
 </ul>
 <h4 id="the-engine-class-engine-instance-ondebugevent-method">The Engine Class Engine instance onDebugEvent method</h4>
 <ul>
-<li>should add an event listener if settings.debug = true(1ms) ... OK</li>
-<li>should not add an event listener if settings.debug = false(0ms) ... OK</li>
+<li>should add an event listener if settings.debug = true(0ms) ... OK</li>
+<li>should not add an event listener if settings.debug = false(1ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-emitevent-method">The Engine Class Engine instance emitEvent method</h4>
 <ul>
@@ -315,10 +316,10 @@
 <h4 id="the-engine-class-engine-instance-registermouseeventsforentity-method">The Engine Class Engine instance registerMouseEventsForEntity method</h4>
 <ul>
 <li>should set the hover cursor for the entity&apos;s primary mesh if cursor arugment is provided(1ms) ... OK</li>
-<li>should set an entityClick event listener on the entity&apos;s primary mesh if click argument is provided(2ms) ... OK</li>
-<li>should set an entityAltClick event listener on the entity&apos;s primary mesh if the altClick argument is provided(2ms) ... OK</li>
+<li>should set an entityClick event listener on the entity&apos;s primary mesh if click argument is provided(1ms) ... OK</li>
+<li>should set an entityAltClick event listener on the entity&apos;s primary mesh if the altClick argument is provided(1ms) ... OK</li>
 <li>should set an entityOver event listener on the entity&apos;s primary mesh if the over argument is provided(1ms) ... OK</li>
-<li>should set an entityOut event listener on the entity&apos;s primrary mesh if the out argument is provided(1ms) ... OK</li>
+<li>should set an entityOut event listener on the entity&apos;s primrary mesh if the out argument is provided(2ms) ... OK</li>
 </ul>
 <h4 id="the-engine-class-engine-instance-deregistermouseeventsforentity-method">The Engine Class Engine instance deregisterMouseEventsForEntity method</h4>
 <ul>
@@ -336,13 +337,13 @@
 <ul>
 <li>should have id and uid properties(0ms) ... OK</li>
 <li>should have a mesh method that returns the component for the _primaryMesh key, if set(0ms) ... OK</li>
-<li>should have a meshAsync property that is configurable until it&apos;s returned promise resolves to the entity mesh once available, then redefining the property to resolve directly to the mesh, and no longer reconfigurable(44ms) ... OK</li>
+<li>should have a meshAsync property that is configurable until it&apos;s returned promise resolves to the entity mesh once available, then redefining the property to resolve directly to the mesh, and no longer reconfigurable(41ms) ... OK</li>
 <li>should have a tick setter that will add a new tick method when the assignment is an object with both id and tick properties, or delete an existing tick when only an id property is in the assignment object(0ms) ... OK</li>
 <li>should have a tick getter that returns a function that will fire each registered component tick method(0ms) ... OK</li>
 </ul>
 <h4 id="the-entity-class-updatecomponent-method">The Entity Class updateComponent method</h4>
 <ul>
-<li>should return a promise that calls the update class method for the given component, stores the updated result to the entity at the property name that matches the component ID, and finally resolves to the newly- updated component(1ms) ... OK</li>
+<li>should return a promise that calls the update class method for the given component, stores the updated result to the entity at the property name that matches the component ID, and finally resolves to the newly- updated component(0ms) ... OK</li>
 </ul>
 <h4 id="the-entity-class-updatecomponents-method">The Entity Class updateComponents method</h4>
 <ul>
@@ -363,7 +364,7 @@
 </ul>
 <h4 id="the-entity-class-tick-method">The Entity Class tick method</h4>
 <ul>
-<li>should call the tick method on the provided entity instance(4ms) ... OK</li>
+<li>should call the tick method on the provided entity instance(0ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class">PlayerController Class</h4>
 <ul>
@@ -379,7 +380,7 @@
 </ul>
 <h4 id="playercontroller-class-constructor">PlayerController Class constructor</h4>
 <ul>
-<li>should create a new PlayerController instance with proxied properties for messages, player, and target, as well as an engine getter(3ms) ... OK</li>
+<li>should create a new PlayerController instance with proxied properties for messages, player, and target, as well as an engine getter(4ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-setup-method">PlayerController Class PlayerController instance setup method</h4>
 <ul>
@@ -387,7 +388,7 @@
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-registerkeyactions-method">PlayerController Class PlayerController instance registerKeyActions method</h4>
 <ul>
-<li>should call engine.registerKeyAction for each keyHandler passed in(2ms) ... OK</li>
+<li>should call engine.registerKeyAction for each keyHandler passed in(1ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-message-method">PlayerController Class PlayerController instance message method</h4>
 <ul>
@@ -406,12 +407,12 @@
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-mwheel-method">PlayerController Class PlayerController instance mWheel method</h4>
 <ul>
-<li>should not throw an error when a proper event is passed(1ms) ... OK</li>
+<li>should not throw an error when a proper event is passed(0ms) ... OK</li>
 <li>should throw an error when an improper event is passed(0ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-mover-method">PlayerController Class PlayerController instance mOver method</h4>
 <ul>
-<li>should not throw an error when a proper event is passed(0ms) ... OK</li>
+<li>should not throw an error when a proper event is passed(1ms) ... OK</li>
 <li>should throw an error when an improper event is passed(0ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-mout-method">PlayerController Class PlayerController instance mOut method</h4>
@@ -427,12 +428,12 @@
 <h4 id="playercontroller-class-playercontroller-instance-entityout-method">PlayerController Class PlayerController instance entityOut method</h4>
 <ul>
 <li>should remove the current target if the entity passed is the current target(0ms) ... OK</li>
-<li>should not remove the current target if the entity passed is not the current target(1ms) ... OK</li>
+<li>should not remove the current target if the entity passed is not the current target(0ms) ... OK</li>
 <li>should throw an error when an invalid entity or event is provided(0ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-entityclick-method">PlayerController Class PlayerController instance entityClick method</h4>
 <ul>
-<li>should not throw an error when a proper entity and event is passed(1ms) ... OK</li>
+<li>should not throw an error when a proper entity and event is passed(0ms) ... OK</li>
 <li>should throw an error when an improper entity or event is passed(0ms) ... OK</li>
 </ul>
 <h4 id="playercontroller-class-playercontroller-instance-entityaltclick-method">PlayerController Class PlayerController instance entityAltClick method</h4>
@@ -442,7 +443,7 @@
 </ul>
 <h4 id="the-scene-class">The Scene Class</h4>
 <ul>
-<li>should be a singleton(0ms) ... OK</li>
+<li>should be a singleton(1ms) ... OK</li>
 </ul>
 <h4 id="the-scene-class-constructor">The Scene Class Constructor</h4>
 <ul>
@@ -454,7 +455,7 @@
 </ul>
 <h4 id="the-scene-class-scene-instance-mount-method">The Scene Class scene instance mount method</h4>
 <ul>
-<li>should set the scene._baby property to a new BabylonJS Scene(1ms) ... OK</li>
+<li>should set the scene._baby property to a new BabylonJS Scene(0ms) ... OK</li>
 </ul>
 <h4 id="the-scene-class-scene-instance-dismount-method">The Scene Class scene instance dismount method</h4>
 <ul>
@@ -462,11 +463,11 @@
 </ul>
 <h4 id="the-scene-class-scene-instance-getentity-method">The Scene Class scene instance getEntity method</h4>
 <ul>
-<li>should get a child entity by uid(0ms) ... OK</li>
+<li>should get a child entity by uid(1ms) ... OK</li>
 </ul>
 <h4 id="the-scene-class-scene-instance-updateentity-method">The Scene Class scene instance updateEntity method</h4>
 <ul>
-<li>should return a promise that updates an entity by uid with Entity.update, then saves the updated entity back in children(1ms) ... OK</li>
+<li>should return a promise that updates an entity by uid with Entity.update, then saves the updated entity back in children(0ms) ... OK</li>
 </ul>
 <h4 id="the-scene-class-scene-instance-updateentities-method">The Scene Class scene instance updateEntities method</h4>
 <ul>
@@ -478,37 +479,37 @@
 </ul>
 <h4 id="the-scene-class-scene-instance-tick-method">The Scene Class scene instance tick method</h4>
 <ul>
-<li>should call Entity.tick for each entity in its children(2ms) ... OK</li>
+<li>should call Entity.tick for each entity in its children(1ms) ... OK</li>
 </ul>
 <h4 id="stateeventproxy-stateproxy-exported-function-integration-tests-">StateEventProxy StateProxy exported function (integration tests)</h4>
 <ul>
-<li>should assign proxy properties from a list of keys to the provided object and emit state events when a property is reassigned(4ms) ... OK</li>
+<li>should assign proxy properties from a list of keys to the provided object and emit state events when a property is reassigned(3ms) ... OK</li>
 <li>should assign proxy properties from a map of keys and values to the provided object and emit state events when a property is reassigned(3ms) ... OK</li>
 </ul>
 <h4 id="stateeventproxy-stateeventproxy-class-ismutatefn-method">StateEventProxy StateEventProxy Class isMutateFn method</h4>
 <ul>
 <li>should return true if provided key is an Array member-function that mutates itself(0ms) ... OK</li>
-<li>should return false if provided key is not an Array member-function that mutates itself(1ms) ... OK</li>
+<li>should return false if provided key is not an Array member-function that mutates itself(0ms) ... OK</li>
 </ul>
 <h4 id="stateeventproxy-stateeventproxy-class-emit-method">StateEventProxy StateEventProxy Class emit method</h4>
 <ul>
-<li>should call events.emit if the scope is not disabled(3ms) ... OK</li>
+<li>should call events.emit if the scope is not disabled(2ms) ... OK</li>
 <li>should not call events.emit if the scope is disabled(2ms) ... OK</li>
 </ul>
 <h4 id="stateeventproxy-stateeventproxy-class-proxifyproperty-method">StateEventProxy StateEventProxy Class proxifyProperty method</h4>
 <ul>
 <li>should assign to the provided object a wrapped property that, when set, will emit a state event(3ms) ... OK</li>
-<li>should assign to the provided object a deeply-proxied value when the value to be assigned is an array and deep=true(4ms) ... OK</li>
+<li>should assign to the provided object a deeply-proxied value when the value to be assigned is an array and deep=true(10ms) ... OK</li>
 <li>should assign to the provided object a deeply-proxied value when the value to be assigned is an object and deep=true(4ms) ... OK</li>
 <li>should assign to the provided object a wrapped property that is not enumerable when enumerable=false(3ms) ... OK</li>
 </ul>
 <h4 id="stateeventproxy-stateeventproxy-class-buildproxyobject-method">StateEventProxy StateEventProxy Class buildProxyObject method</h4>
 <ul>
-<li>should return an object that has proxified properties forEach each property on the original object(3ms) ... OK</li>
+<li>should return an object that has proxified properties forEach each property on the original object(2ms) ... OK</li>
 </ul>
 <h4 id="stateeventproxy-stateeventproxy-class-buildproxyarray-method">StateEventProxy StateEventProxy Class buildProxyArray method</h4>
 <ul>
-<li>should create and return an Array Proxy that wraps sets to be deeply-watched for new values, and gets to be watched if a mutation method is requested(4ms) ... OK</li>
+<li>should create and return an Array Proxy that wraps sets to be deeply-watched for new values, and gets to be watched if a mutation method is requested(5ms) ... OK</li>
 </ul>
 <h4 id="stateeventmanager">StateEventManager</h4>
 <ul>
