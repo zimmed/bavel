@@ -1,4 +1,21 @@
 # Changelog
+
+#### 0.2.0 - ...
+
+...
+
+##### Details
+ - ...
+
+##### 0.2 Todo
+ ...
+
+#### Roadmap
+ - -0.2.x - Multiplayer networking support- *This will not be supported by the framework*
+ - 0.2.x ... we'll see ...
+
+## History
+
 ### 0.1.6 - Docstrings
 
 Used ESDoc to generate API reference from inline docstrings. Can now view docs
@@ -8,12 +25,6 @@ using the [github page](https://zimmed.github.io/bavel).
  - Added ESDoc to project
  - Added inline documentation to source code
  - Created build scripts to encorporate test results and changelog into docs
-
-#### Roadmap
- - 0.2.x - Multiplayer networking support
- -  ... we'll see ...
-
-## History
 
 ### 0.1.5 - Hotfix
 
