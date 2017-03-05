@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/player-controller.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/player-controller.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import {_} from &apos;./utils&apos;;
+import Singleton from &apos;basic-singleton&apos;;
+import StateProxy from &apos;./state-event-proxy&apos;;
+
+/**
+ * @typedef {Object} Message
+ * @property {string} time
+ * @property {string} type
+ * @property {?string} sender
+ * @property {string} message
+ */
+
+let _engine;
+
+/**
+ * Controller for player logic and interactions.
+ *
+ * @property {number} MAX_MESSAGES - The maximum number of messages to keep in the array.
+ * @example &lt;caption&gt;Definition&lt;/caption&gt;
+ * class MyGamePlayerController extends PlayerController {
+ *     get DOM_EVENTS() {
+ *         return {contextmenu: &apos;mAltClick&apos;, click: &apos;myClickMethod&apos;};
+ *     }
+ *     entityOver(entity, event) {
+ *         super.entityOver(entity, event);
+ *         entity.MyActionableComponent.doAction();
+ *     }
+ *     entityClick(entity, {pointerX, pointerY}) {
+ *         let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
+ *
+ *         this.player.MyOtherActionableComponent.beginMovementTo(x, y, z);
+ *     }
+ *     myClickMethod(event) {
+ *         this.player.DestructionComponent.killAllHumans();
+ *     }
+ * }
+ * @example &lt;caption&gt;Implementation&lt;/caption&gt;
+ * let engine = Engine.init(myLogger, myResourceLoader, MyGamePlayerController, {});
+ */
+export default class PlayerController extends Singleton {
+
+    /**
+     * Used for generating readable-timestamps in messages.
+     *
+     * @param {Date} [date=new Date()]
+     * @return {string} - Current time in HH:mm:ss format.
+     */
+    static getTime(date=new Date()) {
+        return `${_.padStart(date.getHours(), 2, &apos;0&apos;)}:${_.padStart(date.getMinutes(), 2, &apos;0&apos;)}:${_.padStart(date.getSeconds(), 2, &apos;0&apos;)}`;
+    }
+
+    /**
+     * Map of HTML DOM events to controller functions to be hooked into the window
+     * when engine is mounted.
+     *
+     * @type {Object}
+     * @example &lt;caption&gt;Override DOM_EVENTS&lt;/caption&gt;
+     * get DOM_EVENTS() { return {click: &apos;mClick&apos;}; }
+     * // Only the browser click action will trigger a Controller method.
+     */
+    get DOM_EVENTS() {
+        return {
+            click: &apos;mClick&apos;,
+            contextmenu: &apos;mAltClick&apos;,
+            wheel: &apos;mWheel&apos;,
+            mouseover: &apos;mOver&apos;,
+            mouseout: &apos;mOut&apos;
+        };
+    }
+
+    /**
+     * @param {Engine} engine - The reference to the parent game engine.
+     */
+    constructor(engine) {
+        super();
+        StateProxy(this, `engine.ctrl`, [&apos;messages&apos;, &apos;player&apos;, &apos;target&apos;]);
+        /**
+         * The list of logged game messages. New messages are inserted into the
+         * beginning of the array.
+         *
+         * @type {Message[]}
+         */
+        this.messages = [];
+        /**
+         * The controlled player entity.
+         *
+         * @type {?EntityInstance}
+         */
+        this.player = null;
+        /**
+         * The currently-targeted entity (based on mouse-over).
+         *
+         * @type {?EntityInstance}
+         */
+        this.target = null;
+        _engine = engine;
+    }
+
+    /**
+     * Reference to the parent game engine instance.
+     *
+     * @type {Engine}
+     */
+    get engine() { return _engine; }
+
+    /**
+     * Supplies the key listeners defined in the provided game settings to
+     *  {@link PlayerController#registerKeyActions}.
+     *
+     * @param {Settings} settings
+     */
+    setup(settings) {
+        this.registerKeyActions(_.get(settings, &apos;input.keys&apos;, []));
+    }
+
+    /**
+     * Hooks the provided key handlers into the game&apos;s keystroke actions.
+     *
+     * @param {KeyDefinition[]} keyHandlers
+     */
+    registerKeyActions(keyHandlers) {
+        _.forEach(keyHandlers, (desc) =&gt; {
+            this.engine.registerKeyAction(desc.key, desc);
+        });
+    }
+
+    /**
+     * Inserts new message into controller&apos;s messages array.
+     *
+     * @param {string} type
+     * @param {?string} sender
+     * @param {string} message
+     * @param {number} [max=PlayerController.MAX_MESSAGES]
+     * @return {Message[]} - The updated messages array.
+     */
+    message(type, sender, message, max=this.constructor.MAX_MESSAGES) {
+        return this.messages = _.take(
+            _.concat(
+                {time: this.constructor.getTime(), type, sender, message},
+                this.messages),
+            max);
+    }
+
+    /**
+     * The event handler for a mouse cursor-over event on a game entity.
+     *
+     * @param {EntityInstance} entity
+     * @param {BabylonJS.ActionEvent} event
+     */
+    entityOver(entity, event) {
+        if (!entity || !event) {
+            throw new Error(&apos;Improper arguments passed to entityOver&apos;);
+        }
+        this.target = entity;
+    }
+
+    /**
+     * The event handler for a mouse cursor-out event on a game entity.
+     *
+     * @param {EntityInstance} entity
+     * @param {BabylonJS.ActionEvent} event
+     */
+    entityOut(entity, event) {
+        if (!entity || !event) {
+            throw new Error(&apos;Improper arguments passed to entityOut&apos;);
+        }
+        if (!this.target || this.target.uid === entity.uid) {
+            this.target = null;
+        }
+    }
+
+    /**
+     * Example event handler for a mouse left-click event on a game entity.
+     *
+     * @abstract
+     * @param {EntityInstance} entity
+     * @param {BabylonJS.ActionEvent} event
+     */
+    entityClick(entity, {pointerX, pointerY}) {
+        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {
+            throw new Error(&apos;Improper arguments passed to entityClick&apos;);
+        }
+        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
+
+        this.engine.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
+    }
+
+    /**
+     * Example event handler for a mouse right-click event on a game entity.
+     *
+     * @abstract
+     * @param {EntityInstance} entity
+     * @param {BabylonJS.ActionEvent} event
+     */
+    entityAltClick(entity, {pointerX, pointerY}) {
+        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {
+            throw new Error(&apos;Improper arguments passed to entityAltClick&apos;);
+        }
+        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
+
+        this.engine.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
+    }
+
+    /**
+     * Example event handler for the browser&apos;s left mouse click.
+     *
+     * @abstract
+     * @param {SyntheticEvent} event
+     * @param {number} event.pageX - The X-position of the click relative to the
+     *  HTML document.
+     * @param {number} event.pageY - The Y-position of the click relative to the
+     *  HTML document.
+     */
+    mClick({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error(&apos;Improper event passed to mClick&apos;);
+        }
+        this.engine.logger.debug(`Click at (${pageX}, ${pageY})`);
+    }
+
+    /**
+     * Example event handler for the browser&apos;s right mouse click.
+     *
+     * @abstract
+     * @param {SyntheticEvent} event
+     * @param {number} event.pageX - The X-position of the click relative to the
+     *  HTML document.
+     * @param {number} event.pageY - The Y-position of the click relative to the
+     *  HTML document.
+     */
+    mAltClick({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error(&apos;Improper event passed to mAltClick&apos;);
+        }
+        this.engine.logger.debug(`Alt Click at (${pageX}, ${pageY})`);
+    }
+
+    /**
+     * Example event handler for the browser&apos;s mouse wheel event.
+     *
+     * @abstract
+     * @param {SyntheticEvent} event
+     * @param {number} event.deltaX - The value scrolled along the X axis.
+     * @param {number} event.deltaY - The value scrolled along the Y axis.
+     * @param {number} event.deltaZ - The value scrolled along the Z axis.
+     */
+    mWheel({deltaX, deltaY, deltaZ}) {
+        if (_.isUndefined(deltaY) &amp;&amp; _.isUndefined(deltaX) &amp;&amp; _.isUndefined(deltaX)) {
+            throw new Error(&apos;Improper event passed to mWheel&apos;);
+        }
+        if (deltaY) {
+            this.engine.logger.debug(`MouseWheel scroll ${deltaY &gt; 0 ? &apos;out&apos; : &apos;in&apos;} ${deltaY}`);
+        }
+    }
+
+    /**
+     * Example event handler for the browser&apos;s mouse over event.
+     *
+     * @abstract
+     * @param {SyntheticEvent} event
+     * @param {number} event.pageX - The X-position of the click relative to the
+     *  HTML document.
+     * @param {number} event.pageY - The Y-position of the click relative to the
+     *  HTML document.
+     */
+    mOver({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error(&apos;Improper event passed to mAltClick&apos;);
+        }
+        this.engine.logger.debug(&apos;Pointer has entered canvas element.&apos;);
+    }
+
+    /**
+     * Example event handler for the browser&apos;s mouse out event.
+     *
+     * @abstract
+     * @param {SyntheticEvent} event
+     * @param {number} event.pageX - The X-position of the click relative to the
+     *  HTML document.
+     * @param {number} event.pageY - The Y-position of the click relative to the
+     *  HTML document.
+     */
+    mOut({pageX, pageY}) {
+        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+            throw new Error(&apos;Improper event passed to mAltClick&apos;);
+        }
+        this.engine.logger.debug(&apos;Pointer has left cavnas element.&apos;);
+    }
+}
+
+/** @type {number} **/
+PlayerController.MAX_MESSAGES = 100;
+
+/**
+ * Simple decimal cut-off utility function that rounds a number to the nearest
+ *  second decimal place.
+ *
+ * @param {number} x - The number to round.
+ * @return {number} - The rounded number.
+ * @example
+ * console.assert(round(Math.PI) === 3.14);
+ */
+export const round = (x) =&gt; Math.floor(x * 100 + .5) / 100;</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

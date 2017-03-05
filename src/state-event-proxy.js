@@ -1,11 +1,65 @@
 import {_} from './utils';
 import Static from 'basic-static';
-import events from './state-events';
+import {Events} from './state-events';
 
-export default (...args) => StateEventProxy.create(...args);
+/**
+ * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener
+ * @typedef {string} ScopedEvent - Handled by {@link ScopedEventListener}.
+ */
+/**
+ * @typedef {Object} ProxifiedObject
+ * @emits {ScopedEvent} - emits event name scoped to property change for proxied
+ *  properties.
+ */
 
+/**
+ * Convenience function that passes through to {@link StateEventProxy.create}.
+ *
+ * @return {ProxifiedObject}
+ * @example <caption>Setup</caption>
+ * const EventProxy = require('state-event-proxy');
+ * let myObject = {};
+ * @example <caption>Property Keys</caption>
+ * EventProxy(myObject, 'myObject', ['myPropA', 'myPropB']);
+ * console.log(myObject) // {myPropA: undefined, myPropB: undeinfed}
+ * myObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject
+ * myObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject
+ * console.log(myObject) // {myPropA: 10, myPropB: {}}
+ * @example <caption>Property Map</caption>
+ * EventProxy(myObject, 'myObject', {
+ *     myPropA: 42,
+ *     myPropB: {foo: 'bar'}
+ * });
+ * console.log(myObject) // {myPropA: 42, myPropB: {foo: 'bar'}}
+ * myObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject
+ * myObject.myPropB.foo = 'foo'; // Does not emit an event.
+ * console.log(myObject) // {myPropA: 10, myPropB: {foo: 'foo'}}
+ * @example <caption>Property Map w/ Deep Proxy</caption>
+ * EventProxy(myObject, 'myObject', {
+ *     myPropA: [{id: 'foo'}, {id: 'bar'}],
+ *     myPropB: {a: 1, b: 2, c: 3}
+ * }, {deep: true});
+ * console.log(myObject) // {myPropA: [{id: 'foo'}, {id: 'bar'}], myPropB: {a: 1, b: 2, c: 3}}
+ * myObject.myPropB.a = 0; // Emits event w/ args: 'myObject.myPropB.a', 0, myObject.myPropB
+ * myObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject
+ * myObject.myPropA[0].id = 42; // Emits event w/ args: 'myObject.myPropA[0].id', 42, myObject.myPropA[0]
+ * myObject.myPropA.push('foobar'); // Emits event w/ args: 'myObject.myPropA', myObject.myPropA, myObject
+ * console.log(myObject) // {myPropA: [{id: 42}, {id: 'bar'}, 'foobar'], myPropB: {}}
+ */
+export default function EventProxy(obj, scope, properties, options) {
+    return StateEventProxy.create(obj, scope, properties, options);
+}
+
+/**
+ * @access private
+ */
 export const DISABLE = {};
 
+/**
+ * The StateEventProxy class.
+ *
+ * @access private
+ */
 export class StateEventProxy extends Static {
 
     static create(obj, scope, properties, options) {
@@ -79,7 +133,7 @@ export class StateEventProxy extends Static {
                     return target[key];
                 },
                 set: (target, i, v) => {
-                    if (!_.isNaN(i)) {
+                    if (!isNaN(i)) {
                         v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||
                             _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;
                         this.emit(`${scope}[${i}]`, v, ret);
@@ -88,7 +142,7 @@ export class StateEventProxy extends Static {
                     return true;
                 },
                 deleteProperty: (target, i) => {
-                    if (!_.isNaN(i)) {
+                    if (!isNaN(i)) {
                         this.emit(`${scope}[${i}]`, undefined, ret);
                     }
                     delete target[i];
@@ -102,7 +156,7 @@ export class StateEventProxy extends Static {
 
     static emit(scope, v, obj) {
         if (!DISABLE[scope]) {
-            setTimeout(() => events.emit(scope, v, obj));
+            setTimeout(() => Events.emit(scope, v, obj));
         }
     }
 

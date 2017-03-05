@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">Overview</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container manual-root" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div class="manual-toc-root">
+  
+<div data-ice="manual" data-toc-name="overview">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;" data-link="manual/overview/README.html"><a href="manual/overview/README.html" data-ice="link">Bavel</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/README.html"><a href="manual/overview/README.html#babylonjs-game-framework-with-proper-entity-component-structure-" data-ice="link">BabylonJS game framework with proper entity/component structure.</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html" data-ice="link">Changelog</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-6-docstrings" data-ice="link">0.1.6 - Docstrings</a></li>
+<li data-ice="manualNav" class="indent-h5" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#details" data-ice="link">Details</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#roadmap" data-ice="link">Roadmap</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#history" data-ice="link">History</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-5-hotfix" data-ice="link">0.1.5 - Hotfix</a></li>
+<li data-ice="manualNav" class="indent-h5" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#details" data-ice="link">Details</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-4-unit-test-coverage" data-ice="link">0.1.4 - Unit Test Coverage</a></li>
+<li data-ice="manualNav" class="indent-h5" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#details" data-ice="link">Details</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-3-hotfix" data-ice="link">0.1.3 - Hotfix</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-2-hotfix" data-ice="link">0.1.2 - Hotfix</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-1-hotfix" data-ice="link">0.1.1 - Hotfix</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#0-1-0-repository-initialization" data-ice="link">0.1.0 - Repository initialization</a></li>
+<li data-ice="manualNav" class="indent-h5" data-link="manual/overview/CHANGELOG.html"><a href="manual/overview/CHANGELOG.html#details" data-ice="link">Details</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html" data-ice="link">Test Results</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class" data-ice="link">The Engine Class</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-init-method" data-ice="link">The Engine Class init method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-constructor" data-ice="link">The Engine Class constructor</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-gl-getter-method" data-ice="link">The Engine Class Engine instance GL getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-baby-getter-method" data-ice="link">The Engine Class Engine instance baby getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-canvas-getter-method" data-ice="link">The Engine Class Engine instance canvas getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-provider-getter-method" data-ice="link">The Engine Class Engine instance provider getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-ctrl-getter-method" data-ice="link">The Engine Class Engine instance ctrl getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-logger-getter-method" data-ice="link">The Engine Class Engine instance logger getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-terrain-getter-and-setter-methods" data-ice="link">The Engine Class Engine instance terrain getter and setter methods</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-mount-method" data-ice="link">The Engine Class Engine instance mount method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-dismount-method" data-ice="link">The Engine Class Engine instance dismount method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-run-method" data-ice="link">The Engine Class Engine instance run method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-stop-method" data-ice="link">The Engine Class Engine instance stop method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-resize-method" data-ice="link">The Engine Class Engine instance resize method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-tovector-method" data-ice="link">The Engine Class Engine instance toVector method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-emitdebugevent-method" data-ice="link">The Engine Class Engine instance emitDebugEvent method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-ondebugevent-method" data-ice="link">The Engine Class Engine instance onDebugEvent method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-emitevent-method" data-ice="link">The Engine Class Engine instance emitEvent method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-onevent-method" data-ice="link">The Engine Class Engine instance onEvent method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-registerkeyaction-method" data-ice="link">The Engine Class Engine instance registerKeyAction method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-registermouseeventsforentity-method" data-ice="link">The Engine Class Engine instance registerMouseEventsForEntity method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-engine-class-engine-instance-deregistermouseeventsforentity-method" data-ice="link">The Engine Class Engine instance deregisterMouseEventsForEntity method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class" data-ice="link">The Entity Class</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-create-method" data-ice="link">The Entity Class create method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-create-method-entity-object" data-ice="link">The Entity Class create method Entity object</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-updatecomponent-method" data-ice="link">The Entity Class updateComponent method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-updatecomponents-method" data-ice="link">The Entity Class updateComponents method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-dismountcomponent-method" data-ice="link">The Entity Class dismountComponent method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-update-method" data-ice="link">The Entity Class update method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-dismount-method" data-ice="link">The Entity Class dismount method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-entity-class-tick-method" data-ice="link">The Entity Class tick method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class" data-ice="link">PlayerController Class</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-round-function" data-ice="link">PlayerController Class round function</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-gettime-method" data-ice="link">PlayerController Class getTime method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-constructor" data-ice="link">PlayerController Class constructor</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-setup-method" data-ice="link">PlayerController Class PlayerController instance setup method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-registerkeyactions-method" data-ice="link">PlayerController Class PlayerController instance registerKeyActions method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-message-method" data-ice="link">PlayerController Class PlayerController instance message method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-mclick-method" data-ice="link">PlayerController Class PlayerController instance mClick method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-maltclick-method" data-ice="link">PlayerController Class PlayerController instance mAltClick method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-mwheel-method" data-ice="link">PlayerController Class PlayerController instance mWheel method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-mover-method" data-ice="link">PlayerController Class PlayerController instance mOver method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-mout-method" data-ice="link">PlayerController Class PlayerController instance mOut method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-entityover-method" data-ice="link">PlayerController Class PlayerController instance entityOver method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-entityout-method" data-ice="link">PlayerController Class PlayerController instance entityOut method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-entityclick-method" data-ice="link">PlayerController Class PlayerController instance entityClick method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#playercontroller-class-playercontroller-instance-entityaltclick-method" data-ice="link">PlayerController Class PlayerController instance entityAltClick method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class" data-ice="link">The Scene Class</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-constructor" data-ice="link">The Scene Class Constructor</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-baby-getter-method" data-ice="link">The Scene Class scene instance baby getter method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-mount-method" data-ice="link">The Scene Class scene instance mount method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-dismount-method" data-ice="link">The Scene Class scene instance dismount method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-getentity-method" data-ice="link">The Scene Class scene instance getEntity method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-updateentity-method" data-ice="link">The Scene Class scene instance updateEntity method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-updateentities-method" data-ice="link">The Scene Class scene instance updateEntities method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-removeentity-method" data-ice="link">The Scene Class scene instance removeEntity method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#the-scene-class-scene-instance-tick-method" data-ice="link">The Scene Class scene instance tick method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventproxy-stateproxy-exported-function-integration-tests-" data-ice="link">StateEventProxy StateProxy exported function (integration tests)</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventproxy-stateeventproxy-class-ismutatefn-method" data-ice="link">StateEventProxy StateEventProxy Class isMutateFn method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventproxy-stateeventproxy-class-emit-method" data-ice="link">StateEventProxy StateEventProxy Class emit method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventproxy-stateeventproxy-class-proxifyproperty-method" data-ice="link">StateEventProxy StateEventProxy Class proxifyProperty method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventproxy-stateeventproxy-class-buildproxyobject-method" data-ice="link">StateEventProxy StateEventProxy Class buildProxyObject method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventproxy-stateeventproxy-class-buildproxyarray-method" data-ice="link">StateEventProxy StateEventProxy Class buildProxyArray method</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/overview/test-results.html"><a href="manual/overview/test-results.html#stateeventmanager" data-ice="link">StateEventManager</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#toc" data-ice="link">TOC</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#the-engine-class" data-ice="link">The Engine Class</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#init-method" data-ice="link">init method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#constructor" data-ice="link">constructor</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#engine-instance" data-ice="link">Engine instance</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#gl-getter-method" data-ice="link">GL getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#baby-getter-method" data-ice="link">baby getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#canvas-getter-method" data-ice="link">canvas getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#provider-getter-method" data-ice="link">provider getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#ctrl-getter-method" data-ice="link">ctrl getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#logger-getter-method" data-ice="link">logger getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#terrain-getter-and-setter-methods" data-ice="link">terrain getter and setter methods</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#mount-method" data-ice="link">mount method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#dismount-method" data-ice="link">dismount method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#run-method" data-ice="link">run method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#stop-method" data-ice="link">stop method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#resize-method" data-ice="link">resize method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#tovector-method" data-ice="link">toVector method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#emitdebugevent-method" data-ice="link">emitDebugEvent method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#ondebugevent-method" data-ice="link">onDebugEvent method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#emitevent-method" data-ice="link">emitEvent method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#onevent-method" data-ice="link">onEvent method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#registerkeyaction-method" data-ice="link">registerKeyAction method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#registermouseeventsforentity-method" data-ice="link">registerMouseEventsForEntity method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#deregistermouseeventsforentity-method" data-ice="link">deregisterMouseEventsForEntity method</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#the-entity-class" data-ice="link">The Entity Class</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#create-method" data-ice="link">create method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#entity-object" data-ice="link">Entity object</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#updatecomponent-method" data-ice="link">updateComponent method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#updatecomponents-method" data-ice="link">updateComponents method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#dismountcomponent-method" data-ice="link">dismountComponent method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#update-method" data-ice="link">update method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#dismount-method" data-ice="link">dismount method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#tick-method" data-ice="link">tick method</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#playercontroller-class" data-ice="link">PlayerController Class</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#round-function" data-ice="link">round function</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#gettime-method" data-ice="link">getTime method</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#constructor" data-ice="link">constructor</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#playercontroller-instance" data-ice="link">PlayerController instance</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#setup-method" data-ice="link">setup method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#registerkeyactions-method" data-ice="link">registerKeyActions method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#message-method" data-ice="link">message method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#mclick-method" data-ice="link">mClick method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#maltclick-method" data-ice="link">mAltClick method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#mwheel-method" data-ice="link">mWheel method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#mover-method" data-ice="link">mOver method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#mout-method" data-ice="link">mOut method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#entityover-method" data-ice="link">entityOver method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#entityout-method" data-ice="link">entityOut method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#entityclick-method" data-ice="link">entityClick method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#entityaltclick-method" data-ice="link">entityAltClick method</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#the-scene-class" data-ice="link">The Scene Class</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#constructor" data-ice="link">Constructor</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#scene-instance" data-ice="link">scene instance</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#baby-getter-method" data-ice="link">baby getter method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#mount-method" data-ice="link">mount method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#dismount-method" data-ice="link">dismount method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#getentity-method" data-ice="link">getEntity method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#updateentity-method" data-ice="link">updateEntity method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#updateentities-method" data-ice="link">updateEntities method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#removeentity-method" data-ice="link">removeEntity method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#tick-method" data-ice="link">tick method</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#stateeventproxy" data-ice="link">StateEventProxy</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#stateproxy-exported-function-integration-tests-" data-ice="link">StateProxy exported function (integration tests)</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#stateeventproxy-class" data-ice="link">StateEventProxy Class</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#ismutatefn-method" data-ice="link">isMutateFn method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#emit-method" data-ice="link">emit method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#proxifyproperty-method" data-ice="link">proxifyProperty method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#buildproxyobject-method" data-ice="link">buildProxyObject method</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#buildproxyarray-method" data-ice="link">buildProxyArray method</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="manual/overview/test-spec.html"><a href="manual/overview/test-spec.html#stateeventmanager" data-ice="link">StateEventManager</a></li>
+</ul>
+  </div>
+<div data-ice="manual" data-toc-name="reference">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-reference" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="identifiers.html"><a href="identifiers.html" data-ice="link">Reference</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#class" data-ice="link">Class</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#function" data-ice="link">Function</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#variable" data-ice="link">Variable</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#typedef" data-ice="link">Typedef</a></li>
+</ul>
+  </div>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div class="github-markdown">
+  <div class="manual-breadcrumb-list">
+    <a href="./manual/./index.html">Manual</a>
+    <span>&#xBB;</span>
+    <span data-ice="title">Overview</span>
+  </div>
+  <div data-ice="content"><h1 id="toc">TOC</h1>
+<ul>
+<li><a href="#the-engine-class">The Engine Class</a><ul>
+<li><a href="#the-engine-class-init-method">init method</a></li>
+<li><a href="#the-engine-class-constructor">constructor</a></li>
+<li><a href="#the-engine-class-engine-instance">Engine instance</a><ul>
+<li><a href="#the-engine-class-engine-instance-gl-getter-method">GL getter method</a></li>
+<li><a href="#the-engine-class-engine-instance-baby-getter-method">baby getter method</a></li>
+<li><a href="#the-engine-class-engine-instance-canvas-getter-method">canvas getter method</a></li>
+<li><a href="#the-engine-class-engine-instance-provider-getter-method">provider getter method</a></li>
+<li><a href="#the-engine-class-engine-instance-ctrl-getter-method">ctrl getter method</a></li>
+<li><a href="#the-engine-class-engine-instance-logger-getter-method">logger getter method</a></li>
+<li><a href="#the-engine-class-engine-instance-terrain-getter-and-setter-methods">terrain getter and setter methods</a></li>
+<li><a href="#the-engine-class-engine-instance-mount-method">mount method</a></li>
+<li><a href="#the-engine-class-engine-instance-dismount-method">dismount method</a></li>
+<li><a href="#the-engine-class-engine-instance-run-method">run method</a></li>
+<li><a href="#the-engine-class-engine-instance-stop-method">stop method</a></li>
+<li><a href="#the-engine-class-engine-instance-resize-method">resize method</a></li>
+<li><a href="#the-engine-class-engine-instance-tovector-method">toVector method</a></li>
+<li><a href="#the-engine-class-engine-instance-emitdebugevent-method">emitDebugEvent method</a></li>
+<li><a href="#the-engine-class-engine-instance-ondebugevent-method">onDebugEvent method</a></li>
+<li><a href="#the-engine-class-engine-instance-emitevent-method">emitEvent method</a></li>
+<li><a href="#the-engine-class-engine-instance-onevent-method">onEvent method</a></li>
+<li><a href="#the-engine-class-engine-instance-registerkeyaction-method">registerKeyAction method</a></li>
+<li><a href="#the-engine-class-engine-instance-registermouseeventsforentity-method">registerMouseEventsForEntity method</a></li>
+<li><a href="#the-engine-class-engine-instance-deregistermouseeventsforentity-method">deregisterMouseEventsForEntity method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#the-entity-class">The Entity Class</a><ul>
+<li><a href="#the-entity-class-create-method">create method</a><ul>
+<li><a href="#the-entity-class-create-method-entity-object">Entity object</a></li>
+</ul>
+</li>
+<li><a href="#the-entity-class-updatecomponent-method">updateComponent method</a></li>
+<li><a href="#the-entity-class-updatecomponents-method">updateComponents method</a></li>
+<li><a href="#the-entity-class-dismountcomponent-method">dismountComponent method</a></li>
+<li><a href="#the-entity-class-update-method">update method</a></li>
+<li><a href="#the-entity-class-dismount-method">dismount method</a></li>
+<li><a href="#the-entity-class-tick-method">tick method</a></li>
+</ul>
+</li>
+<li><a href="#playercontroller-class">PlayerController Class</a><ul>
+<li><a href="#playercontroller-class-round-function">round function</a></li>
+<li><a href="#playercontroller-class-gettime-method">getTime method</a></li>
+<li><a href="#playercontroller-class-constructor">constructor</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance">PlayerController instance</a><ul>
+<li><a href="#playercontroller-class-playercontroller-instance-setup-method">setup method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-registerkeyactions-method">registerKeyActions method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-message-method">message method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-mclick-method">mClick method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-maltclick-method">mAltClick method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-mwheel-method">mWheel method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-mover-method">mOver method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-mout-method">mOut method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-entityover-method">entityOver method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-entityout-method">entityOut method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-entityclick-method">entityClick method</a></li>
+<li><a href="#playercontroller-class-playercontroller-instance-entityaltclick-method">entityAltClick method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#the-scene-class">The Scene Class</a><ul>
+<li><a href="#the-scene-class-constructor">Constructor</a></li>
+<li><a href="#the-scene-class-scene-instance">scene instance</a><ul>
+<li><a href="#the-scene-class-scene-instance-baby-getter-method">baby getter method</a></li>
+<li><a href="#the-scene-class-scene-instance-mount-method">mount method</a></li>
+<li><a href="#the-scene-class-scene-instance-dismount-method">dismount method</a></li>
+<li><a href="#the-scene-class-scene-instance-getentity-method">getEntity method</a></li>
+<li><a href="#the-scene-class-scene-instance-updateentity-method">updateEntity method</a></li>
+<li><a href="#the-scene-class-scene-instance-updateentities-method">updateEntities method</a></li>
+<li><a href="#the-scene-class-scene-instance-removeentity-method">removeEntity method</a></li>
+<li><a href="#the-scene-class-scene-instance-tick-method">tick method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#stateeventproxy">StateEventProxy</a><ul>
+<li><a href="#stateeventproxy-stateproxy-exported-function-integration-tests">StateProxy exported function (integration tests)</a></li>
+<li><a href="#stateeventproxy-stateeventproxy-class">StateEventProxy Class</a><ul>
+<li><a href="#stateeventproxy-stateeventproxy-class-create-method">create method</a></li>
+<li><a href="#stateeventproxy-stateeventproxy-class-ismutatefn-method">isMutateFn method</a></li>
+<li><a href="#stateeventproxy-stateeventproxy-class-emit-method">emit method</a></li>
+<li><a href="#stateeventproxy-stateeventproxy-class-proxifyproperty-method">proxifyProperty method</a></li>
+<li><a href="#stateeventproxy-stateeventproxy-class-buildproxyobject-method">buildProxyObject method</a></li>
+<li><a href="#stateeventproxy-stateeventproxy-class-buildproxyarray-method">buildProxyArray method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#stateeventmanager">StateEventManager</a>
+<a name=""></a></li>
+</ul>
+<p><a name="the-engine-class"></a></p>
+<h1 id="the-engine-class">The Engine Class</h1>
+<p>should be a singleton class.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(Engine).to.be.a(&apos;function&apos;);
+(0, _chai.expect)(Engine.__proto__.name).to.equal(&apos;Singleton&apos;);</code>
+</code></pre>
+<p><a name="the-engine-class-init-method"></a></p>
+<h2 id="init-method">init method</h2>
+<p>should initialize a new Engine instance if none exist by calling the
+        Engine constructor, and kicking off the resourceLoader.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var engine = void 0,
+    load = void 0;
+(0, _chai.expect)(Engine.instance).to.not.exist;
+(0, _chai.expect)(function () {
+    return engine = Engine.init(params.logger, params.resourceLoader, null, params.settings);
+}).to.not.throw(Error);
+(0, _chai.expect)(engine).to.exist;
+(0, _chai.expect)(engine.loading).to.equal(LoadStates.RES);
+(0, _chai.expect)(initialize.callCount).to.equal(1);
+(0, _chai.expect)(initialize.calledWithExactly(engine, params.logger, null, params.settings)).to.equal(true);
+(0, _chai.expect)(loader.callCount).to.equal(1);
+load = getPrivateDataForTest().loader;
+(0, _chai.expect)(load).to.exist;
+(0, _chai.expect)(function () {
+    return load.then(function () {
+        var _getPrivateDataForTes = getPrivateDataForTest(),
+            resourceProvider = _getPrivateDataForTes.resourceProvider;
+        (0, _chai.expect)(resourceProvider).to.exist;
+        (0, _chai.expect)(resourceProvider).to.equal(params.provider);
+        (0, _chai.expect)(engine.loading).to.equal(LoadStates.INIT);
+        (0, _chai.expect)(sceneSpy.callCount).to.equal(1);
+        (0, _chai.expect)(engine.scene).to.exist;
+        (0, _chai.expect)(engine.scene.stubs.constructor.calledWith).to.eql([engine]);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should return the engine instance if it has already been initialized.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var ngn = void 0,
+    engine = Engine.init(params.logger, params.resourceLoader, null, params.settings);
+loader.reset();
+initialize.reset();
+(0, _chai.expect)(function () {
+    return ngn = Engine.init();
+}).to.not.throw(Error);
+(0, _chai.expect)(ngn).to.exist;
+(0, _chai.expect)(ngn).to.equal(engine);
+(0, _chai.expect)(loader.callCount).to.equal(0);
+(0, _chai.expect)(initialize.callCount).to.equal(0);</code>
+</code></pre>
+<p><a name="the-engine-class-constructor"></a></p>
+<h2 id="constructor">constructor</h2>
+<p>should create a new Engine instance with EventProxied properties
+        (fps, loading) and standard enumerable properties (scene, running,
+        settings).</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var engine = void 0;
+(0, _chai.expect)(function () {
+    return engine = new Engine(params.logger, null, params.settings);
+}).to.not.throw(Error);
+(0, _chai.expect)(engine).to.exist;
+(0, _chai.expect)(EventProxyMock.callCount).to.equal(1);
+(0, _chai.expect)(EventProxyMock.calledWithExactly(engine, &apos;engine&apos;, { fps: 0, loading: LoadStates.BOOT }));
+(0, _chai.expect)(engine).to.have.property(&apos;fps&apos;).that.equals(0);
+(0, _chai.expect)(engine).to.have.property(&apos;loading&apos;).that.equals(LoadStates.BOOT);
+(0, _chai.expect)(engine).to.have.property(&apos;scene&apos;).that.equals(null);
+(0, _chai.expect)(engine).to.have.property(&apos;running&apos;).that.equals(false);
+(0, _chai.expect)(engine).to.have.property(&apos;settings&apos;).that.equals(params.settings);
+var _getPrivateDataForTes2 = getPrivateDataForTest(),
+    logger = _getPrivateDataForTes2.logger,
+    playerController = _getPrivateDataForTes2.playerController;
+(0, _chai.expect)(logger).to.exist;
+(0, _chai.expect)(logger).to.equal(params.logger);
+(0, _chai.expect)(playerController).to.exist;
+(0, _chai.expect)(playerController.stubs.constructor.calledWith).to.eql([engine]);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance"></a></p>
+<h2 id="engine-instance">Engine instance</h2>
+<p><a name="the-engine-class-engine-instance-gl-getter-method"></a></p>
+<h3 id="gl-getter-method">GL getter method</h3>
+<p>should return the read-only GraphicsLibary once loaded.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var gl = void 0;
+(0, _chai.expect)(function () {
+    return gl = engine.GL;
+}).to.not.throw(Error);
+(0, _chai.expect)(gl).to.equal(null);
+engine.mount({}).then(function () {
+    (0, _chai.expect)(function () {
+        return gl = engine.GL;
+    }).to.not.throw(Error);
+    (0, _chai.expect)(gl).to.equal(BabylonJSMock);
+    done();
+}).catch(done);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-baby-getter-method"></a></p>
+<h3 id="baby-getter-method">baby getter method</h3>
+<p>should return the read-only GraphicsLibary Engine instance once
+            mounted.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var baby = void 0,
+    canvas = {};
+(0, _chai.expect)(function () {
+    return baby = engine.baby;
+}).to.not.throw(Error);
+(0, _chai.expect)(baby).to.equal(null);
+engine.mount(canvas).then(function () {
+    (0, _chai.expect)(function () {
+        return baby = engine.baby;
+    }).to.not.throw(Error);
+    (0, _chai.expect)(baby).to.not.equal(null);
+    done();
+}).catch(done);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-canvas-getter-method"></a></p>
+<h3 id="canvas-getter-method">canvas getter method</h3>
+<p>should return the read-only canvas element once mounted.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var c = void 0,
+    canvas = {};
+(0, _chai.expect)(function () {
+    return c = engine.canvas;
+}).to.not.throw(Error);
+(0, _chai.expect)(c).to.equal(null);
+engine.mount(canvas).then(function () {
+    (0, _chai.expect)(function () {
+        return c = engine.canvas;
+    }).to.not.throw(Error);
+    (0, _chai.expect)(c).to.not.equal(null);
+    (0, _chai.expect)(c).to.equal(canvas);
+    done();
+}).catch(done);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-provider-getter-method"></a></p>
+<h3 id="provider-getter-method">provider getter method</h3>
+<p>should return the read-only ResourceProvider once loaded.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var provider = void 0;
+(0, _chai.expect)(function () {
+    return provider = engine.provider;
+}).to.not.throw(Error);
+(0, _chai.expect)(engine.provider).to.not.equal(null);
+(0, _chai.expect)(engine.provider).to.equal(params.provider);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-ctrl-getter-method"></a></p>
+<h3 id="ctrl-getter-method">ctrl getter method</h3>
+<p>should return the read-only PlayerController instance.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var ctrl = void 0;
+(0, _chai.expect)(function () {
+    return ctrl = engine.ctrl;
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl).to.not.equal(null);
+(0, _chai.expect)(ctrl.stubs.constructor.calledWith).to.eql([engine]);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-logger-getter-method"></a></p>
+<h3 id="logger-getter-method">logger getter method</h3>
+<p>should return the read-only logger instance.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var logger = void 0;
+(0, _chai.expect)(function () {
+    return logger = engine.logger;
+}).to.not.throw(Error);
+(0, _chai.expect)(logger).to.not.equal(null);
+(0, _chai.expect)(logger).to.equal(params.logger);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-terrain-getter-and-setter-methods"></a></p>
+<h3 id="terrain-getter-and-setter-methods">terrain getter and setter methods</h3>
+<p>should set and get the engine&apos;s terrain entity.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var terrain = {},
+    t = void 0;
+(0, _chai.expect)(function () {
+    return t = engine.terrain;
+}).to.not.throw(Error);
+(0, _chai.expect)(t).to.equal(null);
+(0, _chai.expect)(function () {
+    return engine.terrain = terrain;
+}).to.not.throw(Error);
+(0, _chai.expect)(function () {
+    return t = engine.terrain;
+}).to.not.throw(Error);
+(0, _chai.expect)(t).to.equal(terrain);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-mount-method"></a></p>
+<h3 id="mount-method">mount method</h3>
+<p>should return a promise that mounts the engine to the provided
+            canvas element after the ResourceProvider and GraphicsLibrary have
+            been loaded (resolves to self).</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var canvas = {};
+(0, _chai.expect)(function () {
+    return engine.mount(canvas).then(function (e) {
+        var _getPrivateDataForTes3 = getPrivateDataForTest(),
+            GraphicsLibrary = _getPrivateDataForTes3.GraphicsLibrary,
+            babylonEngine = _getPrivateDataForTes3.babylonEngine,
+            canvasElement = _getPrivateDataForTes3.canvasElement;
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(engine.loading).to.equal(LoadStates.DATA);
+        (0, _chai.expect)(GraphicsLibrary).to.equal(BabylonJSMock);
+        (0, _chai.expect)(babylonEngine.stubs.constructor.calledWith).to.eql([canvas, true]);
+        (0, _chai.expect)(canvasElement).to.equal(canvas);
+        (0, _chai.expect)(engine.scene.stubs.mount.callCount).to.equal(1);
+        (0, _chai.expect)(engine.scene.stubs.mount.calledWithExactly(engine)).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-dismount-method"></a></p>
+<h3 id="dismount-method">dismount method</h3>
+<p>should return a promise that stops the engine render process when
+            running, dismounts and deletes the scene, along with the GraphicsLibrary
+            Engine instance and canvas element before resolving to self.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">engine.running = true;
+(0, _chai.expect)(function () {
+    return engine.dismount().then(function (e) {
+        var _getPrivateDataForTes4 = getPrivateDataForTest(),
+            babylonEngine = _getPrivateDataForTes4.babylonEngine,
+            canvasElement = _getPrivateDataForTes4.canvasElement;
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(scene.stubs.dismount.callCount).to.equal(1);
+        (0, _chai.expect)(scene.stubs.dismount.calledWithExactly(engine)).to.equal(true);
+        (0, _chai.expect)(baby.stubs.dispose.callCount).to.equal(1);
+        (0, _chai.expect)(babylonEngine).to.equal(null);
+        (0, _chai.expect)(canvasElement).to.equal(null);
+        (0, _chai.expect)(stop.callCount).to.equal(1);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should return a promise dismounts and deletes the scene, along
+            with the GraphicsLibrary Engine instance and canvas element before
+            resolving to self.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.dismount().then(function (e) {
+        var _getPrivateDataForTes5 = getPrivateDataForTest(),
+            babylonEngine = _getPrivateDataForTes5.babylonEngine,
+            canvasElement = _getPrivateDataForTes5.canvasElement;
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(scene.stubs.dismount.callCount).to.equal(1);
+        (0, _chai.expect)(scene.stubs.dismount.calledWithExactly(engine)).to.equal(true);
+        (0, _chai.expect)(baby.stubs.dispose.callCount).to.equal(1);
+        (0, _chai.expect)(babylonEngine).to.equal(null);
+        (0, _chai.expect)(canvasElement).to.equal(null);
+        (0, _chai.expect)(stop.callCount).to.equal(0);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-run-method"></a></p>
+<h3 id="run-method">run method</h3>
+<p>should return a promise that initializes the scene with the provided
+            entities, attaches event listeners to the canvas element, and begins
+            the main render/update loop before resolving to self.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var data = [{ id: &apos;foo&apos;, uid: &apos;foo&apos; }, { id: &apos;bar&apos;, uid: &apos;bar&apos; }];
+(0, _chai.expect)(engine.running).to.equal(false);
+(0, _chai.expect)(function () {
+    return engine.run(data).then(function (e) {
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(engine.ctrl.stubs.setup.callCount).to.equal(1);
+        (0, _chai.expect)(engine.ctrl.stubs.setup.calledWithExactly(engine.settings)).to.equal(true);
+        (0, _chai.expect)(engine.scene.stubs.updateEntities.callCount).to.equal(1);
+        (0, _chai.expect)(engine.scene.stubs.updateEntities.calledWithExactly(engine, data));
+        (0, _chai.expect)(addListener.callCount).to.equal(2);
+        (0, _chai.expect)(addListener.calledWith(&apos;click&apos;)).to.equal(true);
+        (0, _chai.expect)(addListener.calledWith(&apos;contextmenu&apos;)).to.equal(true);
+        (0, _chai.expect)(engine.baby.stubs.runRenderLoop.callCount).to.equal(1);
+        (0, _chai.expect)(engine.loading).to.equal(LoadStates.DONE);
+        (0, _chai.expect)(engine.fps).to.equal(0);
+        (0, _chai.expect)(engine.running).to.equal(true);
+        setTimeout(function () {
+            (0, _chai.expect)(engine.fps).to.equal(60);
+            done();
+        }, 501);
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should return a promise that attaches event listeners to the canvas
+            element and begins the main render/update loop without adding new
+            entites, when none provided, before resolving to self.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(engine.running).to.equal(false);
+(0, _chai.expect)(function () {
+    return engine.run().then(function (e) {
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(engine.ctrl.stubs.setup.callCount).to.equal(1);
+        (0, _chai.expect)(engine.ctrl.stubs.setup.calledWithExactly(engine.settings)).to.equal(true);
+        (0, _chai.expect)(engine.scene.stubs.updateEntities.callCount).to.equal(0);
+        (0, _chai.expect)(addListener.callCount).to.equal(2);
+        (0, _chai.expect)(addListener.calledWith(&apos;click&apos;)).to.equal(true);
+        (0, _chai.expect)(addListener.calledWith(&apos;contextmenu&apos;)).to.equal(true);
+        (0, _chai.expect)(engine.baby.stubs.runRenderLoop.callCount).to.equal(1);
+        (0, _chai.expect)(engine.loading).to.equal(LoadStates.DONE);
+        (0, _chai.expect)(engine.fps).to.equal(0);
+        (0, _chai.expect)(engine.running).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should return a promise that resolves to self with engine is already
+            running.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">engine.running = true;
+(0, _chai.expect)(function () {
+    return engine.run().then(function (e) {
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(addListener.callCount).to.equal(0);
+        (0, _chai.expect)(engine.scene.stubs.updateEntities.callCount).to.equal(0);
+        (0, _chai.expect)(engine.ctrl.stubs.setup.callCount).to.equal(0);
+        (0, _chai.expect)(engine.baby.stubs.runRenderLoop.callCount).to.equal(0);
+        (0, _chai.expect)(engine.loading).to.equal(LoadStates.DATA);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should return a promise that resolves to self with engine is not in
+            the correct loading state.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">engine.loading = LoadStates.RES;
+(0, _chai.expect)(function () {
+    return engine.run().then(function (e) {
+        (0, _chai.expect)(e).to.equal(engine);
+        (0, _chai.expect)(addListener.callCount).to.equal(0);
+        (0, _chai.expect)(engine.scene.stubs.updateEntities.callCount).to.equal(0);
+        (0, _chai.expect)(engine.ctrl.stubs.setup.callCount).to.equal(0);
+        (0, _chai.expect)(engine.baby.stubs.runRenderLoop.callCount).to.equal(0);
+        (0, _chai.expect)(engine.loading).to.equal(LoadStates.RES);
+        (0, _chai.expect)(engine.running).to.equal(false);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-stop-method"></a></p>
+<h3 id="stop-method">stop method</h3>
+<p>should stop the render/update loop if running.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var e = void 0;
+(0, _chai.expect)(engine.running).to.equal(true);
+(0, _chai.expect)(function () {
+    return e = engine.stop();
+}).to.not.throw(Error);
+(0, _chai.expect)(e).to.equal(engine);
+(0, _chai.expect)(engine.running).to.equal(false);
+(0, _chai.expect)(engine.loading).to.equal(LoadStates.DATA);
+(0, _chai.expect)(engine.baby.stubs.stopRenderLoop.callCount).to.equal(1);</code>
+</code></pre>
+<p>should just return self when engine is not running.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var e = void 0;
+engine.running = false;
+(0, _chai.expect)(function () {
+    return e = engine.stop();
+}).to.not.throw(Error);
+(0, _chai.expect)(e).to.equal(engine);
+(0, _chai.expect)(engine.loading).to.equal(LoadStates.DONE);
+(0, _chai.expect)(engine.baby.stubs.stopRenderLoop.callCount).to.equal(0);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-resize-method"></a></p>
+<h3 id="resize-method">resize method</h3>
+<p>should call the resize method of the GraphicsLibrary engine
+            instance.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.resize();
+}).to.not.throw(Error);
+(0, _chai.expect)(engine.baby.stubs.resize.callCount).to.equal(1);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-tovector-method"></a></p>
+<h3 id="tovector-method">toVector method</h3>
+<p>should convert a plain object with (x,y,z) properties into a 3D
+            Vector object.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var v = void 0;
+(0, _chai.expect)(function () {
+    return v = engine.toVector({ x: 1, y: 3.3, z: 4 });
+}).to.not.throw(Error);
+(0, _chai.expect)(v).to.exist;
+(0, _chai.expect)(BabylonJSMock.Vector3.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.Vector3.calledWithExactly(1, 3.3, 4)).to.equal(true);</code>
+</code></pre>
+<p>should return a new zero vector by default.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var v = void 0;
+(0, _chai.expect)(function () {
+    return v = engine.toVector();
+}).to.not.throw(Error);
+(0, _chai.expect)(v).to.exist;
+(0, _chai.expect)(BabylonJSMock.Vector3.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.Vector3.calledWithExactly(0, 0, 0)).to.equal(true);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-emitdebugevent-method"></a></p>
+<h3 id="emitdebugevent-method">emitDebugEvent method</h3>
+<p>should emit a state event if settings.debug = true.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.emitDebugEvent(&apos;test&apos;, {});
+}).to.not.throw(Error);
+(0, _chai.expect)(emit.callCount).to.equal(1);
+(0, _chai.expect)(emit.calledWithExactly(&apos;test&apos;, {})).to.equal(true);</code>
+</code></pre>
+<p>should not emit an event if settings.debug = false.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">params.settings.debug = false;
+(0, _chai.expect)(function () {
+    return engine.emitDebugEvent(&apos;test&apos;, {});
+}).to.not.throw(Error);
+(0, _chai.expect)(emit.callCount).to.equal(0);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-ondebugevent-method"></a></p>
+<h3 id="ondebugevent-method">onDebugEvent method</h3>
+<p>should add an event listener if settings.debug = true.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.onDebugEvent(&apos;test&apos;, _utils._.noop);
+}).to.not.throw(Error);
+(0, _chai.expect)(on.callCount).to.equal(1);
+(0, _chai.expect)(on.calledWithExactly(&apos;test&apos;, _utils._.noop)).to.equal(true);</code>
+</code></pre>
+<p>should not add an event listener if settings.debug = false.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">params.settings.debug = false;
+(0, _chai.expect)(function () {
+    return engine.onDebugEvent(&apos;test&apos;, _utils._.noop);
+}).to.not.throw(Error);
+(0, _chai.expect)(on.callCount).to.equal(0);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-emitevent-method"></a></p>
+<h3 id="emitevent-method">emitEvent method</h3>
+<p>should unconditionally emit a state event.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.emitEvent(&apos;test&apos;, 40, {});
+}).to.not.throw(Error);
+(0, _chai.expect)(eventsMock.Events.emit.callCount).to.equal(1);
+(0, _chai.expect)(eventsMock.Events.emit.calledWithExactly(&apos;test&apos;, 40, {})).to.equal(true);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-onevent-method"></a></p>
+<h3 id="onevent-method">onEvent method</h3>
+<p>should unconditionally listen to a state event.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.onEvent(&apos;test&apos;, _utils._.noop);
+}).to.not.throw(Error);
+(0, _chai.expect)(eventsMock.Events.on.callCount).to.equal(1);
+(0, _chai.expect)(eventsMock.Events.on.calledWithExactly(&apos;test&apos;, _utils._.noop)).to.equal(true);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-registerkeyaction-method"></a></p>
+<h3 id="registerkeyaction-method">registerKeyAction method</h3>
+<p>should register event listeners to fire the handler provided for
+            the key event specified, onKeyUp or onKeyDown.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerKeyAction(&apos;f&apos;, { handler: handler });
+}).to.not.throw(Error);
+(0, _chai.expect)(engine.scene.baby.actionManager).to.exist;
+(0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+(0, _chai.expect)(engine.scene.baby.actionManager.registerAction.callCount).to.equal(2);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(2);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith({ trigger: &apos;down&apos;, parameter: &apos;f&apos; })).to.equal(true);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith({ trigger: &apos;up&apos;, parameter: &apos;f&apos; })).to.equal(true);</code>
+</code></pre>
+<p>should register an event listener for the onKeyUp event for the
+            provided key if the upHandler argument is set.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerKeyAction(&apos;g&apos;, { upHandler: handler });
+}).to.not.throw(Error);
+(0, _chai.expect)(engine.scene.baby.actionManager).to.exist;
+(0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+(0, _chai.expect)(engine.scene.baby.actionManager.registerAction.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith({ trigger: &apos;up&apos;, parameter: &apos;g&apos; })).to.equal(true);</code>
+</code></pre>
+<p>should register an event listener for the onKeyDown event for the
+            provided key if the downHandler argument is set.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerKeyAction(&apos;h&apos;, { downHandler: handler });
+}).to.not.throw(Error);
+(0, _chai.expect)(engine.scene.baby.actionManager).to.exist;
+(0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+(0, _chai.expect)(engine.scene.baby.actionManager.registerAction.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(1);
+(0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith({ trigger: &apos;down&apos;, parameter: &apos;h&apos; })).to.equal(true);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-registermouseeventsforentity-method"></a></p>
+<h3 id="registermouseeventsforentity-method">registerMouseEventsForEntity method</h3>
+<p>should set the hover cursor for the entity&apos;s primary mesh if cursor
+            arugment is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerMouseEventsForEntity(entity, { cursor: &apos;pointer&apos; }).then(function () {
+        (0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+        (0, _chai.expect)(baby.actionManager).to.exist;
+        (0, _chai.expect)(baby.actionManager.hoverCursor).to.equal(&apos;pointer&apos;);
+        (0, _chai.expect)(baby.actionManager.registerAction.callCount).to.equal(0);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(0);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should set an entityClick event listener on the entity&apos;s primary
+            mesh if click argument is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerMouseEventsForEntity(entity, { click: handler }).then(function () {
+        (0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+        (0, _chai.expect)(baby.actionManager).to.exist;
+        (0, _chai.expect)(baby.actionManager.hoverCursor).to.not.exist;
+        (0, _chai.expect)(baby.actionManager.registerAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith(&apos;left&apos;)).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should set an entityAltClick event listener on the entity&apos;s primary
+            mesh if the altClick argument is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerMouseEventsForEntity(entity, { altClick: handler }).then(function () {
+        (0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+        (0, _chai.expect)(baby.actionManager).to.exist;
+        (0, _chai.expect)(baby.actionManager.hoverCursor).to.not.exist;
+        (0, _chai.expect)(baby.actionManager.registerAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith(&apos;right&apos;)).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should set an entityOver event listener on the entity&apos;s primary
+            mesh if the over argument is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerMouseEventsForEntity(entity, { over: handler }).then(function () {
+        (0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+        (0, _chai.expect)(baby.actionManager).to.exist;
+        (0, _chai.expect)(baby.actionManager.hoverCursor).to.not.exist;
+        (0, _chai.expect)(baby.actionManager.registerAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith(&apos;over&apos;)).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should set an entityOut event listener on the entity&apos;s primrary
+            mesh if the out argument is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return engine.registerMouseEventsForEntity(entity, { out: handler }).then(function () {
+        (0, _chai.expect)(BabylonJSMock.ActionManager.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ActionManager.calledWithExactly(engine.scene.baby)).to.equal(true);
+        (0, _chai.expect)(baby.actionManager).to.exist;
+        (0, _chai.expect)(baby.actionManager.hoverCursor).to.not.exist;
+        (0, _chai.expect)(baby.actionManager.registerAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.callCount).to.equal(1);
+        (0, _chai.expect)(BabylonJSMock.ExecuteCodeAction.calledWith(&apos;out&apos;)).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-engine-class-engine-instance-deregistermouseeventsforentity-method"></a></p>
+<h3 id="deregistermouseeventsforentity-method">deregisterMouseEventsForEntity method</h3>
+<p>should remove all click/altClick/over/out event listeners for the
+            given entity&apos;s primary mesh, and reset the hover cursor style.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(baby.actionManager.actions).to.have.length(4);
+(0, _chai.expect)(function () {
+    return engine.deregisterMouseEventsForEntity(entity);
+}).to.not.throw(Error);
+(0, _chai.expect)(baby.actionManager.actions).to.have.length(0);
+(0, _chai.expect)(baby.actionManager.hoverCursor).to.equal(&apos;default&apos;);</code>
+</code></pre>
+<p><a name="the-entity-class"></a></p>
+<h1 id="the-entity-class">The Entity Class</h1>
+<p>should be a class that inherits from Static.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_entity3.default).to.exist;
+(0, _chai.expect)(_entity3.default).to.be.a(&apos;function&apos;);
+(0, _chai.expect)(_entity3.default.__proto__.name).to.equal(&apos;Static&apos;);</code>
+</code></pre>
+<p><a name="the-entity-class-create-method"></a></p>
+<h2 id="create-method">create method</h2>
+<p>should get the entity data for the provided entity ID, create a new
+        entity object with that data, merged with any extra data provided, then
+        return the updateComponents method with the new object and the aggregated
+        component data (which is a promise that eventually resolves to entity).</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return _entity3.default.create(engine, { id: &apos;test&apos;, uid: &apos;foo&apos; }).then(function (entity) {
+        (0, _chai.expect)(entity).to.exist;
+        (0, _chai.expect)(entity).to.have.all.keys([&apos;id&apos;, &apos;uid&apos;]);
+        (0, _chai.expect)(entity).to.have.property(&apos;mesh&apos;);
+        (0, _chai.expect)(entity).to.have.property(&apos;tick&apos;);
+        (0, _chai.expect)(entity).to.have.property(&apos;meshAsync&apos;);
+        (0, _chai.expect)(getEntity.callCount).to.equal(1);
+        (0, _chai.expect)(getEntity.calledWithExactly(&apos;test&apos;)).to.equal(true);
+        (0, _chai.expect)(updateComponents.callCount).to.equal(1);
+        (0, _chai.expect)(updateComponents.calledWithExactly(engine, entity, { TestComponent: { foo: &apos;bar&apos; } })).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-entity-class-create-method-entity-object"></a></p>
+<h3 id="entity-object">Entity object</h3>
+<p>should have id and uid properties.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(entity).to.have.property(&apos;id&apos;).that.equals(&apos;test&apos;);
+(0, _chai.expect)(entity).to.have.property(&apos;uid&apos;).that.equals(&apos;bar&apos;);</code>
+</code></pre>
+<p>should have a mesh method that returns the component for the
+            _primaryMesh key, if set.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(entity).to.have.property(&apos;mesh&apos;);
+(0, _chai.expect)(entity.mesh).to.not.exist;
+entity.TestComponent = _comp;
+(0, _chai.expect)(entity.mesh).to.exist;
+(0, _chai.expect)(entity.mesh).to.equal(_comp);</code>
+</code></pre>
+<p>should have a meshAsync property that is configurable until
+            it&apos;s returned promise resolves to the entity mesh once available, then
+            redefining the property to resolve directly to the mesh, and no longer
+            reconfigurable.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return entity.meshAsync.then(function (mesh) {
+        (0, _chai.expect)(mesh).to.exist;
+        (0, _chai.expect)(mesh).to.equal(_comp);
+    }).catch(done);
+}).to.not.throw(Error);
+(0, _chai.expect)(function () {
+    return entity.meshAsync.then(function (mesh) {
+        (0, _chai.expect)(mesh).to.exist;
+        (0, _chai.expect)(mesh).to.equal(_comp);
+    }).catch(done);
+}).to.not.throw(Error);
+setTimeout(function () {
+    entity.TestComponent = _comp;
+    setTimeout(function () {
+        (0, _chai.expect)(function () {
+            return entity.meshAsync.then(function (mesh) {
+                (0, _chai.expect)(mesh).to.exist;
+                (0, _chai.expect)(mesh).to.equal(_comp);
+                done();
+            }).catch(done);
+        }).to.not.throw(Error);
+    }, 20);
+}, 20);</code>
+</code></pre>
+<p>should have a tick setter that will add a new tick method when the
+            assignment is an object with both id and tick properties, or delete
+            an existing tick when only an id property is in the assignment object.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var cb = 0,
+    fn = function fn() {
+    return cb++;
+};
+(0, _chai.expect)(function () {
+    return entity.tick = { id: &apos;Test&apos;, tick: fn };
+}).to.not.throw(Error);
+(0, _chai.expect)(cb).to.equal(0);
+entity.tick();
+(0, _chai.expect)(cb).to.equal(1);
+entity.tick();
+(0, _chai.expect)(cb).to.equal(2);
+(0, _chai.expect)(function () {
+    return entity.tick = { id: &apos;Test&apos; };
+}).to.not.throw(Error);
+entity.tick();
+(0, _chai.expect)(cb).to.equal(2);</code>
+</code></pre>
+<p>should have a tick getter that returns a function that will fire
+            each registered component tick method.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var a = 0,
+    b = 0,
+    c = 0,
+    fnA = function fnA() {
+    return a++;
+},
+    fnB = function fnB() {
+    return b++;
+},
+    fnC = function fnC() {
+    return c++;
+};
+entity.tick = { id: &apos;A&apos;, tick: fnA };
+entity.tick = { id: &apos;B&apos;, tick: fnB };
+entity.tick = { id: &apos;C&apos;, tick: fnC };
+entity.tick();
+(0, _chai.expect)([a, b, c]).to.eql([1, 1, 1]);
+entity.tick = { id: &apos;A&apos; };
+entity.tick = { id: &apos;B&apos;, tick: fnC };
+entity.tick();
+(0, _chai.expect)([a, b, c]).to.eql([1, 1, 3]);
+entity.tick();
+(0, _chai.expect)([a, b, c]).to.eql([1, 1, 5]);</code>
+</code></pre>
+<p><a name="the-entity-class-updatecomponent-method"></a></p>
+<h2 id="updatecomponent-method">updateComponent method</h2>
+<p>should return a promise that calls the update class method for the
+        given component, stores the updated result to the entity at the property
+        name that matches the component ID, and  finally resolves to the newly-
+        updated component.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(entity.TestComponent).to.not.exist;
+(0, _chai.expect)(function () {
+    return _entity3.default.updateComponent(engine, entity, &apos;TestComponent&apos;).then(function (comp) {
+        (0, _chai.expect)(comp).to.exist;
+        (0, _chai.expect)(comp).to.equal(_comp);
+        (0, _chai.expect)(entity.TestComponent).to.equal(comp);
+        (0, _chai.expect)(getComponent.callCount).to.equal(1);
+        (0, _chai.expect)(getComponent.calledWithExactly(&apos;TestComponent&apos;)).to.equal(true);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-entity-class-updatecomponents-method"></a></p>
+<h2 id="updatecomponents-method">updateComponents method</h2>
+<p>should return a promise that sequentially updates/creates each component
+        from the provided data using the updateComponent method, then resolve
+        to the updated entity.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return _entity3.default.updateComponents(engine, entity, {
+        TestComponent: { foo: &apos;bar&apos; },
+        AnotherComponent: { meaning: 42 }
+    }).then(function (entity) {
+        (0, _chai.expect)(entity).to.exist;
+        (0, _chai.expect)(entity.TestComponent).to.eql({ foo: &apos;bar&apos; });
+        (0, _chai.expect)(entity.AnotherComponent).to.eql({ meaning: 42 });
+        (0, _chai.expect)(updateComponent.callCount).to.equal(2);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-entity-class-dismountcomponent-method"></a></p>
+<h2 id="dismountcomponent-method">dismountComponent method</h2>
+<p>should dismount the specified component using it&apos;s class dismount
+        method and assigning the result (null) to the component property of the
+        entity.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var ret = void 0;
+(0, _chai.expect)(function () {
+    return ret = _entity3.default.dismountComponent(engine, entity, &apos;TestComponent&apos;);
+}).to.not.throw(Error);
+(0, _chai.expect)(ret).to.equal(null);
+(0, _chai.expect)(entity.TestComponent).to.equal(null);
+(0, _chai.expect)(getComponent.callCount).to.equal(1);</code>
+</code></pre>
+<p><a name="the-entity-class-update-method"></a></p>
+<h2 id="update-method">update method</h2>
+<p>should create a new entity if none provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return _entity3.default.update(engine, null, { id: &apos;foo&apos; }).then(function (entity) {
+        (0, _chai.expect)(entity).to.exist;
+        (0, _chai.expect)(create.callCount).to.equal(1);
+        (0, _chai.expect)(updateComponents.callCount).to.equal(0);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should call updateComponents for existing entity.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return _entity3.default.update(engine, entity, { id: &apos;foo&apos; }).then(function (n) {
+        (0, _chai.expect)(n).to.exist;
+        (0, _chai.expect)(n).to.equal(entity);
+        (0, _chai.expect)(create.callCount).to.equal(0);
+        (0, _chai.expect)(updateComponents.callCount).to.equal(1);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-entity-class-dismount-method"></a></p>
+<h2 id="dismount-method">dismount method</h2>
+<p>should dismount each component then return null.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var ret = void 0;
+(0, _chai.expect)(function () {
+    return ret = _entity3.default.dismount(engine, entity);
+}).to.not.throw(Error);
+(0, _chai.expect)(ret).to.equal(null);
+(0, _chai.expect)(entity.id).to.equal(&apos;k&apos;);
+(0, _chai.expect)(dismountComponent.callCount).to.equal(2);</code>
+</code></pre>
+<p><a name="the-entity-class-tick-method"></a></p>
+<h2 id="tick-method">tick method</h2>
+<p>should call the tick method on the provided entity instance.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return _entity3.default.tick(engine, entity, 100, 10);
+}).to.not.throw(Error);
+(0, _chai.expect)(tick.callCount).to.equal(1);
+(0, _chai.expect)(tick.calledWithExactly(engine, 100, 10)).to.equal(true);</code>
+</code></pre>
+<p><a name="playercontroller-class"></a></p>
+<h1 id="playercontroller-class">PlayerController Class</h1>
+<p>should be a singleton class.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(PlayerController).to.be.a(&apos;function&apos;);
+(0, _chai.expect)(PlayerController.__proto__.name).to.equal(&apos;Singleton&apos;);</code>
+</code></pre>
+<p><a name="playercontroller-class-round-function"></a></p>
+<h2 id="round-function">round function</h2>
+<p>should round a float to the second decimal place.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(round(Math.PI)).to.equal(3.14);
+(0, _chai.expect)(round(1923.2250199)).to.equal(1923.23);
+(0, _chai.expect)(round(0.005)).to.equal(0.01);
+(0, _chai.expect)(round(0.00499)).to.equal(0);
+(0, _chai.expect)(round(2.3)).to.equal(2.3);</code>
+</code></pre>
+<p><a name="playercontroller-class-gettime-method"></a></p>
+<h2 id="gettime-method">getTime method</h2>
+<p>should return a 24hr timestamp of HH:mm:ss for a given date object,
+        or the current time if no argument supplied..</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var date = new Date(&apos;December 17, 1995 03:24:01&apos;);
+(0, _chai.expect)(PlayerController.getTime(date)).to.equal(&apos;03:24:01&apos;);
+date = new Date(&apos;February 02, 2017 13:09:22&apos;);
+(0, _chai.expect)(PlayerController.getTime(date)).to.equal(&apos;13:09:22&apos;);</code>
+</code></pre>
+<p><a name="playercontroller-class-constructor"></a></p>
+<h2 id="constructor">constructor</h2>
+<p>should create a new PlayerController instance with proxied properties
+        for messages, player, and target, as well as an engine getter.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var ctrl = void 0,
+    engine = {};
+(0, _chai.expect)(function () {
+    return ctrl = new PlayerController(engine);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl).to.exist;
+(0, _chai.expect)(ctrl).to.have.property(&apos;messages&apos;).that.eqls([]);
+(0, _chai.expect)(ctrl).to.have.property(&apos;player&apos;).that.equals(null);
+(0, _chai.expect)(ctrl).to.have.property(&apos;target&apos;).that.equals(null);
+(0, _chai.expect)(ctrl.engine).to.equal(engine);
+(0, _chai.expect)(EventProxyMock.callCount).to.equal(1);
+(0, _chai.expect)(EventProxyMock.calledWithExactly(ctrl, &apos;engine.ctrl&apos;, [&apos;messages&apos;, &apos;player&apos;, &apos;target&apos;])).to.equal(true);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance"></a></p>
+<h2 id="playercontroller-instance">PlayerController instance</h2>
+<p><a name="playercontroller-class-playercontroller-instance-setup-method"></a></p>
+<h3 id="setup-method">setup method</h3>
+<p>should call registerKeyActions for the settings.input.keys
+            configuration.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.setup(settings);
+}).to.not.throw(Error);
+(0, _chai.expect)(register.callCount).to.equal(1);
+(0, _chai.expect)(register.calledWithExactly(settings.input.keys));</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-registerkeyactions-method"></a></p>
+<h3 id="registerkeyactions-method">registerKeyActions method</h3>
+<p>should call engine.registerKeyAction for each keyHandler passed
+            in.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.registerKeyActions(handlers);
+}).to.not.throw(Error);
+(0, _chai.expect)(register.callCount).to.equal(2);
+(0, _chai.expect)(register.calledWithExactly(&apos;f&apos;, handlers[0])).to.equal(true);
+(0, _chai.expect)(register.calledWithExactly(&apos;g&apos;, handlers[1])).to.equal(true);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-message-method"></a></p>
+<h3 id="message-method">message method</h3>
+<p>should functionally update this.messages by adding the new message
+            from the provided data at the front of messages.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var orig = ctrl.messages,
+    origS = JSON.stringify(orig),
+    msgs = void 0;
+(0, _chai.expect)(function () {
+    return msgs = ctrl.message(&apos;test&apos;, null, &apos;foobar&apos;);
+}).to.not.throw(Error);
+(0, _chai.expect)(msgs).to.have.length(1);
+(0, _chai.expect)(msgs[0]).to.have.property(&apos;type&apos;).that.equals(&apos;test&apos;);
+(0, _chai.expect)(msgs[0]).to.have.property(&apos;sender&apos;).that.equals(null);
+(0, _chai.expect)(msgs[0]).to.have.property(&apos;message&apos;).that.equals(&apos;foobar&apos;);
+(0, _chai.expect)(msgs).to.not.equal(orig);
+(0, _chai.expect)(orig).to.have.length(0);
+(0, _chai.expect)(JSON.stringify(orig)).to.equal(origS);
+(0, _chai.expect)(function () {
+    return msgs = ctrl.message(&apos;test&apos;, &apos;dude&apos;, &apos;barfoo&apos;);
+}).to.not.throw(Error);
+(0, _chai.expect)(msgs).to.have.length(2);
+(0, _chai.expect)(msgs[0]).to.have.property(&apos;sender&apos;).that.equals(&apos;dude&apos;);
+(0, _chai.expect)(msgs[0]).to.have.property(&apos;message&apos;).that.equals(&apos;barfoo&apos;);
+(0, _chai.expect)(msgs[1]).to.have.property(&apos;message&apos;).that.equals(&apos;foobar&apos;);</code>
+</code></pre>
+<p>should trim messages to the provided max.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var msgs = void 0;
+ctrl.message(&apos;test&apos;, null, &apos;one&apos;, 5);
+ctrl.message(&apos;test&apos;, null, &apos;two&apos;, 5);
+ctrl.message(&apos;test&apos;, null, &apos;three&apos;, 5);
+ctrl.message(&apos;test&apos;, null, &apos;four&apos;, 5);
+ctrl.message(&apos;test&apos;, null, &apos;five&apos;, 5);
+(0, _chai.expect)(ctrl.messages).to.have.length(5);
+(0, _chai.expect)(ctrl.messages[0].message).to.equal(&apos;five&apos;);
+(0, _chai.expect)(ctrl.messages[4].message).to.equal(&apos;one&apos;);
+(0, _chai.expect)(function () {
+    return ctrl.message(&apos;test&apos;, null, &apos;six&apos;, 5);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl.messages).to.have.length(5);
+(0, _chai.expect)(ctrl.messages[0].message).to.equal(&apos;six&apos;);
+(0, _chai.expect)(ctrl.messages[4].message).to.equal(&apos;two&apos;);
+(0, _chai.expect)(function () {
+    return ctrl.message(&apos;test&apos;, null, &apos;seven&apos;, 2);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl.messages).to.have.length(2);
+(0, _chai.expect)(ctrl.messages[0].message).to.equal(&apos;seven&apos;);
+(0, _chai.expect)(ctrl.messages[1].message).to.equal(&apos;six&apos;);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-mclick-method"></a></p>
+<h3 id="mclick-method">mClick method</h3>
+<p>should not throw an error when a proper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mClick(evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mClick({ pageX: 3 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-maltclick-method"></a></p>
+<h3 id="maltclick-method">mAltClick method</h3>
+<p>should not throw an error when a proper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mAltClick(evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mAltClick({ pageX: 3 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-mwheel-method"></a></p>
+<h3 id="mwheel-method">mWheel method</h3>
+<p>should not throw an error when a proper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mWheel(evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mWheel({ pageX: 3, pageY: 4 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-mover-method"></a></p>
+<h3 id="mover-method">mOver method</h3>
+<p>should not throw an error when a proper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mOver(evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mOver({ pageX: 3 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-mout-method"></a></p>
+<h3 id="mout-method">mOut method</h3>
+<p>should not throw an error when a proper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mOut(evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.mOut({ pageY: 3 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-entityover-method"></a></p>
+<h3 id="entityover-method">entityOver method</h3>
+<p>should set the controller&apos;s target to the provided entity.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(ctrl.target).to.equal(null);
+(0, _chai.expect)(function () {
+    return ctrl.entityOver(entity, evt);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl.target).to.equal(entity);</code>
+</code></pre>
+<p>should throw an error when an invalid entity or event is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.entityOver(null, evt);
+}).to.throw(Error);
+(0, _chai.expect)(function () {
+    return ctrl.entityOver(entity, null);
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-entityout-method"></a></p>
+<h3 id="entityout-method">entityOut method</h3>
+<p>should remove the current target if the entity passed is the current
+            target.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">ctrl.target = entity;
+(0, _chai.expect)(function () {
+    return ctrl.entityOut(entity, evt);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl.target).to.equal(null);</code>
+</code></pre>
+<p>should not remove the current target if the entity passed is not
+            the current target.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var entity2 = { uid: &apos;bar&apos; };
+(0, _chai.expect)(ctrl.target).to.equal(null);
+(0, _chai.expect)(function () {
+    return ctrl.entityOut(entity, evt);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl.target).to.equal(null);
+ctrl.target = entity2;
+(0, _chai.expect)(function () {
+    return ctrl.entityOut(entity, evt);
+}).to.not.throw(Error);
+(0, _chai.expect)(ctrl.target).to.equal(entity2);</code>
+</code></pre>
+<p>should throw an error when an invalid entity or event is provided.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.entityOut(null, evt);
+}).to.throw(Error);
+(0, _chai.expect)(function () {
+    return ctrl.entityOut(entity, null);
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-entityclick-method"></a></p>
+<h3 id="entityclick-method">entityClick method</h3>
+<p>should not throw an error when a proper entity and event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.entityClick(entity, evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper entity or event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.entityClick(null, evt);
+}).to.throw(Error);
+(0, _chai.expect)(function () {
+    return ctrl.entityClick(entity, { pointerY: 3 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="playercontroller-class-playercontroller-instance-entityaltclick-method"></a></p>
+<h3 id="entityaltclick-method">entityAltClick method</h3>
+<p>should not throw an error when a proper entity and event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.entityAltClick(entity, evt);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p>should throw an error when an improper entity or event is passed.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return ctrl.entityAltClick(null, evt);
+}).to.throw(Error);
+(0, _chai.expect)(function () {
+    return ctrl.entityAltClick(entity, { pointerY: 3 });
+}).to.throw(Error);</code>
+</code></pre>
+<p><a name="the-scene-class"></a></p>
+<h1 id="the-scene-class">The Scene Class</h1>
+<p>should be a singleton.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_scene2.default).to.be.a(&apos;function&apos;);
+(0, _chai.expect)(_scene2.default.__proto__.name).to.equal(&apos;Singleton&apos;);</code>
+</code></pre>
+<p><a name="the-scene-class-constructor"></a></p>
+<h2 id="constructor">Constructor</h2>
+<p>should create a new object with an empty children map and a null
+        activeCamera property, as well as a non-enumerable _baby property.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var scene = void 0;
+(0, _chai.expect)(function () {
+    return scene = new _scene2.default();
+}).to.not.throw(Error);
+(0, _chai.expect)(scene).to.exist;
+(0, _chai.expect)(scene).to.have.all.keys([&apos;children&apos;, &apos;activeCamera&apos;]);
+(0, _chai.expect)(scene.children).to.eql({});
+(0, _chai.expect)(scene.activeCamera).to.equal(null);
+(0, _chai.expect)(scene._baby).to.equal(null);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance"></a></p>
+<h2 id="scene-instance">scene instance</h2>
+<p><a name="the-scene-class-scene-instance-baby-getter-method"></a></p>
+<h3 id="baby-getter-method">baby getter method</h3>
+<p>should get the scene._baby property.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(scene.baby).to.equal(null);
+scene._baby = 42;
+(0, _chai.expect)(scene.baby).to.equal(42);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-mount-method"></a></p>
+<h3 id="mount-method">mount method</h3>
+<p>should set the scene._baby property to a new BabylonJS Scene.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return scene.mount(engine);
+}).to.not.throw(Error);
+(0, _chai.expect)(scene.baby.isBaby).to.equal(true);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-dismount-method"></a></p>
+<h3 id="dismount-method">dismount method</h3>
+<p>should dismount each child in scene.children then delete the _baby
+            property before returning null.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var ret = void 0;
+scene.children = { foo: { uid: &apos;foo&apos; }, bar: { uid: &apos;bar&apos; } };
+(0, _chai.expect)(function () {
+    return ret = scene.dismount(engine);
+}).to.not.throw(Error);
+(0, _chai.expect)(ret).to.equal(null);
+(0, _chai.expect)(scene.baby).to.equal(null);
+(0, _chai.expect)(scene.children).to.eql({});
+(0, _chai.expect)(dismount.callCount).to.equal(2);
+(0, _chai.expect)(dismount.calledWithExactly(engine, { uid: &apos;foo&apos; })).to.equal(true);
+(0, _chai.expect)(dismount.calledWithExactly(engine, { uid: &apos;bar&apos; })).to.equal(true);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-getentity-method"></a></p>
+<h3 id="getentity-method">getEntity method</h3>
+<p>should get a child entity by uid.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var e = void 0;
+scene.children = { bar: { uid: &apos;bar&apos; } };
+(0, _chai.expect)(function () {
+    return e = scene.getEntity(&apos;bar&apos;);
+}).to.not.throw(Error);
+(0, _chai.expect)(e).to.eql({ uid: &apos;bar&apos; });
+(0, _chai.expect)(function () {
+    return e = scene.getEntity(&apos;foo&apos;);
+}).to.not.throw(Error);
+(0, _chai.expect)(e).to.not.exist;</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-updateentity-method"></a></p>
+<h3 id="updateentity-method">updateEntity method</h3>
+<p>should return a promise that updates an entity by uid with
+            Entity.update, then saves the updated entity back in children.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">scene.children = { bar: { uid: &apos;bar&apos;, d: 0 } };
+(0, _chai.expect)(function () {
+    return scene.updateEntity(engine, { uid: &apos;bar&apos; }).then(function (entity) {
+        (0, _chai.expect)(entity).to.eql({ uid: &apos;bar&apos;, d: 0 });
+        (0, _chai.expect)(update.callCount).to.equal(1);
+        (0, _chai.expect)(update.calledWithExactly(engine, { uid: &apos;bar&apos;, d: 0 }, { uid: &apos;bar&apos; })).to.equal(true);
+        (0, _chai.expect)(scene.children.bar).to.eql({ uid: &apos;bar&apos;, d: 0 });
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-updateentities-method"></a></p>
+<h3 id="updateentities-method">updateEntities method</h3>
+<p>should return a promise that sequentially updates/creates each entity
+            from the provided data using the updateEntity method, then resolve
+            to the updated scene.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
+    return scene.updateEntities(engine, [{ uid: &apos;foo&apos;, data: 42 }, { data: 0, uid: &apos;bar&apos; }]).then(function (scene) {
+        (0, _chai.expect)(scene).to.exist;
+        (0, _chai.expect)(scene.children).to.have.all.keys([&apos;foo&apos;, &apos;bar&apos;]);
+        (0, _chai.expect)(scene.children.foo.data).to.equal(42);
+        (0, _chai.expect)(scene.children.bar.data).to.equal(0);
+        (0, _chai.expect)(updateEntity.callCount).to.equal(2);
+        done();
+    }).catch(done);
+}).to.not.throw(Error);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-removeentity-method"></a></p>
+<h3 id="removeentity-method">removeEntity method</h3>
+<p>should call Entity.dismount for the entity at the provided uid,
+            and replace the entity in scene.children with the result (null).</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">scene.children = { foo: { uid: &apos;foo&apos; }, bar: { uid: &apos;bar&apos; } };
+(0, _chai.expect)(function () {
+    return scene.removeEntity(engine, &apos;bar&apos;);
+}).to.not.throw(Error);
+(0, _chai.expect)(scene.children.bar).to.equal(null);
+(0, _chai.expect)(scene.children.foo.uid).to.equal(&apos;foo&apos;);
+(0, _chai.expect)(dismount.callCount).to.equal(1);
+(0, _chai.expect)(dismount.calledWithExactly(engine, { uid: &apos;bar&apos; })).to.equal(true);</code>
+</code></pre>
+<p><a name="the-scene-class-scene-instance-tick-method"></a></p>
+<h3 id="tick-method">tick method</h3>
+<p>should call Entity.tick for each entity in its children.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var foo = { uid: &apos;foo&apos; },
+    bar = { uid: &apos;bar&apos; };
+scene.children = { foo: foo, bar: bar };
+(0, _chai.expect)(function () {
+    return scene.tick(engine, 100, 10);
+}).to.not.throw(Error);
+(0, _chai.expect)(tick.callCount).to.equal(2);
+(0, _chai.expect)(tick.calledWithExactly(engine, foo, 100, 10)).to.equal(true);
+(0, _chai.expect)(tick.calledWithExactly(engine, bar, 100, 10)).to.equal(true);</code>
+</code></pre>
+<p><a name="stateeventproxy"></a></p>
+<h1 id="stateeventproxy">StateEventProxy</h1>
+<p><a name="stateeventproxy-stateproxy-exported-function-integration-tests"></a></p>
+<h2 id="stateproxy-exported-function-integration-tests-">StateProxy exported function (integration tests)</h2>
+<p>should assign proxy properties from a list of keys to the provided object
+        and emit state events when a property is reassigned.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var obj = { d: null };
+(0, _chai.expect)(function () {
+    return (0, _stateEventProxy2.default)(obj, &apos;obj&apos;, [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;], { def: 0 });
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.exist;
+(0, _chai.expect)(obj).to.have.all.keys([&apos;a&apos;, &apos;b&apos;, &apos;c&apos;, &apos;d&apos;]);
+(0, _chai.expect)(obj).to.eql({ a: 0, b: 0, c: 0, d: null });
+(0, _chai.expect)(function () {
+    return obj.d = 5;
+}).to.not.throw(Error);
+(0, _chai.expect)(obj.d).to.equal(5);
+(0, _chai.expect)(function () {
+    return obj.a = { foo: &apos;bar&apos; };
+}).to.not.throw(Error);
+(0, _chai.expect)(obj.a).to.eql({ foo: &apos;bar&apos; });
+(0, _chai.expect)(function () {
+    return obj.b = [1, obj.a, &apos;three&apos;];
+}).to.not.throw(Error);
+(0, _chai.expect)(obj.b).to.eql([1, { foo: &apos;bar&apos; }, &apos;three&apos;]);
+(0, _chai.expect)(function () {
+    return obj.b = null;
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.eql({
+    a: { foo: &apos;bar&apos; },
+    b: null,
+    c: 0,
+    d: 5
+});
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(3);
+    (0, _chai.expect)(emit.calledWith(&apos;obj.a&apos;, { foo: &apos;bar&apos; })).to.equal(true);
+    (0, _chai.expect)(emit.calledWith(&apos;obj.b&apos;, [1, { foo: &apos;bar&apos; }, &apos;three&apos;])).to.equal(true);
+    (0, _chai.expect)(emit.calledWith(&apos;obj.b&apos;, null)).to.equal(true);
+    done();
+}, 1);</code>
+</code></pre>
+<p>should assign proxy properties from a map of keys and values to the provided
+        object and emit state events when a property is reassigned.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var obj = { d: 10 };
+(0, _chai.expect)(function () {
+    return (0, _stateEventProxy2.default)(obj, &apos;obj&apos;, {
+        a: null,
+        b: { foo: &apos;bar&apos; },
+        c: [&apos;foo&apos;, &apos;bar&apos;]
+    });
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.have.all.keys([&apos;a&apos;, &apos;b&apos;, &apos;c&apos;, &apos;d&apos;]);
+(0, _chai.expect)(obj).to.eql({ a: null, b: { foo: &apos;bar&apos; }, c: [&apos;foo&apos;, &apos;bar&apos;], d: 10 });
+obj.d = 42;
+(0, _chai.expect)(obj.d).to.equal(42);
+obj.a = [1, 2, 3];
+(0, _chai.expect)(obj.a).to.eql([1, 2, 3]);
+obj.b.foo = &apos;foo&apos;;
+(0, _chai.expect)(obj.b).to.eql({ foo: &apos;foo&apos; });
+obj.b = &apos;foobar&apos;;
+(0, _chai.expect)(obj.b).to.equal(&apos;foobar&apos;);
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(2);
+    (0, _chai.expect)(emit.calledWith(&apos;obj.a&apos;, [1, 2, 3])).to.equal(true);
+    (0, _chai.expect)(emit.calledWith(&apos;obj.b&apos;, &apos;foobar&apos;)).to.equal(true);
+    done();
+}, 1);</code>
+</code></pre>
+<p><a name="stateeventproxy-stateeventproxy-class"></a></p>
+<h2 id="stateeventproxy-class">StateEventProxy Class</h2>
+<p><a name="stateeventproxy-stateeventproxy-class-ismutatefn-method"></a></p>
+<h3 id="ismutatefn-method">isMutateFn method</h3>
+<p>should return true if provided key is an Array member-function that mutates
+            itself.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;copyWithin&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;fill&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;pop&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;push&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;reverse&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;shift&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;sort&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;splice&apos;)).to.equal(true);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;unshift&apos;)).to.equal(true);</code>
+</code></pre>
+<p>should return false if provided key is not an Array member-function that
+            mutates itself.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;concat&apos;)).to.equal(false);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;forEach&apos;)).to.equal(false);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;join&apos;)).to.equal(false);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;slice&apos;)).to.equal(false);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;toString&apos;)).to.equal(false);
+(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;length&apos;)).to.equal(false);</code>
+</code></pre>
+<p><a name="stateeventproxy-stateeventproxy-class-emit-method"></a></p>
+<h3 id="emit-method">emit method</h3>
+<p>should call events.emit if the scope is not disabled.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var v = 40,
+    obj = {};
+(0, _chai.expect)(function () {
+    return _stateEventProxy.StateEventProxy.emit(&apos;test.scope&apos;, v, obj);
+}).to.not.throw(Error);
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(1);
+    (0, _chai.expect)(emit.calledWithExactly(&apos;test.scope&apos;, v, obj)).to.equal(true);
+    done();
+}, 1);</code>
+</code></pre>
+<p>should not call events.emit if the scope is disabled.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">_stateEventProxy.DISABLE[&apos;test.scope&apos;] = true;
+(0, _chai.expect)(function () {
+    return _stateEventProxy.StateEventProxy.emit(&apos;test.scope&apos;, 30, {});
+}).to.not.throw(Error);
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(0);
+    _stateEventProxy.DISABLE[&apos;test.scope&apos;] = false;
+    done();
+}, 1);</code>
+</code></pre>
+<p><a name="stateeventproxy-stateeventproxy-class-proxifyproperty-method"></a></p>
+<h3 id="proxifyproperty-method">proxifyProperty method</h3>
+<p>should assign to the provided object a wrapped property that, when
+            set, will emit a state event.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var obj = {},
+    prop = &apos;testProp&apos;,
+    scope = &apos;test.obj.testProp&apos;;
+(0, _chai.expect)(function () {
+    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop);
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.exist;
+(0, _chai.expect)(obj).to.have.property(&apos;testProp&apos;);
+(0, _chai.expect)(obj).to.have.key(&apos;testProp&apos;);
+(0, _chai.expect)(obj.testProp).to.not.exist;
+(0, _chai.expect)(buildObject.callCount).to.equal(0);
+(0, _chai.expect)(buildArray.callCount).to.equal(0);
+obj.testProp = &apos;foobar&apos;;
+(0, _chai.expect)(obj.testProp).to.equal(&apos;foobar&apos;);
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(1);
+    (0, _chai.expect)(emit.calledWithExactly(&apos;test.obj.testProp&apos;, &apos;foobar&apos;, obj));
+    done();
+}, 1);</code>
+</code></pre>
+<p>should assign to the provided object a deeply-proxied value when
+            the value to be assigned is an array and deep=true.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var obj = {},
+    prop = &apos;test&apos;,
+    scope = &apos;obj.test&apos;,
+    v = [1, 2, 3],
+    opts = { deep: true, enumerable: true };
+(0, _chai.expect)(function () {
+    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.exist;
+(0, _chai.expect)(obj).to.have.property(&apos;test&apos;).that.eqls([1, 2, 3]);
+(0, _chai.expect)(buildObject.callCount).to.equal(0);
+(0, _chai.expect)(buildArray.callCount).to.equal(1);
+(0, _chai.expect)(buildArray.calledWithExactly(scope, obj, v, opts)).to.equal(true);
+obj.test = [3, 2];
+(0, _chai.expect)(obj.test).to.eql([3, 2]);
+(0, _chai.expect)(buildArray.callCount).to.equal(2);
+(0, _chai.expect)(buildArray.calledWithExactly(scope, obj, [3, 2], opts));
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(1);
+    (0, _chai.expect)(emit.calledWithExactly(scope, [3, 2], obj)).to.equal(true);
+    done();
+}, 1);</code>
+</code></pre>
+<p>should assign to the provided object a deeply-proxied value when
+            the value to be assigned is an object and deep=true.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var obj = {},
+    prop = &apos;test&apos;,
+    scope = &apos;obj.test&apos;,
+    v = { foo: &apos;bar&apos; },
+    opts = { deep: true, enumerable: true };
+(0, _chai.expect)(function () {
+    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.exist;
+(0, _chai.expect)(obj).to.have.property(&apos;test&apos;).that.eqls(v);
+(0, _chai.expect)(buildArray.callCount).to.equal(0);
+(0, _chai.expect)(buildObject.callCount).to.equal(1);
+(0, _chai.expect)(buildObject.calledWithExactly(scope, v, opts)).to.equal(true);
+obj.test = { bar: &apos;foo&apos; };
+(0, _chai.expect)(obj.test).to.eql({ bar: &apos;foo&apos; });
+(0, _chai.expect)(buildObject.callCount).to.equal(2);
+(0, _chai.expect)(buildObject.calledWithExactly(scope, { bar: &apos;foo&apos; }, opts));
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(1);
+    (0, _chai.expect)(emit.calledWithExactly(scope, { bar: &apos;foo&apos; }, obj)).to.equal(true);
+    done();
+}, 1);</code>
+</code></pre>
+<p>should assign to the provided object a wrapped property that is
+            not enumerable when enumerable=false.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var obj = {},
+    prop = &apos;testProp&apos;,
+    scope = &apos;test.obj.testProp&apos;;
+(0, _chai.expect)(function () {
+    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, 42, {
+        enumerable: false
+    });
+}).to.not.throw(Error);
+(0, _chai.expect)(obj).to.exist;
+(0, _chai.expect)(obj).to.have.property(&apos;testProp&apos;);
+(0, _chai.expect)(obj).to.not.have.key(&apos;testProp&apos;);
+(0, _chai.expect)(obj.testProp).to.equal(42);
+(0, _chai.expect)(buildObject.callCount).to.equal(0);
+(0, _chai.expect)(buildArray.callCount).to.equal(0);
+obj.testProp = &apos;foobar&apos;;
+(0, _chai.expect)(obj.testProp).to.equal(&apos;foobar&apos;);
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(1);
+    (0, _chai.expect)(emit.calledWithExactly(&apos;test.obj.testProp&apos;, &apos;foobar&apos;, obj));
+    done();
+}, 1);</code>
+</code></pre>
+<p><a name="stateeventproxy-stateeventproxy-class-buildproxyobject-method"></a></p>
+<h3 id="buildproxyobject-method">buildProxyObject method</h3>
+<p>should return an object that has proxified properties forEach
+            each property on the original object.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var p = void 0,
+    scope = &apos;test.obj.obj&apos;,
+    obj = {
+    foo: &apos;bar&apos;,
+    bar: &apos;foo&apos;
+},
+    opts = { deep: true };
+(0, _chai.expect)(function () {
+    return p = _stateEventProxy.StateEventProxy.buildProxyObject(scope, obj, opts);
+}).to.not.throw(Error);
+(0, _chai.expect)(p).to.exist;
+(0, _chai.expect)(proxify.callCount).to.equal(2);
+(0, _chai.expect)(proxify.calledWithExactly(scope + &apos;.foo&apos;, p, &apos;foo&apos;, &apos;bar&apos;, opts)).to.equal(true);
+(0, _chai.expect)(proxify.calledWithExactly(scope + &apos;.bar&apos;, p, &apos;bar&apos;, &apos;foo&apos;, opts)).to.equal(true);</code>
+</code></pre>
+<p><a name="stateeventproxy-stateeventproxy-class-buildproxyarray-method"></a></p>
+<h3 id="buildproxyarray-method">buildProxyArray method</h3>
+<p>should create and return an Array Proxy that wraps sets to be
+            deeply-watched for new values, and gets to be watched if a mutation
+            method is requested.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var p = void 0,
+    scope = &apos;test.obj.arr&apos;,
+    arr = [[1, 2, 3], 7, 42, { foo: &apos;bar&apos; }],
+    obj = { arr: arr },
+    opts = { deep: true };
+(0, _chai.expect)(function () {
+    return p = _stateEventProxy.StateEventProxy.buildProxyArray(scope, obj, arr, opts);
+}).to.not.throw(Error);
+(0, _chai.expect)(p).to.exist;
+(0, _chai.expect)(p.length).to.equal(4);
+(0, _chai.expect)(p[0].length).to.equal(3);
+(0, _chai.expect)(p.sort()).to.eql(arr.sort());
+(0, _chai.expect)(buildObject.callCount).to.equal(1);
+(0, _chai.expect)(buildObject.calledWithExactly(scope + &apos;[3]&apos;, { foo: &apos;bar&apos; }, opts)).to.equal(true);
+p[1] = 8;
+delete p[0][1];
+setTimeout(function () {
+    (0, _chai.expect)(emit.callCount).to.equal(3);
+    (0, _chai.expect)(emit.calledWithExactly(scope, p, obj)).to.equal(true);
+    (0, _chai.expect)(emit.calledWithExactly(scope + &apos;[1]&apos;, 8, p)).to.equal(true);
+    (0, _chai.expect)(emit.calledWithExactly(scope + &apos;[0][1]&apos;, undefined, p[0])).to.equal(true);
+    done();
+}, 1);</code>
+</code></pre>
+<p><a name="stateeventmanager"></a></p>
+<h1 id="stateeventmanager">StateEventManager</h1>
+<p>should have emit and on methods for dispatching and subscribing to
+    events.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEvents.Events).to.exist;
+(0, _chai.expect)(_stateEvents.Events).to.have.property(&apos;emit&apos;).that.is.a(&apos;function&apos;);
+(0, _chai.expect)(_stateEvents.Events).to.have.property(&apos;on&apos;).that.is.a(&apos;function&apos;);</code>
+</code></pre>
+<p>should dispatch an event with the emit method and callback the events
+    listener for that event, registered with the on method.</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">var test = 0;
+(0, _chai.expect)(function () {
+    _stateEvents.Events.on(&apos;test&apos;, function (data) {
+        (0, _chai.expect)(data).to.equal(&apos;foobar&apos;);
+        test++;
+    });
+    _stateEvents.Events.on(&apos;finish&apos;, function () {
+        (0, _chai.expect)(test).to.equal(2);
+        _stateEvents.Events.removeAllListeners(&apos;test&apos;);
+        _stateEvents.Events.removeAllListeners(&apos;finish&apos;);
+        _stateEvents.Events.removeAllListeners(&apos;foo&apos;);
+        done();
+    });
+    _stateEvents.Events.on(&apos;foo&apos;, function () {
+        done(&apos;No foo event emitted, but handler called.&apos;);
+    });
+    _stateEvents.Events.emit(&apos;test&apos;, &apos;foobar&apos;);
+    _stateEvents.Events.emit(&apos;bar&apos;);
+    _stateEvents.Events.emit(&apos;test&apos;, &apos;foobar&apos;);
+    _stateEvents.Events.emit(&apos;finish&apos;);
+}).to.not.throw(Error);</code>
+</code></pre>
+</div>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

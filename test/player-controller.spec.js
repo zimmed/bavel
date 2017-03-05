@@ -1,11 +1,11 @@
-import {_} from '../src/utils';
+import _ from 'lodash';
 import {expect} from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 import {instances} from 'basic-singleton';
 
 proxyquire.noCallThru();
-const EventProxyMock = sinon.spy(function (obj, s, p) { return _.assign(obj, p); });
+const EventProxyMock = sinon.spy(function (obj, s, p) { return _.assign(obj, _.zipObject(p)); });
 const CtrlModule = proxyquire('../src/player-controller', {
     './state-event-proxy': EventProxyMock
 });
@@ -54,23 +54,21 @@ describe('PlayerController Class', () => {
 
     describe('constructor', () => {
 
-        it(`should create a new PlayerController instance with proied properties
-        for messages, player, target and any others passed in via the uiData param,
-        and an engine getter`, () => {
-            let ctrl, engine = {}, uiData = {testProp: 'foobar'};
+        it(`should create a new PlayerController instance with proxied properties
+        for messages, player, and target, as well as an engine getter`, () => {
+            let ctrl, engine = {};
 
-            expect(() => ctrl = new PlayerController(engine, uiData))
+            expect(() => ctrl = new PlayerController(engine))
                 .to.not.throw(Error);
             expect(ctrl).to.exist;
             expect(ctrl).to.have.property('messages').that.eqls([]);
             expect(ctrl).to.have.property('player').that.equals(null);
             expect(ctrl).to.have.property('target').that.equals(null);
-            expect(ctrl).to.have.property('testProp').that.equals('foobar');
             expect(ctrl.engine).to.equal(engine);
             expect(EventProxyMock.callCount).to.equal(1);
-            expect(EventProxyMock.calledWithExactly(ctrl, 'engine.ctrl', {
-                messages: [], player: null, target: null, testProp: 'foobar'
-            })).to.equal(true);
+            expect(EventProxyMock.calledWithExactly(ctrl, 'engine.ctrl', [
+                'messages', 'player', 'target'
+            ])).to.equal(true);
         });
     });
 
@@ -123,7 +121,7 @@ describe('PlayerController Class', () => {
                 expect(msgs).to.have.length(1);
                 expect(msgs[0]).to.have.property('type').that.equals('test');
                 expect(msgs[0]).to.have.property('sender').that.equals(null);
-                expect(msgs[0]).to.have.property('msg').that.equals('foobar');
+                expect(msgs[0]).to.have.property('message').that.equals('foobar');
                 expect(msgs).to.not.equal(orig);
                 expect(orig).to.have.length(0);
                 expect(JSON.stringify(orig)).to.equal(origS);
@@ -131,8 +129,8 @@ describe('PlayerController Class', () => {
                     .to.not.throw(Error);
                 expect(msgs).to.have.length(2);
                 expect(msgs[0]).to.have.property('sender').that.equals('dude');
-                expect(msgs[0]).to.have.property('msg').that.equals('barfoo');
-                expect(msgs[1]).to.have.property('msg').that.equals('foobar');
+                expect(msgs[0]).to.have.property('message').that.equals('barfoo');
+                expect(msgs[1]).to.have.property('message').that.equals('foobar');
             });
 
             it(`should trim messages to the provided max`, () => {
@@ -144,16 +142,16 @@ describe('PlayerController Class', () => {
                 ctrl.message('test', null, 'four', 5);
                 ctrl.message('test', null, 'five', 5);
                 expect(ctrl.messages).to.have.length(5);
-                expect(ctrl.messages[0].msg).to.equal('five');
-                expect(ctrl.messages[4].msg).to.equal('one');
+                expect(ctrl.messages[0].message).to.equal('five');
+                expect(ctrl.messages[4].message).to.equal('one');
                 expect(() => ctrl.message('test', null, 'six', 5)).to.not.throw(Error);
                 expect(ctrl.messages).to.have.length(5);
-                expect(ctrl.messages[0].msg).to.equal('six');
-                expect(ctrl.messages[4].msg).to.equal('two');
+                expect(ctrl.messages[0].message).to.equal('six');
+                expect(ctrl.messages[4].message).to.equal('two');
                 expect(() => ctrl.message('test', null, 'seven', 2)).to.not.throw(Error);
                 expect(ctrl.messages).to.have.length(2);
-                expect(ctrl.messages[0].msg).to.equal('seven');
-                expect(ctrl.messages[1].msg).to.equal('six');
+                expect(ctrl.messages[0].message).to.equal('seven');
+                expect(ctrl.messages[1].message).to.equal('six');
             });
         });
 
