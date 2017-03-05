@@ -38,8 +38,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
@@ -60,7 +63,7 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/state-event-proxy.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import {_} from &apos;./utils&apos;;
 import Static from &apos;basic-static&apos;;
-import events from &apos;./state-events&apos;;
+import {Events} from &apos;./state-events&apos;;
 
 /**
  * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener
@@ -193,7 +196,7 @@ export class StateEventProxy extends Static {
                     return target[key];
                 },
                 set: (target, i, v) =&gt; {
-                    if (!_.isNaN(i)) {
+                    if (!isNaN(i)) {
                         v = _.isPlainObject(v) &amp;&amp; this.buildProxyObject(`${scope}[${i}]`, v, o) ||
                             _.isArray(v) &amp;&amp; this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;
                         this.emit(`${scope}[${i}]`, v, ret);
@@ -202,7 +205,7 @@ export class StateEventProxy extends Static {
                     return true;
                 },
                 deleteProperty: (target, i) =&gt; {
-                    if (!_.isNaN(i)) {
+                    if (!isNaN(i)) {
                         this.emit(`${scope}[${i}]`, undefined, ret);
                     }
                     delete target[i];
@@ -216,7 +219,7 @@ export class StateEventProxy extends Static {
 
     static emit(scope, v, obj) {
         if (!DISABLE[scope]) {
-            setTimeout(() =&gt; events.emit(scope, v, obj));
+            setTimeout(() =&gt; Events.emit(scope, v, obj));
         }
     }
 

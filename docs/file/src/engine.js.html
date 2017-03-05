@@ -38,8 +38,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
@@ -63,56 +66,7 @@ import Singleton from &apos;basic-singleton&apos;;
 import Promise from &apos;bluebird&apos;;
 import Scene from &apos;./scene&apos;;
 import EventProxy from &apos;./state-event-proxy&apos;;
-import events from &apos;./state-events&apos;;
-
-/**
- * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.
- */
-
-/**
- * @typedef {Object} EntityData
- */
-/**
- * @typedef {EntityData} EntityMetaData
- * @property {string} id - the generic Entity ID.
- * @property {string} uid - the instance-specific identifier.
- */
-/**
- * @typedef {class} ComponentClass
- */
-/**
- * @typedef {Object} ResourceProvider
- * @property {function(id: string): EntityData} - Raw object containing default component definitions for Entity ID.
- * @property {function(id: string): ComponentClass} - Static component class for Component ID.
- */
-/**
- * @typedef {function(): Promise&lt;ResourceProvider&gt;} ResourceLoader
- */
-
-/**
- * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler
- */
-/**
- * @typedef {Object} KeyDefinition
- * @property {string} key
- * @property {KeyHandler} [handler] - The handler function for both key up and down.
- * @property {KeyHandler} [upHandler] - The handler specifically for key up.
- * @property {KeyHandler} [downHandler] - The handler specifically for key down.
- */
-/**
- * @typedef {Object} Settings
- * @property {bool} [debug=false]
- * @property {Object} [input]
- * @property {KeyDefinition[]} [input.keys]
- */
-
-/**
- * @typedef {Object} Logger
- * @property {function} info
- * @property {function} debug
- * @property {function} warn
- * @property {function} error
- */
+import {Events} from &apos;./state-events&apos;;
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
@@ -179,11 +133,20 @@ export default class Engine extends Singleton {
      *
      * @access private
      */
-    constructorHelper( loggerService, PlayerController, settings) {
+    static constructorHelper(engine, ...args) {
+        engine.constructorHelper(...args);
+    }
+
+    /**
+     * For testing purposes -- cannot stub constructor
+     *
+     * @access private
+     */
+    constructorHelper(loggerService, PlayerController, settings) {
         if (!PlayerController) {
             PlayerController = require(&apos;./player-controller&apos;).default;
         }
-        EventProxy(self, &apos;engine&apos;, [&apos;fps&apos;, &apos;loading&apos;]);
+        EventProxy(this, &apos;engine&apos;, [&apos;fps&apos;, &apos;loading&apos;]);
         /**
          * The currently rendered frames-per-second.
          *
@@ -203,7 +166,7 @@ export default class Engine extends Singleton {
         /** @type {Settings} **/
         this.settings = settings;
         logger = loggerService;
-        playerController = new PlayerController(self);
+        playerController = new PlayerController(this);
     }
 
     /**
@@ -211,7 +174,7 @@ export default class Engine extends Singleton {
      */
     constructor(...args) {
         super();
-        Engine.constructorHelper(...args);
+        Engine.constructorHelper(this, ...args);
     }
 
     /**
@@ -247,11 +210,11 @@ export default class Engine extends Singleton {
     /**
      * The scene&apos;s default terrain entity.
      *
-     * @type {?Entity}
+     * @type {?EntityInstance}
      */
     get terrain() { return terrainEntity; }
     /**
-     * @type {Entity}
+     * @type {EntityInstance}
      */
     set terrain(v) { return terrainEntity = v; }
 
@@ -432,7 +395,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     emitEvent(scope, v, obj) {
-        return events.emit(scope, v, obj);
+        return Events.emit(scope, v, obj);
     }
 
     /**
@@ -444,7 +407,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     onEvent(event, handler) {
-        return events.on(event, handler);
+        return Events.on(event, handler);
     }
 
     /**

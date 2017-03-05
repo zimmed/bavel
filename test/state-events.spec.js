@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import events from '../src/state-events';
+import {Events as events} from '../src/state-events';
 
 describe('StateEventManager', () => {
 

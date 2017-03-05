@@ -5,55 +5,6 @@ import Scene from './scene';
 import EventProxy from './state-event-proxy';
 import {Events} from './state-events';
 
-/**
- * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.
- */
-
-/**
- * @typedef {Object} EntityData
- */
-/**
- * @typedef {EntityData} EntityMetaData
- * @property {string} id - the generic Entity ID.
- * @property {string} uid - the instance-specific identifier.
- */
-/**
- * @typedef {class} ComponentClass
- */
-/**
- * @typedef {Object} ResourceProvider
- * @property {function(id: string): EntityData} - Raw object containing default component definitions for Entity ID.
- * @property {function(id: string): ComponentClass} - Static component class for Component ID.
- */
-/**
- * @typedef {function(): Promise<ResourceProvider>} ResourceLoader
- */
-
-/**
- * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler
- */
-/**
- * @typedef {Object} KeyDefinition
- * @property {string} key
- * @property {KeyHandler} [handler] - The handler function for both key up and down.
- * @property {KeyHandler} [upHandler] - The handler specifically for key up.
- * @property {KeyHandler} [downHandler] - The handler specifically for key down.
- */
-/**
- * @typedef {Object} Settings
- * @property {bool} [debug=false]
- * @property {Object} [input]
- * @property {KeyDefinition[]} [input.keys]
- */
-
-/**
- * @typedef {Object} Logger
- * @property {function} info
- * @property {function} debug
- * @property {function} warn
- * @property {function} error
- */
-
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
 if (typeof require.ensure !== 'function') {
@@ -119,11 +70,20 @@ export default class Engine extends Singleton {
      *
      * @access private
      */
-    constructorHelper( loggerService, PlayerController, settings) {
+    static constructorHelper(engine, ...args) {
+        engine.constructorHelper(...args);
+    }
+
+    /**
+     * For testing purposes -- cannot stub constructor
+     *
+     * @access private
+     */
+    constructorHelper(loggerService, PlayerController, settings) {
         if (!PlayerController) {
             PlayerController = require('./player-controller').default;
         }
-        EventProxy(self, 'engine', ['fps', 'loading']);
+        EventProxy(this, 'engine', ['fps', 'loading']);
         /**
          * The currently rendered frames-per-second.
          *
@@ -143,7 +103,7 @@ export default class Engine extends Singleton {
         /** @type {Settings} **/
         this.settings = settings;
         logger = loggerService;
-        playerController = new PlayerController(self);
+        playerController = new PlayerController(this);
     }
 
     /**
@@ -151,7 +111,7 @@ export default class Engine extends Singleton {
      */
     constructor(...args) {
         super();
-        Engine.constructorHelper(...args);
+        Engine.constructorHelper(this, ...args);
     }
 
     /**
@@ -187,11 +147,11 @@ export default class Engine extends Singleton {
     /**
      * The scene's default terrain entity.
      *
-     * @type {?Entity}
+     * @type {?EntityInstance}
      */
     get terrain() { return terrainEntity; }
     /**
-     * @type {Entity}
+     * @type {EntityInstance}
      */
     set terrain(v) { return terrainEntity = v; }
 

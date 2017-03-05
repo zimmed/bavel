@@ -42,7 +42,6 @@ describe('The Entity Class', () => {
                     expect(entity).to.have.all.keys([ 'id', 'uid']);
                     expect(entity).to.have.property('mesh');
                     expect(entity).to.have.property('tick');
-                    expect(entity).to.have.property('get');
                     expect(entity).to.have.property('meshAsync');
                     expect(getEntity.callCount).to.equal(1);
                     expect(getEntity.calledWithExactly('test')).to.equal(true);
@@ -96,13 +95,13 @@ describe('The Entity Class', () => {
                     }, 20)
                 }, 20);
             });
-            it(`should have a get method that takes a property path and
-            returns the value or false if it doesn't exist`, () => {
-                expect(entity.get('id')).to.equal('test');
-                expect(entity.get('TestComponent.id')).to.equal(false);
-                entity.TestComponent = _comp;
-                expect(entity.get('TestComponent.id')).to.equal('TestComponent');
-            });
+            // it(`should have a get method that takes a property path and
+            // returns the value or false if it doesn't exist`, () => {
+            //     expect(entity.get('id')).to.equal('test');
+            //     expect(entity.get('TestComponent.id')).to.equal(false);
+            //     entity.TestComponent = _comp;
+            //     expect(entity.get('TestComponent.id')).to.equal('TestComponent');
+            // });
             it(`should have a tick setter that will add a new tick method when the
             assignment is an object with both id and tick properties, or delete
             an existing tick when only an id property is in the assignment object`, () => {

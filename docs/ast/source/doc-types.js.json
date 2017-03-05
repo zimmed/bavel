@@ -1,0 +1,690 @@
+{
+  "type": "File",
+  "start": 0,
+  "end": 4834,
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 0
+    },
+    "end": {
+      "line": 149,
+      "column": 0
+    }
+  },
+  "program": {
+    "type": "Program",
+    "start": 0,
+    "end": 4834,
+    "loc": {
+      "start": {
+        "line": 1,
+        "column": 0
+      },
+      "end": {
+        "line": 149,
+        "column": 0
+      }
+    },
+    "sourceType": "module",
+    "body": [],
+    "directives": [],
+    "leadingComments": null,
+    "innerComments": [
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.\n ",
+        "start": 0,
+        "end": 114,
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 3,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} ComponentData\n * @property {string} id - The component class name, used by the {@link ResourceProvider}\n *  to pull the component class.\n * @property {*} [*] - Any data.\n ",
+        "start": 116,
+        "end": 314,
+        "loc": {
+          "start": {
+            "line": 5,
+            "column": 0
+          },
+          "end": {
+            "line": 10,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {ComponentData} Component\n ",
+        "start": 316,
+        "end": 361,
+        "loc": {
+          "start": {
+            "line": 12,
+            "column": 0
+          },
+          "end": {
+            "line": 14,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} EntityData\n * @property {string} [_primaryMesh] - Optional ID of component that holds entity's\n *  primary mesh object.\n * @property {ComponentData} [*] - Component properties.\n * @example <caption>ID: 'objects.sphere'</caption>\n * objects = {\n *     sphere: {\n *         _primaryMesh: 'MyMeshComponent',\n *\n *         MyMeshComponent: {position: {x: 0, y: 5, z: 0}},\n *         MyLogicComponent: {value: 'foobar'}\n *     }\n * };\n ",
+        "start": 363,
+        "end": 821,
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 0
+          },
+          "end": {
+            "line": 30,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {EntityData} EntityMetaData\n * @property {string} id - The generic Entity ID, used by the {@link ResourceProvider}\n *  to pull the data.\n * @property {string} uid - the instance-specific identifier.\n * @example <caption>Basic Definition</caption>\n * let entityData1 = {id: 'objects.sphere', uid: 'myFirstSphere'};\n * @example <caption>Advanced Definition</caption>\n * let entityData2 = {\n *     id: 'objects.sphere',\n *     uid: 'mySecondSphere',\n *     MyMeshComponent: {rotation: {y: Math.PI},\n *     MyLogicComponent: {value: 42} // This will override the default definition.\n * };\n ",
+        "start": 823,
+        "end": 1427,
+        "loc": {
+          "start": {
+            "line": 32,
+            "column": 0
+          },
+          "end": {
+            "line": 46,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} EntityInstance\n * @property {string} id - The Entity ID.\n * @property {string} uid - The unique identifier for the entity instance.\n * @property {Component|undefined} mesh - The component that holds the primary mesh\n *  object for the entity.\n * @property {function(engine: Engine, time: number, deltaTime: number): undefined} tick -\n *  Executes all registered component tick methods.\n * @property {Promise<Component>} meshAsync - Wait for entity's mesh component to be\n *  set and get the value, asynchronously.\n ",
+        "start": 1430,
+        "end": 1972,
+        "loc": {
+          "start": {
+            "line": 48,
+            "column": 1
+          },
+          "end": {
+            "line": 58,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {class} ComponentClass - A static class for a component\n * @example <caption>Basic Logic Component</caption>\n * class MyLogicComponent {\n *     constructor(engine, entity, id, {value}) {\n *         this.id = id;\n *         this.value = value;\n *         this.enabled = true;\n *         entity.tick = {id, tick: MyLogicComponent.tick};\n *         return comp;\n *     }\n *     disableMe() {\n *         this.enabled = false;\n *     }\n *     static update(engine, entity, comp, id, data) {\n *         if (!comp) {\n *             comp = new MyLogicComponent(engine, entity, id, data);\n *         } else {\n *             comp.value = data.value;\n *         }\n *         return comp;\n *     }\n *     static dismount(engine, entity, comp) {\n *         delete comp.value;\n *         return null;\n *     }\n *     static tick(engine, entity, comp, t, dt) {\n *         if (comp.enabled) {\n *             engine.ctrl.target.AnotherComponent.doSomething(comp.value);\n *         }\n *     }\n * }\n * @example <caption>BabylonJS Object Wrapper</caption>\n * class MyMeshComponent {\n *     static create(engine, entity, id, meshData) {\n *         const comp = {id, baby: null};\n *\n *         return someFancyAsyncAction().then(() => {\n *             comp.baby = engine.GL.Mesh.CreateSphere('mySphere', 10, 2, engine.scene.baby);\n *             _.assign(comp.baby, meshData);\n *             return comp;\n *          });\n *     static update(engine, entity, comp, id, data) {\n *         if (!comp) {\n *             return this.create(engine, entity, id, data);\n *         }\n *         _.assign(comp.baby, data);\n *         return Promise.resolve(comp);\n *     }\n *     static dismount(engine, entity, comp) {\n *          comp.baby.dispose();\n *          delete comp.baby;\n *          return null;\n *     }\n * }\n ",
+        "start": 1974,
+        "end": 3782,
+        "loc": {
+          "start": {
+            "line": 60,
+            "column": 0
+          },
+          "end": {
+            "line": 115,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} ResourceProvider\n * @property {function(id: string): EntityData} getEntity - Raw object containing default component definitions for Entity ID.\n * @property {function(id: string): ComponentClass} getComponent - Static component class for Component ID.\n ",
+        "start": 3783,
+        "end": 4063,
+        "loc": {
+          "start": {
+            "line": 116,
+            "column": 0
+          },
+          "end": {
+            "line": 120,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {function(): Promise<ResourceProvider>} ResourceLoader\n ",
+        "start": 4064,
+        "end": 4138,
+        "loc": {
+          "start": {
+            "line": 121,
+            "column": 0
+          },
+          "end": {
+            "line": 123,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler\n ",
+        "start": 4140,
+        "end": 4220,
+        "loc": {
+          "start": {
+            "line": 125,
+            "column": 0
+          },
+          "end": {
+            "line": 127,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} KeyDefinition\n * @property {string} key\n * @property {KeyHandler} [handler] - The handler function for both key up and down.\n * @property {KeyHandler} [upHandler] - The handler specifically for key up.\n * @property {KeyHandler} [downHandler] - The handler specifically for key down.\n ",
+        "start": 4221,
+        "end": 4532,
+        "loc": {
+          "start": {
+            "line": 128,
+            "column": 0
+          },
+          "end": {
+            "line": 134,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n ",
+        "start": 4533,
+        "end": 4678,
+        "loc": {
+          "start": {
+            "line": 135,
+            "column": 0
+          },
+          "end": {
+            "line": 140,
+            "column": 3
+          }
+        }
+      },
+      {
+        "type": "CommentBlock",
+        "value": "*\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n ",
+        "start": 4680,
+        "end": 4833,
+        "loc": {
+          "start": {
+            "line": 142,
+            "column": 0
+          },
+          "end": {
+            "line": 148,
+            "column": 3
+          }
+        }
+      }
+    ]
+  },
+  "comments": [
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.\n ",
+      "start": 0,
+      "end": 114,
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 3,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} ComponentData\n * @property {string} id - The component class name, used by the {@link ResourceProvider}\n *  to pull the component class.\n * @property {*} [*] - Any data.\n ",
+      "start": 116,
+      "end": 314,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 0
+        },
+        "end": {
+          "line": 10,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {ComponentData} Component\n ",
+      "start": 316,
+      "end": 361,
+      "loc": {
+        "start": {
+          "line": 12,
+          "column": 0
+        },
+        "end": {
+          "line": 14,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} EntityData\n * @property {string} [_primaryMesh] - Optional ID of component that holds entity's\n *  primary mesh object.\n * @property {ComponentData} [*] - Component properties.\n * @example <caption>ID: 'objects.sphere'</caption>\n * objects = {\n *     sphere: {\n *         _primaryMesh: 'MyMeshComponent',\n *\n *         MyMeshComponent: {position: {x: 0, y: 5, z: 0}},\n *         MyLogicComponent: {value: 'foobar'}\n *     }\n * };\n ",
+      "start": 363,
+      "end": 821,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 0
+        },
+        "end": {
+          "line": 30,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {EntityData} EntityMetaData\n * @property {string} id - The generic Entity ID, used by the {@link ResourceProvider}\n *  to pull the data.\n * @property {string} uid - the instance-specific identifier.\n * @example <caption>Basic Definition</caption>\n * let entityData1 = {id: 'objects.sphere', uid: 'myFirstSphere'};\n * @example <caption>Advanced Definition</caption>\n * let entityData2 = {\n *     id: 'objects.sphere',\n *     uid: 'mySecondSphere',\n *     MyMeshComponent: {rotation: {y: Math.PI},\n *     MyLogicComponent: {value: 42} // This will override the default definition.\n * };\n ",
+      "start": 823,
+      "end": 1427,
+      "loc": {
+        "start": {
+          "line": 32,
+          "column": 0
+        },
+        "end": {
+          "line": 46,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} EntityInstance\n * @property {string} id - The Entity ID.\n * @property {string} uid - The unique identifier for the entity instance.\n * @property {Component|undefined} mesh - The component that holds the primary mesh\n *  object for the entity.\n * @property {function(engine: Engine, time: number, deltaTime: number): undefined} tick -\n *  Executes all registered component tick methods.\n * @property {Promise<Component>} meshAsync - Wait for entity's mesh component to be\n *  set and get the value, asynchronously.\n ",
+      "start": 1430,
+      "end": 1972,
+      "loc": {
+        "start": {
+          "line": 48,
+          "column": 1
+        },
+        "end": {
+          "line": 58,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {class} ComponentClass - A static class for a component\n * @example <caption>Basic Logic Component</caption>\n * class MyLogicComponent {\n *     constructor(engine, entity, id, {value}) {\n *         this.id = id;\n *         this.value = value;\n *         this.enabled = true;\n *         entity.tick = {id, tick: MyLogicComponent.tick};\n *         return comp;\n *     }\n *     disableMe() {\n *         this.enabled = false;\n *     }\n *     static update(engine, entity, comp, id, data) {\n *         if (!comp) {\n *             comp = new MyLogicComponent(engine, entity, id, data);\n *         } else {\n *             comp.value = data.value;\n *         }\n *         return comp;\n *     }\n *     static dismount(engine, entity, comp) {\n *         delete comp.value;\n *         return null;\n *     }\n *     static tick(engine, entity, comp, t, dt) {\n *         if (comp.enabled) {\n *             engine.ctrl.target.AnotherComponent.doSomething(comp.value);\n *         }\n *     }\n * }\n * @example <caption>BabylonJS Object Wrapper</caption>\n * class MyMeshComponent {\n *     static create(engine, entity, id, meshData) {\n *         const comp = {id, baby: null};\n *\n *         return someFancyAsyncAction().then(() => {\n *             comp.baby = engine.GL.Mesh.CreateSphere('mySphere', 10, 2, engine.scene.baby);\n *             _.assign(comp.baby, meshData);\n *             return comp;\n *          });\n *     static update(engine, entity, comp, id, data) {\n *         if (!comp) {\n *             return this.create(engine, entity, id, data);\n *         }\n *         _.assign(comp.baby, data);\n *         return Promise.resolve(comp);\n *     }\n *     static dismount(engine, entity, comp) {\n *          comp.baby.dispose();\n *          delete comp.baby;\n *          return null;\n *     }\n * }\n ",
+      "start": 1974,
+      "end": 3782,
+      "loc": {
+        "start": {
+          "line": 60,
+          "column": 0
+        },
+        "end": {
+          "line": 115,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} ResourceProvider\n * @property {function(id: string): EntityData} getEntity - Raw object containing default component definitions for Entity ID.\n * @property {function(id: string): ComponentClass} getComponent - Static component class for Component ID.\n ",
+      "start": 3783,
+      "end": 4063,
+      "loc": {
+        "start": {
+          "line": 116,
+          "column": 0
+        },
+        "end": {
+          "line": 120,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {function(): Promise<ResourceProvider>} ResourceLoader\n ",
+      "start": 4064,
+      "end": 4138,
+      "loc": {
+        "start": {
+          "line": 121,
+          "column": 0
+        },
+        "end": {
+          "line": 123,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler\n ",
+      "start": 4140,
+      "end": 4220,
+      "loc": {
+        "start": {
+          "line": 125,
+          "column": 0
+        },
+        "end": {
+          "line": 127,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} KeyDefinition\n * @property {string} key\n * @property {KeyHandler} [handler] - The handler function for both key up and down.\n * @property {KeyHandler} [upHandler] - The handler specifically for key up.\n * @property {KeyHandler} [downHandler] - The handler specifically for key down.\n ",
+      "start": 4221,
+      "end": 4532,
+      "loc": {
+        "start": {
+          "line": 128,
+          "column": 0
+        },
+        "end": {
+          "line": 134,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n ",
+      "start": 4533,
+      "end": 4678,
+      "loc": {
+        "start": {
+          "line": 135,
+          "column": 0
+        },
+        "end": {
+          "line": 140,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n ",
+      "start": 4680,
+      "end": 4833,
+      "loc": {
+        "start": {
+          "line": 142,
+          "column": 0
+        },
+        "end": {
+          "line": 148,
+          "column": 3
+        }
+      }
+    }
+  ],
+  "tokens": [
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {string|number|Object|boolean} ProxyValue - Emits the scoped event when this property changes.\n ",
+      "start": 0,
+      "end": 114,
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 3,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} ComponentData\n * @property {string} id - The component class name, used by the {@link ResourceProvider}\n *  to pull the component class.\n * @property {*} [*] - Any data.\n ",
+      "start": 116,
+      "end": 314,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 0
+        },
+        "end": {
+          "line": 10,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {ComponentData} Component\n ",
+      "start": 316,
+      "end": 361,
+      "loc": {
+        "start": {
+          "line": 12,
+          "column": 0
+        },
+        "end": {
+          "line": 14,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} EntityData\n * @property {string} [_primaryMesh] - Optional ID of component that holds entity's\n *  primary mesh object.\n * @property {ComponentData} [*] - Component properties.\n * @example <caption>ID: 'objects.sphere'</caption>\n * objects = {\n *     sphere: {\n *         _primaryMesh: 'MyMeshComponent',\n *\n *         MyMeshComponent: {position: {x: 0, y: 5, z: 0}},\n *         MyLogicComponent: {value: 'foobar'}\n *     }\n * };\n ",
+      "start": 363,
+      "end": 821,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 0
+        },
+        "end": {
+          "line": 30,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {EntityData} EntityMetaData\n * @property {string} id - The generic Entity ID, used by the {@link ResourceProvider}\n *  to pull the data.\n * @property {string} uid - the instance-specific identifier.\n * @example <caption>Basic Definition</caption>\n * let entityData1 = {id: 'objects.sphere', uid: 'myFirstSphere'};\n * @example <caption>Advanced Definition</caption>\n * let entityData2 = {\n *     id: 'objects.sphere',\n *     uid: 'mySecondSphere',\n *     MyMeshComponent: {rotation: {y: Math.PI},\n *     MyLogicComponent: {value: 42} // This will override the default definition.\n * };\n ",
+      "start": 823,
+      "end": 1427,
+      "loc": {
+        "start": {
+          "line": 32,
+          "column": 0
+        },
+        "end": {
+          "line": 46,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} EntityInstance\n * @property {string} id - The Entity ID.\n * @property {string} uid - The unique identifier for the entity instance.\n * @property {Component|undefined} mesh - The component that holds the primary mesh\n *  object for the entity.\n * @property {function(engine: Engine, time: number, deltaTime: number): undefined} tick -\n *  Executes all registered component tick methods.\n * @property {Promise<Component>} meshAsync - Wait for entity's mesh component to be\n *  set and get the value, asynchronously.\n ",
+      "start": 1430,
+      "end": 1972,
+      "loc": {
+        "start": {
+          "line": 48,
+          "column": 1
+        },
+        "end": {
+          "line": 58,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {class} ComponentClass - A static class for a component\n * @example <caption>Basic Logic Component</caption>\n * class MyLogicComponent {\n *     constructor(engine, entity, id, {value}) {\n *         this.id = id;\n *         this.value = value;\n *         this.enabled = true;\n *         entity.tick = {id, tick: MyLogicComponent.tick};\n *         return comp;\n *     }\n *     disableMe() {\n *         this.enabled = false;\n *     }\n *     static update(engine, entity, comp, id, data) {\n *         if (!comp) {\n *             comp = new MyLogicComponent(engine, entity, id, data);\n *         } else {\n *             comp.value = data.value;\n *         }\n *         return comp;\n *     }\n *     static dismount(engine, entity, comp) {\n *         delete comp.value;\n *         return null;\n *     }\n *     static tick(engine, entity, comp, t, dt) {\n *         if (comp.enabled) {\n *             engine.ctrl.target.AnotherComponent.doSomething(comp.value);\n *         }\n *     }\n * }\n * @example <caption>BabylonJS Object Wrapper</caption>\n * class MyMeshComponent {\n *     static create(engine, entity, id, meshData) {\n *         const comp = {id, baby: null};\n *\n *         return someFancyAsyncAction().then(() => {\n *             comp.baby = engine.GL.Mesh.CreateSphere('mySphere', 10, 2, engine.scene.baby);\n *             _.assign(comp.baby, meshData);\n *             return comp;\n *          });\n *     static update(engine, entity, comp, id, data) {\n *         if (!comp) {\n *             return this.create(engine, entity, id, data);\n *         }\n *         _.assign(comp.baby, data);\n *         return Promise.resolve(comp);\n *     }\n *     static dismount(engine, entity, comp) {\n *          comp.baby.dispose();\n *          delete comp.baby;\n *          return null;\n *     }\n * }\n ",
+      "start": 1974,
+      "end": 3782,
+      "loc": {
+        "start": {
+          "line": 60,
+          "column": 0
+        },
+        "end": {
+          "line": 115,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} ResourceProvider\n * @property {function(id: string): EntityData} getEntity - Raw object containing default component definitions for Entity ID.\n * @property {function(id: string): ComponentClass} getComponent - Static component class for Component ID.\n ",
+      "start": 3783,
+      "end": 4063,
+      "loc": {
+        "start": {
+          "line": 116,
+          "column": 0
+        },
+        "end": {
+          "line": 120,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {function(): Promise<ResourceProvider>} ResourceLoader\n ",
+      "start": 4064,
+      "end": 4138,
+      "loc": {
+        "start": {
+          "line": 121,
+          "column": 0
+        },
+        "end": {
+          "line": 123,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {function(engine: Engine, k: string, down: bool)} KeyHandler\n ",
+      "start": 4140,
+      "end": 4220,
+      "loc": {
+        "start": {
+          "line": 125,
+          "column": 0
+        },
+        "end": {
+          "line": 127,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} KeyDefinition\n * @property {string} key\n * @property {KeyHandler} [handler] - The handler function for both key up and down.\n * @property {KeyHandler} [upHandler] - The handler specifically for key up.\n * @property {KeyHandler} [downHandler] - The handler specifically for key down.\n ",
+      "start": 4221,
+      "end": 4532,
+      "loc": {
+        "start": {
+          "line": 128,
+          "column": 0
+        },
+        "end": {
+          "line": 134,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n ",
+      "start": 4533,
+      "end": 4678,
+      "loc": {
+        "start": {
+          "line": 135,
+          "column": 0
+        },
+        "end": {
+          "line": 140,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n ",
+      "start": 4680,
+      "end": 4833,
+      "loc": {
+        "start": {
+          "line": 142,
+          "column": 0
+        },
+        "end": {
+          "line": 148,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "eof",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 4834,
+      "end": 4834,
+      "loc": {
+        "start": {
+          "line": 149,
+          "column": 0
+        },
+        "end": {
+          "line": 149,
+          "column": 0
+        }
+      }
+    }
+  ]
+}

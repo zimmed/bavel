@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 188,
+  "end": 212,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 11,
+      "line": 13,
       "column": 0
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 188,
+    "end": 212,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 11,
+        "line": 13,
         "column": 0
       }
     },
@@ -95,20 +95,103 @@
             "raw": "'events'"
           },
           "value": "events"
+        }
+      },
+      {
+        "type": "VariableDeclaration",
+        "start": 36,
+        "end": 70,
+        "loc": {
+          "start": {
+            "line": 3,
+            "column": 0
+          },
+          "end": {
+            "line": 3,
+            "column": 34
+          }
         },
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "start": 42,
+            "end": 69,
+            "loc": {
+              "start": {
+                "line": 3,
+                "column": 6
+              },
+              "end": {
+                "line": 3,
+                "column": 33
+              }
+            },
+            "id": {
+              "type": "Identifier",
+              "start": 42,
+              "end": 48,
+              "loc": {
+                "start": {
+                  "line": 3,
+                  "column": 6
+                },
+                "end": {
+                  "line": 3,
+                  "column": 12
+                },
+                "identifierName": "events"
+              },
+              "name": "events"
+            },
+            "init": {
+              "type": "NewExpression",
+              "start": 51,
+              "end": 69,
+              "loc": {
+                "start": {
+                  "line": 3,
+                  "column": 15
+                },
+                "end": {
+                  "line": 3,
+                  "column": 33
+                }
+              },
+              "callee": {
+                "type": "Identifier",
+                "start": 55,
+                "end": 67,
+                "loc": {
+                  "start": {
+                    "line": 3,
+                    "column": 19
+                  },
+                  "end": {
+                    "line": 3,
+                    "column": 31
+                  },
+                  "identifierName": "EventEmitter"
+                },
+                "name": "EventEmitter"
+              },
+              "arguments": []
+            }
+          }
+        ],
+        "kind": "const",
         "trailingComments": [
           {
             "type": "CommentBlock",
             "value": "*\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n ",
-            "start": 36,
-            "end": 144,
+            "start": 72,
+            "end": 180,
             "loc": {
               "start": {
-                "line": 3,
+                "line": 5,
                 "column": 0
               },
               "end": {
-                "line": 8,
+                "line": 10,
                 "column": 3
               }
             }
@@ -117,60 +200,60 @@
       },
       {
         "type": "ExportNamedDeclaration",
-        "start": 145,
-        "end": 186,
+        "start": 181,
+        "end": 210,
         "loc": {
           "start": {
-            "line": 9,
+            "line": 11,
             "column": 0
           },
           "end": {
-            "line": 9,
-            "column": 41
+            "line": 11,
+            "column": 29
           }
         },
         "specifiers": [],
         "source": null,
         "declaration": {
           "type": "VariableDeclaration",
-          "start": 152,
-          "end": 186,
+          "start": 188,
+          "end": 210,
           "loc": {
             "start": {
-              "line": 9,
+              "line": 11,
               "column": 7
             },
             "end": {
-              "line": 9,
-              "column": 41
+              "line": 11,
+              "column": 29
             }
           },
           "declarations": [
             {
               "type": "VariableDeclarator",
-              "start": 158,
-              "end": 185,
+              "start": 194,
+              "end": 209,
               "loc": {
                 "start": {
-                  "line": 9,
+                  "line": 11,
                   "column": 13
                 },
                 "end": {
-                  "line": 9,
-                  "column": 40
+                  "line": 11,
+                  "column": 28
                 }
               },
               "id": {
                 "type": "Identifier",
-                "start": 158,
-                "end": 164,
+                "start": 194,
+                "end": 200,
                 "loc": {
                   "start": {
-                    "line": 9,
+                    "line": 11,
                     "column": 13
                   },
                   "end": {
-                    "line": 9,
+                    "line": 11,
                     "column": 19
                   },
                   "identifierName": "Events"
@@ -179,37 +262,21 @@
                 "leadingComments": null
               },
               "init": {
-                "type": "NewExpression",
-                "start": 167,
-                "end": 185,
+                "type": "Identifier",
+                "start": 203,
+                "end": 209,
                 "loc": {
                   "start": {
-                    "line": 9,
+                    "line": 11,
                     "column": 22
                   },
                   "end": {
-                    "line": 9,
-                    "column": 40
-                  }
-                },
-                "callee": {
-                  "type": "Identifier",
-                  "start": 171,
-                  "end": 183,
-                  "loc": {
-                    "start": {
-                      "line": 9,
-                      "column": 26
-                    },
-                    "end": {
-                      "line": 9,
-                      "column": 38
-                    },
-                    "identifierName": "EventEmitter"
+                    "line": 11,
+                    "column": 28
                   },
-                  "name": "EventEmitter"
+                  "identifierName": "events"
                 },
-                "arguments": []
+                "name": "events"
               },
               "leadingComments": null
             }
@@ -219,15 +286,15 @@
             {
               "type": "CommentBlock",
               "value": "*\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n ",
-              "start": 36,
-              "end": 144,
+              "start": 72,
+              "end": 180,
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 5,
                   "column": 0
                 },
                 "end": {
-                  "line": 8,
+                  "line": 10,
                   "column": 3
                 }
               }
@@ -239,15 +306,15 @@
           {
             "type": "CommentBlock",
             "value": "*\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n ",
-            "start": 36,
-            "end": 144,
+            "start": 72,
+            "end": 180,
             "loc": {
               "start": {
-                "line": 3,
+                "line": 5,
                 "column": 0
               },
               "end": {
-                "line": 8,
+                "line": 10,
                 "column": 3
               }
             }
@@ -261,15 +328,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n ",
-      "start": 36,
-      "end": 144,
+      "start": 72,
+      "end": 180,
       "loc": {
         "start": {
-          "line": 3,
+          "line": 5,
           "column": 0
         },
         "end": {
-          "line": 8,
+          "line": 10,
           "column": 3
         }
       }
@@ -410,17 +477,228 @@
       }
     },
     {
-      "type": "CommentBlock",
-      "value": "*\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n ",
+      "type": {
+        "label": "const",
+        "keyword": "const",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "const",
       "start": 36,
-      "end": 144,
+      "end": 41,
       "loc": {
         "start": {
           "line": 3,
           "column": 0
         },
         "end": {
-          "line": 8,
+          "line": 3,
+          "column": 5
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "events",
+      "start": 42,
+      "end": 48,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 6
+        },
+        "end": {
+          "line": 3,
+          "column": 12
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "=",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": true,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "=",
+      "start": 49,
+      "end": 50,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 13
+        },
+        "end": {
+          "line": 3,
+          "column": 14
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "new",
+        "keyword": "new",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "new",
+      "start": 51,
+      "end": 54,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 15
+        },
+        "end": {
+          "line": 3,
+          "column": 18
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "EventEmitter",
+      "start": 55,
+      "end": 67,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 19
+        },
+        "end": {
+          "line": 3,
+          "column": 31
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 67,
+      "end": 68,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 31
+        },
+        "end": {
+          "line": 3,
+          "column": 32
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 68,
+      "end": 69,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 32
+        },
+        "end": {
+          "line": 3,
+          "column": 33
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 69,
+      "end": 70,
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 33
+        },
+        "end": {
+          "line": 3,
+          "column": 34
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n ",
+      "start": 72,
+      "end": 180,
+      "loc": {
+        "start": {
+          "line": 5,
+          "column": 0
+        },
+        "end": {
+          "line": 10,
           "column": 3
         }
       }
@@ -440,15 +718,15 @@
         "updateContext": null
       },
       "value": "export",
-      "start": 145,
-      "end": 151,
+      "start": 181,
+      "end": 187,
       "loc": {
         "start": {
-          "line": 9,
+          "line": 11,
           "column": 0
         },
         "end": {
-          "line": 9,
+          "line": 11,
           "column": 6
         }
       }
@@ -468,15 +746,15 @@
         "updateContext": null
       },
       "value": "const",
-      "start": 152,
-      "end": 157,
+      "start": 188,
+      "end": 193,
       "loc": {
         "start": {
-          "line": 9,
+          "line": 11,
           "column": 7
         },
         "end": {
-          "line": 9,
+          "line": 11,
           "column": 12
         }
       }
@@ -494,15 +772,15 @@
         "binop": null
       },
       "value": "Events",
-      "start": 158,
-      "end": 164,
+      "start": 194,
+      "end": 200,
       "loc": {
         "start": {
-          "line": 9,
+          "line": 11,
           "column": 13
         },
         "end": {
-          "line": 9,
+          "line": 11,
           "column": 19
         }
       }
@@ -521,44 +799,16 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 165,
-      "end": 166,
+      "start": 201,
+      "end": 202,
       "loc": {
         "start": {
-          "line": 9,
+          "line": 11,
           "column": 20
         },
         "end": {
-          "line": 9,
+          "line": 11,
           "column": 21
-        }
-      }
-    },
-    {
-      "type": {
-        "label": "new",
-        "keyword": "new",
-        "beforeExpr": true,
-        "startsExpr": true,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null,
-        "updateContext": null
-      },
-      "value": "new",
-      "start": 167,
-      "end": 170,
-      "loc": {
-        "start": {
-          "line": 9,
-          "column": 22
-        },
-        "end": {
-          "line": 9,
-          "column": 25
         }
       }
     },
@@ -574,67 +824,17 @@
         "postfix": false,
         "binop": null
       },
-      "value": "EventEmitter",
-      "start": 171,
-      "end": 183,
+      "value": "events",
+      "start": 203,
+      "end": 209,
       "loc": {
         "start": {
-          "line": 9,
-          "column": 26
+          "line": 11,
+          "column": 22
         },
         "end": {
-          "line": 9,
-          "column": 38
-        }
-      }
-    },
-    {
-      "type": {
-        "label": "(",
-        "beforeExpr": true,
-        "startsExpr": true,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null
-      },
-      "start": 183,
-      "end": 184,
-      "loc": {
-        "start": {
-          "line": 9,
-          "column": 38
-        },
-        "end": {
-          "line": 9,
-          "column": 39
-        }
-      }
-    },
-    {
-      "type": {
-        "label": ")",
-        "beforeExpr": false,
-        "startsExpr": false,
-        "rightAssociative": false,
-        "isLoop": false,
-        "isAssign": false,
-        "prefix": false,
-        "postfix": false,
-        "binop": null
-      },
-      "start": 184,
-      "end": 185,
-      "loc": {
-        "start": {
-          "line": 9,
-          "column": 39
-        },
-        "end": {
-          "line": 9,
-          "column": 40
+          "line": 11,
+          "column": 28
         }
       }
     },
@@ -651,16 +851,16 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 185,
-      "end": 186,
+      "start": 209,
+      "end": 210,
       "loc": {
         "start": {
-          "line": 9,
-          "column": 40
+          "line": 11,
+          "column": 28
         },
         "end": {
-          "line": 9,
-          "column": 41
+          "line": 11,
+          "column": 29
         }
       }
     },
@@ -677,15 +877,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 188,
-      "end": 188,
+      "start": 212,
+      "end": 212,
       "loc": {
         "start": {
-          "line": 11,
+          "line": 13,
           "column": 0
         },
         "end": {
-          "line": 11,
+          "line": 13,
           "column": 0
         }
       }

@@ -1,11 +1,11 @@
 {
-  "coverage": "72.85%",
-  "expectCount": 70,
-  "actualCount": 51,
+  "coverage": "98.61%",
+  "expectCount": 72,
+  "actualCount": 71,
   "files": {
     "src/player-controller.js": {
-      "expectCount": 20,
-      "actualCount": 20,
+      "expectCount": 21,
+      "actualCount": 21,
       "undocumentLines": []
     },
     "src/engine.js": {
@@ -15,17 +15,8 @@
     },
     "src/scene/entity/entity.js": {
       "expectCount": 8,
-      "actualCount": 0,
-      "undocumentLines": [
-        10,
-        12,
-        78,
-        65,
-        85,
-        71,
-        54,
-        60
-      ]
+      "actualCount": 8,
+      "undocumentLines": []
     },
     "src/state-event-proxy.js": {
       "expectCount": 1,
@@ -38,20 +29,10 @@
       "undocumentLines": []
     },
     "src/scene/scene.js": {
-      "expectCount": 11,
-      "actualCount": 0,
+      "expectCount": 12,
+      "actualCount": 11,
       "undocumentLines": [
-        6,
-        21,
-        28,
-        8,
-        27,
-        34,
-        23,
-        48,
-        52,
-        43,
-        38
+        11
       ]
     }
   }

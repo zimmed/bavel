@@ -378,16 +378,94 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
+    "src/doc-types.js",
+    "file/src/doc-types.js.html",
+    "src/doc-types.js",
+    "file"
+  ],
+  [
+    "src/doc-types.js~component",
+    "typedef/index.html#static-typedef-Component",
+    "src/doc-types.js~Component",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~componentclass",
+    "typedef/index.html#static-typedef-ComponentClass",
+    "src/doc-types.js~ComponentClass",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~componentdata",
+    "typedef/index.html#static-typedef-ComponentData",
+    "src/doc-types.js~ComponentData",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~entitydata",
+    "typedef/index.html#static-typedef-EntityData",
+    "src/doc-types.js~EntityData",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~entityinstance",
+    "typedef/index.html#static-typedef-EntityInstance",
+    "src/doc-types.js~EntityInstance",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~entitymetadata",
+    "typedef/index.html#static-typedef-EntityMetaData",
+    "src/doc-types.js~EntityMetaData",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~keydefinition",
+    "typedef/index.html#static-typedef-KeyDefinition",
+    "src/doc-types.js~KeyDefinition",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~keyhandler",
+    "typedef/index.html#static-typedef-KeyHandler",
+    "src/doc-types.js~KeyHandler",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~logger",
+    "typedef/index.html#static-typedef-Logger",
+    "src/doc-types.js~Logger",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~proxyvalue",
+    "typedef/index.html#static-typedef-ProxyValue",
+    "src/doc-types.js~ProxyValue",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~resourceloader",
+    "typedef/index.html#static-typedef-ResourceLoader",
+    "src/doc-types.js~ResourceLoader",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~resourceprovider",
+    "typedef/index.html#static-typedef-ResourceProvider",
+    "src/doc-types.js~ResourceProvider",
+    "typedef"
+  ],
+  [
+    "src/doc-types.js~settings",
+    "typedef/index.html#static-typedef-Settings",
+    "src/doc-types.js~Settings",
+    "typedef"
+  ],
+  [
     "src/engine.js",
     "file/src/engine.js.html",
     "src/engine.js",
     "file"
-  ],
-  [
-    "src/engine.js~componentclass",
-    "typedef/index.html#static-typedef-ComponentClass",
-    "src/engine.js~ComponentClass",
-    "typedef"
   ],
   [
     "src/engine.js~engine#gl",
@@ -529,13 +607,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/engine.js~engine#terrain",
-    "class/src/engine.js~Engine.html#instance-set-terrain",
+    "class/src/engine.js~Engine.html#instance-get-terrain",
     "src/engine.js~Engine#terrain",
     "member"
   ],
   [
     "src/engine.js~engine#terrain",
-    "class/src/engine.js~Engine.html#instance-get-terrain",
+    "class/src/engine.js~Engine.html#instance-set-terrain",
     "src/engine.js~Engine#terrain",
     "member"
   ],
@@ -550,60 +628,6 @@ window.esdocSearchIndex = [
     "class/src/engine.js~Engine.html#static-method-init",
     "src/engine.js~Engine.init",
     "method"
-  ],
-  [
-    "src/engine.js~entitydata",
-    "typedef/index.html#static-typedef-EntityData",
-    "src/engine.js~EntityData",
-    "typedef"
-  ],
-  [
-    "src/engine.js~entitymetadata",
-    "typedef/index.html#static-typedef-EntityMetaData",
-    "src/engine.js~EntityMetaData",
-    "typedef"
-  ],
-  [
-    "src/engine.js~keydefinition",
-    "typedef/index.html#static-typedef-KeyDefinition",
-    "src/engine.js~KeyDefinition",
-    "typedef"
-  ],
-  [
-    "src/engine.js~keyhandler",
-    "typedef/index.html#static-typedef-KeyHandler",
-    "src/engine.js~KeyHandler",
-    "typedef"
-  ],
-  [
-    "src/engine.js~logger",
-    "typedef/index.html#static-typedef-Logger",
-    "src/engine.js~Logger",
-    "typedef"
-  ],
-  [
-    "src/engine.js~proxyvalue",
-    "typedef/index.html#static-typedef-ProxyValue",
-    "src/engine.js~ProxyValue",
-    "typedef"
-  ],
-  [
-    "src/engine.js~resourceloader",
-    "typedef/index.html#static-typedef-ResourceLoader",
-    "src/engine.js~ResourceLoader",
-    "typedef"
-  ],
-  [
-    "src/engine.js~resourceprovider",
-    "typedef/index.html#static-typedef-ResourceProvider",
-    "src/engine.js~ResourceProvider",
-    "typedef"
-  ],
-  [
-    "src/engine.js~settings",
-    "typedef/index.html#static-typedef-Settings",
-    "src/engine.js~Settings",
-    "typedef"
   ],
   [
     "src/player-controller.js",
@@ -628,6 +652,12 @@ window.esdocSearchIndex = [
     "class/src/player-controller.js~PlayerController.html#instance-constructor-constructor",
     "src/player-controller.js~PlayerController#constructor",
     "method"
+  ],
+  [
+    "src/player-controller.js~playercontroller#engine",
+    "class/src/player-controller.js~PlayerController.html#instance-get-engine",
+    "src/player-controller.js~PlayerController#engine",
+    "member"
   ],
   [
     "src/player-controller.js~playercontroller#entityaltclick",
@@ -774,22 +804,16 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/scene/entity/index.js",
-    "file/src/scene/entity/index.js.html",
-    "src/scene/entity/index.js",
-    "file"
-  ],
-  [
-    "src/scene/index.js",
-    "file/src/scene/index.js.html",
-    "src/scene/index.js",
-    "file"
-  ],
-  [
     "src/scene/scene.js",
     "file/src/scene/scene.js.html",
     "src/scene/scene.js",
     "file"
+  ],
+  [
+    "src/scene/scene.js~scene#activecamera",
+    "class/src/scene/scene.js~Scene.html#instance-member-activeCamera",
+    "src/scene/scene.js~Scene#activeCamera",
+    "member"
   ],
   [
     "src/scene/scene.js~scene#baby",

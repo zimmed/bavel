@@ -38,8 +38,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
@@ -63,12 +66,26 @@ import Promise from &apos;bluebird&apos;;
 import Static from &apos;basic-static&apos;;
 import reducePromise from &apos;reduce-promise&apos;;
 
+// List of entity keys that are not components.
 const nonCompKeys = [&apos;id&apos;, &apos;uid&apos;, &apos;tick&apos;, &apos;mesh&apos;, &apos;_primaryMesh&apos;];
+// Time in MS to tick a check when waiting for entity&apos;s primary mesh to resolve.
 const asyncStep = 10;
+// Time in MS to wait before the primary mesh resolution times out.
 const asyncTimeout = 2000;
 
+/**
+ * The Entity class
+ */
 export default class Entity extends Static {
 
+    /**
+     * Uses the provided metadata and the engine&apos;s resourceProvider to create a
+     *  new entity.
+     *
+     * @param {Engine} engine
+     * @param {EntityMetaData} data
+     * @return {EntityInstance}
+     */
     static create(engine, data) {
         const ticks = {};
         const {id, uid} = data;
@@ -80,9 +97,6 @@ export default class Entity extends Static {
                 get: () =&gt; (eng, t, dt) =&gt;
                     _.forEach(ticks, (v, k) =&gt; { v(eng, entity, entity[k], t, dt); }),
                 set: ({id, tick}) =&gt; tick ? (ticks[id] = tick) : (delete ticks[id])
-            },
-            get: {
-                value: (path) =&gt; _.get(entity, path, false)
             },
             meshAsync: {
                 get: () =&gt; new Promise((res, rej) =&gt; {
@@ -111,23 +125,56 @@ export default class Entity extends Static {
         return this.updateComponents(engine, entity, componentData);
     }
 
+    /**
+     * Updates/creates the component for the specified id.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {string} id - The component ID
+     * @param {ComponentData} data - The data with which to initialize/update the component.
+     * @return {Promise&lt;Component&gt;}
+     */
     static updateComponent(engine, entity, id, data) {
         return engine.provider.getComponent(id)
             .update(engine, entity, entity[id], id, data)
             .then(comp =&gt; entity[id] = comp);
     }
 
+    /**
+     * Update/create all the components in the provided list of component data.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {ComponentData[]} componentData
+     * @return {Promise&lt;EntityInstance&gt;}
+     */
     static updateComponents(engine, entity, componentData) {
         return reducePromise(componentData, (v, k) =&gt; this.updateComponent(engine, entity, k, v))
             .then(() =&gt; entity);
     }
 
+    /**
+     * Dismount the specified component.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {string} id - The component ID.
+     * @return {null}
+     */
     static dismountComponent(engine, entity, id) {
         return entity[id] = engine.provider
             .getComponent(id)
             .dismount(engine, entity, entity[id]);
     }
 
+    /**
+     * Update the entity or create if it doesn&apos;t exist.
+     *
+     * @param {Engine} engine
+     * @param {?EntityInstance} entity
+     * @param {EntityMetaData} data
+     * @return {Promise&lt;EntityInstance&gt;}
+     */
     static update(engine, entity, data) {
         if (!entity) {
             return this.create(engine, data);
@@ -135,6 +182,13 @@ export default class Entity extends Static {
         return this.updateComponents(engine, entity, _.omit(data, nonCompKeys));
     }
 
+    /**
+     * Dismount the entity and all of its components.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @return {null}
+     */
     static dismount(engine, entity) {
         _.forEach(
             _.omit(entity, nonCompKeys),
@@ -142,6 +196,14 @@ export default class Entity extends Static {
         return null;
     }
 
+    /**
+     * Execute the tick method for the provided EntityInstance.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {number} t
+     * @param {number} dt
+     */
     static tick(engine, entity, t, dt) {
         entity.tick(engine, t, dt);
     }

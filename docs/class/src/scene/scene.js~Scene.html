@@ -38,8 +38,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
@@ -58,13 +61,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Scene from &apos;<span><a href="file/src/scene/scene.js.html#lineNumber6">bavel/src/scene/scene.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Scene from &apos;<span><a href="file/src/scene/scene.js.html#lineNumber9">bavel/src/scene/scene.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/scene/scene.js.html#lineNumber6">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/scene/scene.js.html#lineNumber9">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -84,7 +87,8 @@
 
   
   
-  
+  <div class="description" data-ice="description"><p>The Scene class</p>
+</div>
   
 
   
@@ -140,6 +144,34 @@
     <td>
       <span class="access" data-ice="access">public</span>
       
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-member-activeCamera">activeCamera</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The active camera entity.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
       <span class="kind" data-ice="kind">get</span>
       
       <span class="override" data-ice="override"></span>
@@ -149,13 +181,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-get-baby">baby</a></span></span><span data-ice="signature">: <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-get-baby">baby</a></span></span><span data-ice="signature">: <span>BabylonJS.Scene</span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The BabylonJS.Scene instance.</p>
+</div>
       </div>
     </td>
     <td>
@@ -176,13 +209,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-member-children">children</a></span></span><span data-ice="signature">: <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-member-children">children</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The map of entities registered to the scene (keys are entity.uid).</p>
+</div>
       </div>
     </td>
     <td>
@@ -210,13 +244,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-dismount">dismount</a></span></span><span data-ice="signature">(engine: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-dismount">dismount</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Dismounts all child entities and disposes <span><a href="class/src/scene/scene.js~Scene.html#instance-get-baby">Scene#baby</a></span> property.</p>
+</div>
       </div>
     </td>
     <td>
@@ -237,13 +272,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-getEntity">getEntity</a></span></span><span data-ice="signature">(uid: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-getEntity">getEntity</a></span></span><span data-ice="signature">(uid: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Gets child entity by EntityInstance#uid.</p>
+</div>
       </div>
     </td>
     <td>
@@ -264,13 +300,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-mount">mount</a></span></span><span data-ice="signature">(engine: <span>*</span>)</span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-mount">mount</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Instantiates the <span><a href="class/src/scene/scene.js~Scene.html#instance-get-baby">Scene#baby</a></span> object.</p>
+</div>
       </div>
     </td>
     <td>
@@ -291,13 +328,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-removeEntity">removeEntity</a></span></span><span data-ice="signature">(engine: <span>*</span>, entityUid: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-removeEntity">removeEntity</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, entityUid: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Dismounts and removes child entity by EntityInstance#uid.</p>
+</div>
       </div>
     </td>
     <td>
@@ -318,13 +356,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-tick">tick</a></span></span><span data-ice="signature">(engine: <span>*</span>, t: <span>*</span>, dt: <span>*</span>)</span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-tick">tick</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, t: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, dt: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Executes registered tick methods for all child entities.</p>
+</div>
       </div>
     </td>
     <td>
@@ -345,13 +384,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-updateEntities">updateEntities</a></span></span><span data-ice="signature">(engine: <span>*</span>, entities: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-updateEntities">updateEntities</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, entities: <span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Updates all entities in the provided list of entity data.</p>
+</div>
       </div>
     </td>
     <td>
@@ -372,13 +412,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-updateEntity">updateEntity</a></span></span><span data-ice="signature">(engine: <span>*</span>, entityData: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html#instance-method-updateEntity">updateEntity</a></span></span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, entityData: <span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span>&gt;</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Updates/creates an entity with the provided data, and saves it to <span><a href="class/src/scene/scene.js~Scene.html#instance-member-children">Scene#children</a></span>.</p>
+</div>
       </div>
     </td>
     <td>
@@ -408,7 +449,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber8">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber11">source</a></span></span>
     </span>
   </h3>
 
@@ -443,6 +484,50 @@
 <div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-activeCamera">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">activeCamera</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber24">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The active camera entity.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-get-baby">
     <span class="access" data-ice="access">public</span>
     
@@ -450,18 +535,19 @@
     
     
     
-    <span data-ice="name">baby</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">baby</span><span data-ice="signature">: <span>BabylonJS.Scene</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber21">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber36">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The BabylonJS.Scene instance.</p>
+</div>
 
   
 
@@ -493,18 +579,19 @@
     
     
     
-    <span data-ice="name">children</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">children</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber28">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber18">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The map of entities registered to the scene (keys are entity.uid).</p>
+</div>
 
   
 
@@ -539,18 +626,19 @@
     
     
     
-    <span data-ice="name">dismount</span><span data-ice="signature">(engine: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">dismount</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber27">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber53">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Dismounts all child entities and disposes <span><a href="class/src/scene/scene.js~Scene.html#instance-get-baby">Scene#baby</a></span> property.</p>
+</div>
 
   
 
@@ -564,7 +652,7 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -578,7 +666,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
           
         </tr>
       </tbody>
@@ -610,18 +698,19 @@
     
     
     
-    <span data-ice="name">getEntity</span><span data-ice="signature">(uid: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">getEntity</span><span data-ice="signature">(uid: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber34">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber67">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Gets child entity by EntityInstance#uid.</p>
+</div>
 
   
 
@@ -635,7 +724,7 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">uid</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -649,8 +738,9 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>*</span></td>
-          
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>if entity is not found.</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -681,18 +771,19 @@
     
     
     
-    <span data-ice="name">mount</span><span data-ice="signature">(engine: <span>*</span>)</span>
+    <span data-ice="name">mount</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber23">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber43">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Instantiates the <span><a href="class/src/scene/scene.js~Scene.html#instance-get-baby">Scene#baby</a></span> object.</p>
+</div>
 
   
 
@@ -706,7 +797,7 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -740,18 +831,19 @@
     
     
     
-    <span data-ice="name">removeEntity</span><span data-ice="signature">(engine: <span>*</span>, entityUid: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">removeEntity</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, entityUid: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber48">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber102">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Dismounts and removes child entity by EntityInstance#uid.</p>
+</div>
 
   
 
@@ -765,13 +857,13 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entityUid</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -785,7 +877,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
           
         </tr>
       </tbody>
@@ -817,18 +909,19 @@
     
     
     
-    <span data-ice="name">tick</span><span data-ice="signature">(engine: <span>*</span>, t: <span>*</span>, dt: <span>*</span>)</span>
+    <span data-ice="name">tick</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, t: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, dt: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber52">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber113">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Executes registered tick methods for all child entities.</p>
+</div>
 
   
 
@@ -842,21 +935,23 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">t</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>The current timestamp in miliseconds.</p>
+</td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">dt</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>The elapsed miliseconds since the last tick.</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -888,18 +983,19 @@
     
     
     
-    <span data-ice="name">updateEntities</span><span data-ice="signature">(engine: <span>*</span>, entities: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">updateEntities</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, entities: <span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber43">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber90">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Updates all entities in the provided list of entity data.</p>
+</div>
 
   
 
@@ -913,13 +1009,13 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entities</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -933,7 +1029,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -965,18 +1061,19 @@
     
     
     
-    <span data-ice="name">updateEntity</span><span data-ice="signature">(engine: <span>*</span>, entityData: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">updateEntity</span><span data-ice="signature">(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, entityData: <span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber38">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/scene/scene.js.html#lineNumber78">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Updates/creates an entity with the provided data, and saves it to <span><a href="class/src/scene/scene.js~Scene.html#instance-member-children">Scene#children</a></span>.</p>
+</div>
 
   
 
@@ -990,13 +1087,13 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">engine</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">entityData</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1010,8 +1107,9 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>*</span></td>
-          
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span>&gt;</td>
+          <td class="return-desc" data-ice="returnDescription"><p>The new/updated entity.</p>
+</td>
         </tr>
       </tbody>
     </table>

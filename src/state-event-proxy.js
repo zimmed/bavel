@@ -133,7 +133,7 @@ export class StateEventProxy extends Static {
                     return target[key];
                 },
                 set: (target, i, v) => {
-                    if (!_.isNaN(i)) {
+                    if (!isNaN(i)) {
                         v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||
                             _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;
                         this.emit(`${scope}[${i}]`, v, ret);
@@ -142,7 +142,7 @@ export class StateEventProxy extends Static {
                     return true;
                 },
                 deleteProperty: (target, i) => {
-                    if (!_.isNaN(i)) {
+                    if (!isNaN(i)) {
                         this.emit(`${scope}[${i}]`, undefined, ret);
                     }
                     delete target[i];

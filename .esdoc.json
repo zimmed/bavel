@@ -2,7 +2,11 @@
   "source": "./src",
   "destination": "./docs",
   "manual": {
-    "overview": ["./README.md"],
-    "changelog": ["./CHANGELOG.md"]
-  }
+    "index": "./README.md",
+    "overview": ["./README.md", "./CHANGELOG.md", "./build/test-results.md", "./build/test-spec.md"]
+  },
+  "excludes": [
+    "index\\.js$",
+    "lodash\\.js$"
+  ]
 }

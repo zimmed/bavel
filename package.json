@@ -9,12 +9,14 @@
   "repository": "github.com/zimmed/bavel",
   "main": "lib/index.js",
   "scripts": {
-    "test-save": "node ./node_modules/.bin/mocha -R json-stream --require babel-core/register 'test/**/*.spec.js' > test-results.json",
+    "test-spec": "node ./node_modules/.bin/mocha --no-color --reporter markdown --require babel-core/register 'test/**/*.spec.js' > build/test-spec.md",
+    "test-results": "node ./node_modules/.bin/mocha --no-color --reporter json --require babel-core/register 'test/**/*.spec.js' > build/test-results.json && node build/test-results.js",
+    "test-save": "npm run test-spec && npm run test-results",
     "test-run": "node ./node_modules/.bin/mocha --require babel-core/register 'test/**/*.spec.js'",
     "test": "npm run test-save && npm run test-run",
     "compile": "rm -rf ./lib && node ./node_modules/.bin/babel -d lib/ src/",
     "doc": "node ./node_modules/.bin/esdoc",
-    "publish": "npm run test-save && npm run doc && npm run compile"
+    "build": "npm run test-run && npm run test-save && npm run doc && npm run compile"
   },
   "graphicsLibs": [
     "babylonjs"

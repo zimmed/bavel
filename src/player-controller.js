@@ -10,6 +10,8 @@ import StateProxy from './state-event-proxy';
  * @property {string} message
  */
 
+let _engine;
+
 /**
  * Controller for player logic and interactions.
  *
@@ -82,20 +84,24 @@ export default class PlayerController extends Singleton {
         /**
          * The controlled player entity.
          *
-         * @type {?Entity}
+         * @type {?EntityInstance}
          */
         this.player = null;
         /**
          * The currently-targeted entity (based on mouse-over).
          *
-         * @type {?Entity}
+         * @type {?EntityInstance}
          */
         this.target = null;
-        /** @type {Engine} **/
-        Object.defineProperty(this, 'engine', {
-            get: () => engine
-        });
+        _engine = engine;
     }
+
+    /**
+     * Reference to the parent game engine instance.
+     *
+     * @type {Engine}
+     */
+    get engine() { return _engine; }
 
     /**
      * Supplies the key listeners defined in the provided game settings to
@@ -138,7 +144,7 @@ export default class PlayerController extends Singleton {
     /**
      * The event handler for a mouse cursor-over event on a game entity.
      *
-     * @param {Entity} entity
+     * @param {EntityInstance} entity
      * @param {BabylonJS.ActionEvent} event
      */
     entityOver(entity, event) {
@@ -151,7 +157,7 @@ export default class PlayerController extends Singleton {
     /**
      * The event handler for a mouse cursor-out event on a game entity.
      *
-     * @param {Entity} entity
+     * @param {EntityInstance} entity
      * @param {BabylonJS.ActionEvent} event
      */
     entityOut(entity, event) {
@@ -167,7 +173,7 @@ export default class PlayerController extends Singleton {
      * Example event handler for a mouse left-click event on a game entity.
      *
      * @abstract
-     * @param {Entity} entity
+     * @param {EntityInstance} entity
      * @param {BabylonJS.ActionEvent} event
      */
     entityClick(entity, {pointerX, pointerY}) {
@@ -183,7 +189,7 @@ export default class PlayerController extends Singleton {
      * Example event handler for a mouse right-click event on a game entity.
      *
      * @abstract
-     * @param {Entity} entity
+     * @param {EntityInstance} entity
      * @param {BabylonJS.ActionEvent} event
      */
     entityAltClick(entity, {pointerX, pointerY}) {
