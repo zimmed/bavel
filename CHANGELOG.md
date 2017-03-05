@@ -1,16 +1,25 @@
 # Changelog
 
+### 0.2.0 - ...
+
+...
+
 ##### Details
  - ...
 
 ##### 0.2 Todo
- ...
+ - ...
 
 #### Roadmap
  - -0.2.x - Multiplayer networking support- *This will not be supported by the framework*
  - 0.2.x ... we'll see ...
 
 ## History
+
+### 0.1.8 Hotfix
+
+Default options parameter accidentially removed from StateEventProxy method. Re-added
+to method.
 
 ### 0.1.7 - Hotfix
 
