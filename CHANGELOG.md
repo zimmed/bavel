@@ -1,19 +1,16 @@
 # Changelog
 ### 0.1.6 - Docstrings
 
-...
+Used ESDoc to generate API reference from inline docstrings. Can now view docs
+using the [github page](https://zimmed.github.io/bavel).
 
 ##### Details
- - ...
-
-##### 0.1 Todo
- - Add in-line documentation to code
- - Generate API documentation
+ - Added ESDoc to project
+ - Added inline documentation to source code
+ - Created build scripts to encorporate test results and changelog into docs
 
 #### Roadmap
- - 0.2.0 - Basic API documentation
- - 0.3.0 - Multiplayer networking support
- - 0.4.0 - Full API documentation
+ - 0.2.x - Multiplayer networking support
  -  ... we'll see ...
 
 ## History
