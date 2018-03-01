@@ -5,9 +5,9 @@
     "passes": 103,
     "pending": 0,
     "failures": 0,
-    "start": "2017-03-05T21:36:02.702Z",
-    "end": "2017-03-05T21:36:03.769Z",
-    "duration": 1067
+    "start": "2018-03-01T19:09:21.035Z",
+    "end": "2018-03-01T19:09:22.207Z",
+    "duration": 1172
   },
   "tests": [
     {
@@ -20,35 +20,35 @@
     {
       "title": "should initialize a new Engine instance if none exist by calling the\n        Engine constructor, and kicking off the resourceLoader",
       "fullTitle": "The Engine Class init method should initialize a new Engine instance if none exist by calling the\n        Engine constructor, and kicking off the resourceLoader",
-      "duration": 16,
+      "duration": 23,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return the engine instance if it has already been initialized",
       "fullTitle": "The Engine Class init method should return the engine instance if it has already been initialized",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should create a new Engine instance with EventProxied properties\n        (fps, loading) and standard enumerable properties (scene, running,\n        settings)",
       "fullTitle": "The Engine Class constructor should create a new Engine instance with EventProxied properties\n        (fps, loading) and standard enumerable properties (scene, running,\n        settings)",
-      "duration": 10,
+      "duration": 6,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return the read-only GraphicsLibary once loaded",
       "fullTitle": "The Engine Class Engine instance GL getter method should return the read-only GraphicsLibary once loaded",
-      "duration": 3,
+      "duration": 4,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return the read-only GraphicsLibary Engine instance once\n            mounted",
       "fullTitle": "The Engine Class Engine instance baby getter method should return the read-only GraphicsLibary Engine instance once\n            mounted",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -97,42 +97,42 @@
     {
       "title": "should return a promise that stops the engine render process when\n            running, dismounts and deletes the scene, along with the GraphicsLibrary\n            Engine instance and canvas element before resolving to self",
       "fullTitle": "The Engine Class Engine instance dismount method should return a promise that stops the engine render process when\n            running, dismounts and deletes the scene, along with the GraphicsLibrary\n            Engine instance and canvas element before resolving to self",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise dismounts and deletes the scene, along\n            with the GraphicsLibrary Engine instance and canvas element before\n            resolving to self",
       "fullTitle": "The Engine Class Engine instance dismount method should return a promise dismounts and deletes the scene, along\n            with the GraphicsLibrary Engine instance and canvas element before\n            resolving to self",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that initializes the scene with the provided\n            entities, attaches event listeners to the canvas element, and begins\n            the main render/update loop before resolving to self",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that initializes the scene with the provided\n            entities, attaches event listeners to the canvas element, and begins\n            the main render/update loop before resolving to self",
-      "duration": 512,
+      "duration": 507,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that attaches event listeners to the canvas\n            element and begins the main render/update loop without adding new\n            entites, when none provided, before resolving to self",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that attaches event listeners to the canvas\n            element and begins the main render/update loop without adding new\n            entites, when none provided, before resolving to self",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that resolves to self with engine is already\n            running",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that resolves to self with engine is already\n            running",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that resolves to self with engine is not in\n            the correct loading state",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that resolves to self with engine is not in\n            the correct loading state",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -153,7 +153,7 @@
     {
       "title": "should call the resize method of the GraphicsLibrary engine\n            instance",
       "fullTitle": "The Engine Class Engine instance resize method should call the resize method of the GraphicsLibrary engine\n            instance",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -167,7 +167,7 @@
     {
       "title": "should return a new zero vector by default",
       "fullTitle": "The Engine Class Engine instance toVector method should return a new zero vector by default",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -188,21 +188,21 @@
     {
       "title": "should add an event listener if settings.debug = true",
       "fullTitle": "The Engine Class Engine instance onDebugEvent method should add an event listener if settings.debug = true",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should not add an event listener if settings.debug = false",
       "fullTitle": "The Engine Class Engine instance onDebugEvent method should not add an event listener if settings.debug = false",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should unconditionally emit a state event",
       "fullTitle": "The Engine Class Engine instance emitEvent method should unconditionally emit a state event",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -216,7 +216,7 @@
     {
       "title": "should register event listeners to fire the handler provided for\n            the key event specified, onKeyUp or onKeyDown",
       "fullTitle": "The Engine Class Engine instance registerKeyAction method should register event listeners to fire the handler provided for\n            the key event specified, onKeyUp or onKeyDown",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -244,7 +244,7 @@
     {
       "title": "should set an entityClick event listener on the entity's primary\n            mesh if click argument is provided",
       "fullTitle": "The Engine Class Engine instance registerMouseEventsForEntity method should set an entityClick event listener on the entity's primary\n            mesh if click argument is provided",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -265,7 +265,7 @@
     {
       "title": "should set an entityOut event listener on the entity's primrary\n            mesh if the out argument is provided",
       "fullTitle": "The Engine Class Engine instance registerMouseEventsForEntity method should set an entityOut event listener on the entity's primrary\n            mesh if the out argument is provided",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -279,7 +279,7 @@
     {
       "title": "should be a class that inherits from Static",
       "fullTitle": "The Entity Class should be a class that inherits from Static",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -307,7 +307,7 @@
     {
       "title": "should have a meshAsync property that is configurable until\n            it's returned promise resolves to the entity mesh once available, then\n            redefining the property to resolve directly to the mesh, and no longer\n            reconfigurable",
       "fullTitle": "The Entity Class create method Entity object should have a meshAsync property that is configurable until\n            it's returned promise resolves to the entity mesh once available, then\n            redefining the property to resolve directly to the mesh, and no longer\n            reconfigurable",
-      "duration": 41,
+      "duration": 45,
       "currentRetry": 0,
       "err": {}
     },
@@ -328,14 +328,14 @@
     {
       "title": "should return a promise that calls the update class method for the\n        given component, stores the updated result to the entity at the property\n        name that matches the component ID, and  finally resolves to the newly-\n        updated component",
       "fullTitle": "The Entity Class updateComponent method should return a promise that calls the update class method for the\n        given component, stores the updated result to the entity at the property\n        name that matches the component ID, and  finally resolves to the newly-\n        updated component",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that sequentially updates/creates each component\n        from the provided data using the updateComponent method, then resolve\n        to the updated entity",
       "fullTitle": "The Entity Class updateComponents method should return a promise that sequentially updates/creates each component\n        from the provided data using the updateComponent method, then resolve\n        to the updated entity",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -349,14 +349,14 @@
     {
       "title": "should create a new entity if none provided",
       "fullTitle": "The Entity Class update method should create a new entity if none provided",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should call updateComponents for existing entity",
       "fullTitle": "The Entity Class update method should call updateComponents for existing entity",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -370,7 +370,7 @@
     {
       "title": "should call the tick method on the provided entity instance",
       "fullTitle": "The Entity Class tick method should call the tick method on the provided entity instance",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -419,7 +419,7 @@
     {
       "title": "should functionally update this.messages by adding the new message\n            from the provided data at the front of messages",
       "fullTitle": "PlayerController Class PlayerController instance message method should functionally update this.messages by adding the new message\n            from the provided data at the front of messages",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -475,7 +475,7 @@
     {
       "title": "should not throw an error when a proper event is passed",
       "fullTitle": "PlayerController Class PlayerController instance mOver method should not throw an error when a proper event is passed",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -524,7 +524,7 @@
     {
       "title": "should not remove the current target if the entity passed is not\n            the current target",
       "fullTitle": "PlayerController Class PlayerController instance entityOut method should not remove the current target if the entity passed is not\n            the current target",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -566,7 +566,7 @@
     {
       "title": "should be a singleton",
       "fullTitle": "The Scene Class should be a singleton",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -580,14 +580,14 @@
     {
       "title": "should get the scene._baby property",
       "fullTitle": "The Scene Class scene instance baby getter method should get the scene._baby property",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should set the scene._baby property to a new BabylonJS Scene",
       "fullTitle": "The Scene Class scene instance mount method should set the scene._baby property to a new BabylonJS Scene",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -601,21 +601,21 @@
     {
       "title": "should get a child entity by uid",
       "fullTitle": "The Scene Class scene instance getEntity method should get a child entity by uid",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that updates an entity by uid with\n            Entity.update, then saves the updated entity back in children",
       "fullTitle": "The Scene Class scene instance updateEntity method should return a promise that updates an entity by uid with\n            Entity.update, then saves the updated entity back in children",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that sequentially updates/creates each entity\n            from the provided data using the updateEntity method, then resolve\n            to the updated scene",
       "fullTitle": "The Scene Class scene instance updateEntities method should return a promise that sequentially updates/creates each entity\n            from the provided data using the updateEntity method, then resolve\n            to the updated scene",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -636,7 +636,7 @@
     {
       "title": "should assign proxy properties from a list of keys to the provided object\n        and emit state events when a property is reassigned",
       "fullTitle": "StateEventProxy StateProxy exported function (integration tests) should assign proxy properties from a list of keys to the provided object\n        and emit state events when a property is reassigned",
-      "duration": 3,
+      "duration": 5,
       "currentRetry": 0,
       "err": {}
     },
@@ -671,7 +671,7 @@
     {
       "title": "should not call events.emit if the scope is disabled",
       "fullTitle": "StateEventProxy StateEventProxy Class emit method should not call events.emit if the scope is disabled",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -685,28 +685,28 @@
     {
       "title": "should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an array and deep=true",
       "fullTitle": "StateEventProxy StateEventProxy Class proxifyProperty method should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an array and deep=true",
-      "duration": 10,
+      "duration": 3,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an object and deep=true",
       "fullTitle": "StateEventProxy StateEventProxy Class proxifyProperty method should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an object and deep=true",
-      "duration": 4,
+      "duration": 3,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should assign to the provided object a wrapped property that is\n            not enumerable when enumerable=false",
       "fullTitle": "StateEventProxy StateEventProxy Class proxifyProperty method should assign to the provided object a wrapped property that is\n            not enumerable when enumerable=false",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return an object that has proxified properties forEach\n            each property on the original object",
       "fullTitle": "StateEventProxy StateEventProxy Class buildProxyObject method should return an object that has proxified properties forEach\n            each property on the original object",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -727,7 +727,7 @@
     {
       "title": "should dispatch an event with the emit method and callback the events\n    listener for that event, registered with the on method",
       "fullTitle": "StateEventManager should dispatch an event with the emit method and callback the events\n    listener for that event, registered with the on method",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     }
@@ -745,35 +745,35 @@
     {
       "title": "should initialize a new Engine instance if none exist by calling the\n        Engine constructor, and kicking off the resourceLoader",
       "fullTitle": "The Engine Class init method should initialize a new Engine instance if none exist by calling the\n        Engine constructor, and kicking off the resourceLoader",
-      "duration": 16,
+      "duration": 23,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return the engine instance if it has already been initialized",
       "fullTitle": "The Engine Class init method should return the engine instance if it has already been initialized",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should create a new Engine instance with EventProxied properties\n        (fps, loading) and standard enumerable properties (scene, running,\n        settings)",
       "fullTitle": "The Engine Class constructor should create a new Engine instance with EventProxied properties\n        (fps, loading) and standard enumerable properties (scene, running,\n        settings)",
-      "duration": 10,
+      "duration": 6,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return the read-only GraphicsLibary once loaded",
       "fullTitle": "The Engine Class Engine instance GL getter method should return the read-only GraphicsLibary once loaded",
-      "duration": 3,
+      "duration": 4,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return the read-only GraphicsLibary Engine instance once\n            mounted",
       "fullTitle": "The Engine Class Engine instance baby getter method should return the read-only GraphicsLibary Engine instance once\n            mounted",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -822,42 +822,42 @@
     {
       "title": "should return a promise that stops the engine render process when\n            running, dismounts and deletes the scene, along with the GraphicsLibrary\n            Engine instance and canvas element before resolving to self",
       "fullTitle": "The Engine Class Engine instance dismount method should return a promise that stops the engine render process when\n            running, dismounts and deletes the scene, along with the GraphicsLibrary\n            Engine instance and canvas element before resolving to self",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise dismounts and deletes the scene, along\n            with the GraphicsLibrary Engine instance and canvas element before\n            resolving to self",
       "fullTitle": "The Engine Class Engine instance dismount method should return a promise dismounts and deletes the scene, along\n            with the GraphicsLibrary Engine instance and canvas element before\n            resolving to self",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that initializes the scene with the provided\n            entities, attaches event listeners to the canvas element, and begins\n            the main render/update loop before resolving to self",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that initializes the scene with the provided\n            entities, attaches event listeners to the canvas element, and begins\n            the main render/update loop before resolving to self",
-      "duration": 512,
+      "duration": 507,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that attaches event listeners to the canvas\n            element and begins the main render/update loop without adding new\n            entites, when none provided, before resolving to self",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that attaches event listeners to the canvas\n            element and begins the main render/update loop without adding new\n            entites, when none provided, before resolving to self",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that resolves to self with engine is already\n            running",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that resolves to self with engine is already\n            running",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that resolves to self with engine is not in\n            the correct loading state",
       "fullTitle": "The Engine Class Engine instance run method should return a promise that resolves to self with engine is not in\n            the correct loading state",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -878,7 +878,7 @@
     {
       "title": "should call the resize method of the GraphicsLibrary engine\n            instance",
       "fullTitle": "The Engine Class Engine instance resize method should call the resize method of the GraphicsLibrary engine\n            instance",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -892,7 +892,7 @@
     {
       "title": "should return a new zero vector by default",
       "fullTitle": "The Engine Class Engine instance toVector method should return a new zero vector by default",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -913,21 +913,21 @@
     {
       "title": "should add an event listener if settings.debug = true",
       "fullTitle": "The Engine Class Engine instance onDebugEvent method should add an event listener if settings.debug = true",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should not add an event listener if settings.debug = false",
       "fullTitle": "The Engine Class Engine instance onDebugEvent method should not add an event listener if settings.debug = false",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should unconditionally emit a state event",
       "fullTitle": "The Engine Class Engine instance emitEvent method should unconditionally emit a state event",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -941,7 +941,7 @@
     {
       "title": "should register event listeners to fire the handler provided for\n            the key event specified, onKeyUp or onKeyDown",
       "fullTitle": "The Engine Class Engine instance registerKeyAction method should register event listeners to fire the handler provided for\n            the key event specified, onKeyUp or onKeyDown",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -969,7 +969,7 @@
     {
       "title": "should set an entityClick event listener on the entity's primary\n            mesh if click argument is provided",
       "fullTitle": "The Engine Class Engine instance registerMouseEventsForEntity method should set an entityClick event listener on the entity's primary\n            mesh if click argument is provided",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -990,7 +990,7 @@
     {
       "title": "should set an entityOut event listener on the entity's primrary\n            mesh if the out argument is provided",
       "fullTitle": "The Engine Class Engine instance registerMouseEventsForEntity method should set an entityOut event listener on the entity's primrary\n            mesh if the out argument is provided",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1004,7 +1004,7 @@
     {
       "title": "should be a class that inherits from Static",
       "fullTitle": "The Entity Class should be a class that inherits from Static",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1032,7 +1032,7 @@
     {
       "title": "should have a meshAsync property that is configurable until\n            it's returned promise resolves to the entity mesh once available, then\n            redefining the property to resolve directly to the mesh, and no longer\n            reconfigurable",
       "fullTitle": "The Entity Class create method Entity object should have a meshAsync property that is configurable until\n            it's returned promise resolves to the entity mesh once available, then\n            redefining the property to resolve directly to the mesh, and no longer\n            reconfigurable",
-      "duration": 41,
+      "duration": 45,
       "currentRetry": 0,
       "err": {}
     },
@@ -1053,14 +1053,14 @@
     {
       "title": "should return a promise that calls the update class method for the\n        given component, stores the updated result to the entity at the property\n        name that matches the component ID, and  finally resolves to the newly-\n        updated component",
       "fullTitle": "The Entity Class updateComponent method should return a promise that calls the update class method for the\n        given component, stores the updated result to the entity at the property\n        name that matches the component ID, and  finally resolves to the newly-\n        updated component",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that sequentially updates/creates each component\n        from the provided data using the updateComponent method, then resolve\n        to the updated entity",
       "fullTitle": "The Entity Class updateComponents method should return a promise that sequentially updates/creates each component\n        from the provided data using the updateComponent method, then resolve\n        to the updated entity",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -1074,14 +1074,14 @@
     {
       "title": "should create a new entity if none provided",
       "fullTitle": "The Entity Class update method should create a new entity if none provided",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should call updateComponents for existing entity",
       "fullTitle": "The Entity Class update method should call updateComponents for existing entity",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -1095,7 +1095,7 @@
     {
       "title": "should call the tick method on the provided entity instance",
       "fullTitle": "The Entity Class tick method should call the tick method on the provided entity instance",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1144,7 +1144,7 @@
     {
       "title": "should functionally update this.messages by adding the new message\n            from the provided data at the front of messages",
       "fullTitle": "PlayerController Class PlayerController instance message method should functionally update this.messages by adding the new message\n            from the provided data at the front of messages",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -1200,7 +1200,7 @@
     {
       "title": "should not throw an error when a proper event is passed",
       "fullTitle": "PlayerController Class PlayerController instance mOver method should not throw an error when a proper event is passed",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -1249,7 +1249,7 @@
     {
       "title": "should not remove the current target if the entity passed is not\n            the current target",
       "fullTitle": "PlayerController Class PlayerController instance entityOut method should not remove the current target if the entity passed is not\n            the current target",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1291,7 +1291,7 @@
     {
       "title": "should be a singleton",
       "fullTitle": "The Scene Class should be a singleton",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
@@ -1305,14 +1305,14 @@
     {
       "title": "should get the scene._baby property",
       "fullTitle": "The Scene Class scene instance baby getter method should get the scene._baby property",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should set the scene._baby property to a new BabylonJS Scene",
       "fullTitle": "The Scene Class scene instance mount method should set the scene._baby property to a new BabylonJS Scene",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1326,21 +1326,21 @@
     {
       "title": "should get a child entity by uid",
       "fullTitle": "The Scene Class scene instance getEntity method should get a child entity by uid",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that updates an entity by uid with\n            Entity.update, then saves the updated entity back in children",
       "fullTitle": "The Scene Class scene instance updateEntity method should return a promise that updates an entity by uid with\n            Entity.update, then saves the updated entity back in children",
-      "duration": 0,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return a promise that sequentially updates/creates each entity\n            from the provided data using the updateEntity method, then resolve\n            to the updated scene",
       "fullTitle": "The Scene Class scene instance updateEntities method should return a promise that sequentially updates/creates each entity\n            from the provided data using the updateEntity method, then resolve\n            to the updated scene",
-      "duration": 1,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
@@ -1361,7 +1361,7 @@
     {
       "title": "should assign proxy properties from a list of keys to the provided object\n        and emit state events when a property is reassigned",
       "fullTitle": "StateEventProxy StateProxy exported function (integration tests) should assign proxy properties from a list of keys to the provided object\n        and emit state events when a property is reassigned",
-      "duration": 3,
+      "duration": 5,
       "currentRetry": 0,
       "err": {}
     },
@@ -1396,7 +1396,7 @@
     {
       "title": "should not call events.emit if the scope is disabled",
       "fullTitle": "StateEventProxy StateEventProxy Class emit method should not call events.emit if the scope is disabled",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1410,28 +1410,28 @@
     {
       "title": "should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an array and deep=true",
       "fullTitle": "StateEventProxy StateEventProxy Class proxifyProperty method should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an array and deep=true",
-      "duration": 10,
+      "duration": 3,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an object and deep=true",
       "fullTitle": "StateEventProxy StateEventProxy Class proxifyProperty method should assign to the provided object a deeply-proxied value when\n            the value to be assigned is an object and deep=true",
-      "duration": 4,
+      "duration": 3,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should assign to the provided object a wrapped property that is\n            not enumerable when enumerable=false",
       "fullTitle": "StateEventProxy StateEventProxy Class proxifyProperty method should assign to the provided object a wrapped property that is\n            not enumerable when enumerable=false",
-      "duration": 3,
+      "duration": 2,
       "currentRetry": 0,
       "err": {}
     },
     {
       "title": "should return an object that has proxified properties forEach\n            each property on the original object",
       "fullTitle": "StateEventProxy StateEventProxy Class buildProxyObject method should return an object that has proxified properties forEach\n            each property on the original object",
-      "duration": 2,
+      "duration": 1,
       "currentRetry": 0,
       "err": {}
     },
@@ -1452,7 +1452,7 @@
     {
       "title": "should dispatch an event with the emit method and callback the events\n    listener for that event, registered with the on method",
       "fullTitle": "StateEventManager should dispatch an event with the emit method and callback the events\n    listener for that event, registered with the on method",
-      "duration": 1,
+      "duration": 0,
       "currentRetry": 0,
       "err": {}
     }
