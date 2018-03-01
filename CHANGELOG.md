@@ -1,18 +1,19 @@
 # Changelog
 
-### 0.2.0 - ...
+### 0.2.0 - Refactor
 
-...
+Long overdue refactor (best practices, etc.)
 
 ##### Details
  - ...
 
 ##### 0.2 Todo
- - ...
+ - Refactor to best practices
+ - Optimize state sharing
 
 #### Roadmap
- - -0.2.x - Multiplayer networking support- *This will not be supported by the framework*
- - 0.2.x ... we'll see ...
+ - -0.3.x - Multiplayer networking support- *This will not be supported by the framework*
+ - 0.3.x ... we'll see ...
 
 ## History
 
