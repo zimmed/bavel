@@ -1,6 +1,9 @@
-import {_} from './utils';
 import Singleton from 'basic-singleton';
-import StateProxy from './state-event-proxy';
+import moment from 'moment';
+import get from 'lodash.get';
+import take from 'lodash.take';
+import isNumber from 'lodash.isnumber';
+import StateEventProxy from './StateEventProxy';
 
 /**
  * @typedef {Object} Message
@@ -38,15 +41,15 @@ let _engine;
  * let engine = Engine.init(myLogger, myResourceLoader, MyGamePlayerController, {});
  */
 export default class PlayerController extends Singleton {
-
     /**
      * Used for generating readable-timestamps in messages.
      *
-     * @param {Date} [date=new Date()]
-     * @return {string} - Current time in HH:mm:ss format.
+     * @param {Date|number|string} [date] - The date to stamp (current time is used if none provided).
+     * @param {string} [format='HH:mm:ss'] - The output format string.
+     * @return {string} - Current time in the specified / HH:mm:ss format.
      */
-    static getTime(date=new Date()) {
-        return `${_.padStart(date.getHours(), 2, '0')}:${_.padStart(date.getMinutes(), 2, '0')}:${_.padStart(date.getSeconds(), 2, '0')}`;
+    static getTime(date, format='HH:mm:ss') {
+        return moment(date).format(format);
     }
 
     /**
@@ -73,7 +76,7 @@ export default class PlayerController extends Singleton {
      */
     constructor(engine) {
         super();
-        StateProxy(this, `engine.ctrl`, ['messages', 'player', 'target']);
+        StateEventProxy.create(this, `engine.ctrl`, ['messages', 'player', 'target']);
         /**
          * The list of logged game messages. New messages are inserted into the
          * beginning of the array.
@@ -110,7 +113,7 @@ export default class PlayerController extends Singleton {
      * @param {Settings} settings
      */
     setup(settings) {
-        this.registerKeyActions(_.get(settings, 'input.keys', []));
+        this.registerKeyActions(get(settings, 'input.keys', []));
     }
 
     /**
@@ -119,7 +122,7 @@ export default class PlayerController extends Singleton {
      * @param {KeyDefinition[]} keyHandlers
      */
     registerKeyActions(keyHandlers) {
-        _.forEach(keyHandlers, (desc) => {
+        keyHandlers.forEach((desc) => {
             this.engine.registerKeyAction(desc.key, desc);
         });
     }
@@ -134,11 +137,10 @@ export default class PlayerController extends Singleton {
      * @return {Message[]} - The updated messages array.
      */
     message(type, sender, message, max=this.constructor.MAX_MESSAGES) {
-        return this.messages = _.take(
-            _.concat(
-                {time: this.constructor.getTime(), type, sender, message},
-                this.messages),
-            max);
+        return this.messages = take(
+            [{ time: this.constructor.getTime(), type, sender, message }].concat(this.messages),
+            max
+        );
     }
 
     /**
@@ -176,8 +178,8 @@ export default class PlayerController extends Singleton {
      * @param {EntityInstance} entity
      * @param {BabylonJS.ActionEvent} event
      */
-    entityClick(entity, {pointerX, pointerY}) {
-        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {
+    entityClick(entity, { pointerX, pointerY }) {
+        if (!entity || !isNumber(pointerX) || !isNumber(pointerY)) {
             throw new Error('Improper arguments passed to entityClick');
         }
         let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
@@ -192,8 +194,8 @@ export default class PlayerController extends Singleton {
      * @param {EntityInstance} entity
      * @param {BabylonJS.ActionEvent} event
      */
-    entityAltClick(entity, {pointerX, pointerY}) {
-        if (!entity || _.isUndefined(pointerX) || _.isUndefined(pointerY)) {
+    entityAltClick(entity, { pointerX, pointerY }) {
+        if (!entity || !isNumber(pointerX) || !isNumber(pointerY)) {
             throw new Error('Improper arguments passed to entityAltClick');
         }
         let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
@@ -211,8 +213,8 @@ export default class PlayerController extends Singleton {
      * @param {number} event.pageY - The Y-position of the click relative to the
      *  HTML document.
      */
-    mClick({pageX, pageY}) {
-        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+    mClick({ pageX, pageY }) {
+        if (!isNumber(pageX) || !isNumber(pageY)) {
             throw new Error('Improper event passed to mClick');
         }
         this.engine.logger.debug(`Click at (${pageX}, ${pageY})`);
@@ -228,8 +230,8 @@ export default class PlayerController extends Singleton {
      * @param {number} event.pageY - The Y-position of the click relative to the
      *  HTML document.
      */
-    mAltClick({pageX, pageY}) {
-        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+    mAltClick({ pageX, pageY }) {
+        if (!isNumber(pageX) || !isNumber(pageY)) {
             throw new Error('Improper event passed to mAltClick');
         }
         this.engine.logger.debug(`Alt Click at (${pageX}, ${pageY})`);
@@ -244,8 +246,8 @@ export default class PlayerController extends Singleton {
      * @param {number} event.deltaY - The value scrolled along the Y axis.
      * @param {number} event.deltaZ - The value scrolled along the Z axis.
      */
-    mWheel({deltaX, deltaY, deltaZ}) {
-        if (_.isUndefined(deltaY) && _.isUndefined(deltaX) && _.isUndefined(deltaX)) {
+    mWheel({ deltaX, deltaY, deltaZ }) {
+        if (!isNumber(deltaY) && !isNumber(deltaX) && !isNumber(deltaX)) {
             throw new Error('Improper event passed to mWheel');
         }
         if (deltaY) {
@@ -263,8 +265,8 @@ export default class PlayerController extends Singleton {
      * @param {number} event.pageY - The Y-position of the click relative to the
      *  HTML document.
      */
-    mOver({pageX, pageY}) {
-        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+    mOver({ pageX, pageY }) {
+        if (!isNumber(pageX) || !isNumber(pageY)) {
             throw new Error('Improper event passed to mAltClick');
         }
         this.engine.logger.debug('Pointer has entered canvas element.');
@@ -280,8 +282,8 @@ export default class PlayerController extends Singleton {
      * @param {number} event.pageY - The Y-position of the click relative to the
      *  HTML document.
      */
-    mOut({pageX, pageY}) {
-        if (_.isUndefined(pageX) || _.isUndefined(pageY)) {
+    mOut({ pageX, pageY }) {
+        if (!isNumber(pageX) || !isNumber(pageY)) {
             throw new Error('Improper event passed to mAltClick');
         }
         this.engine.logger.debug('Pointer has left cavnas element.');

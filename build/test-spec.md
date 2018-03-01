@@ -143,8 +143,8 @@ var engine = void 0;
     return engine = new Engine(params.logger, null, params.settings);
 }).to.not.throw(Error);
 (0, _chai.expect)(engine).to.exist;
-(0, _chai.expect)(EventProxyMock.callCount).to.equal(1);
-(0, _chai.expect)(EventProxyMock.calledWithExactly(engine, 'engine', { fps: 0, loading: LoadStates.BOOT }));
+(0, _chai.expect)(EventProxyMock.create.callCount).to.equal(1);
+(0, _chai.expect)(EventProxyMock.create.calledWithExactly(engine, 'engine', { fps: 0, loading: LoadStates.BOOT }));
 (0, _chai.expect)(engine).to.have.property('fps').that.equals(0);
 (0, _chai.expect)(engine).to.have.property('loading').that.equals(LoadStates.BOOT);
 (0, _chai.expect)(engine).to.have.property('scene').that.equals(null);
@@ -542,10 +542,10 @@ should add an event listener if settings.debug = true.
 
 ```js
 (0, _chai.expect)(function () {
-    return engine.onDebugEvent('test', _utils._.noop);
+    return engine.onDebugEvent('test', _lodash2.default);
 }).to.not.throw(Error);
 (0, _chai.expect)(on.callCount).to.equal(1);
-(0, _chai.expect)(on.calledWithExactly('test', _utils._.noop)).to.equal(true);
+(0, _chai.expect)(on.calledWithExactly('test', _lodash2.default)).to.equal(true);
 ```
 
 should not add an event listener if settings.debug = false.
@@ -553,7 +553,7 @@ should not add an event listener if settings.debug = false.
 ```js
 params.settings.debug = false;
 (0, _chai.expect)(function () {
-    return engine.onDebugEvent('test', _utils._.noop);
+    return engine.onDebugEvent('test', _lodash2.default);
 }).to.not.throw(Error);
 (0, _chai.expect)(on.callCount).to.equal(0);
 ```
@@ -566,8 +566,8 @@ should unconditionally emit a state event.
 (0, _chai.expect)(function () {
     return engine.emitEvent('test', 40, {});
 }).to.not.throw(Error);
-(0, _chai.expect)(eventsMock.Events.emit.callCount).to.equal(1);
-(0, _chai.expect)(eventsMock.Events.emit.calledWithExactly('test', 40, {})).to.equal(true);
+(0, _chai.expect)(eventsMock.emit.callCount).to.equal(1);
+(0, _chai.expect)(eventsMock.emit.calledWithExactly('test', 40, {})).to.equal(true);
 ```
 
 <a name="the-engine-class-engine-instance-onevent-method"></a>
@@ -576,10 +576,10 @@ should unconditionally listen to a state event.
 
 ```js
 (0, _chai.expect)(function () {
-    return engine.onEvent('test', _utils._.noop);
+    return engine.onEvent('test', _lodash2.default);
 }).to.not.throw(Error);
-(0, _chai.expect)(eventsMock.Events.on.callCount).to.equal(1);
-(0, _chai.expect)(eventsMock.Events.on.calledWithExactly('test', _utils._.noop)).to.equal(true);
+(0, _chai.expect)(eventsMock.on.callCount).to.equal(1);
+(0, _chai.expect)(eventsMock.on.calledWithExactly('test', _lodash2.default)).to.equal(true);
 ```
 
 <a name="the-engine-class-engine-instance-registerkeyaction-method"></a>
@@ -740,9 +740,9 @@ should remove all click/altClick/over/out event listeners for the
 should be a class that inherits from Static.
 
 ```js
-(0, _chai.expect)(_entity3.default).to.exist;
-(0, _chai.expect)(_entity3.default).to.be.a('function');
-(0, _chai.expect)(_entity3.default.__proto__.name).to.equal('Static');
+(0, _chai.expect)(_Entity2.default).to.exist;
+(0, _chai.expect)(_Entity2.default).to.be.a('function');
+(0, _chai.expect)(_Entity2.default.__proto__.name).to.equal('Static');
 ```
 
 <a name="the-entity-class-create-method"></a>
@@ -754,7 +754,7 @@ should get the entity data for the provided entity ID, create a new
 
 ```js
 (0, _chai.expect)(function () {
-    return _entity3.default.create(engine, { id: 'test', uid: 'foo' }).then(function (entity) {
+    return _Entity2.default.create(engine, { id: 'test', uid: 'foo' }).then(function (entity) {
         (0, _chai.expect)(entity).to.exist;
         (0, _chai.expect)(entity).to.have.all.keys(['id', 'uid']);
         (0, _chai.expect)(entity).to.have.property('mesh');
@@ -884,7 +884,7 @@ should return a promise that calls the update class method for the
 ```js
 (0, _chai.expect)(entity.TestComponent).to.not.exist;
 (0, _chai.expect)(function () {
-    return _entity3.default.updateComponent(engine, entity, 'TestComponent').then(function (comp) {
+    return _Entity2.default.updateComponent(engine, entity, 'TestComponent').then(function (comp) {
         (0, _chai.expect)(comp).to.exist;
         (0, _chai.expect)(comp).to.equal(_comp);
         (0, _chai.expect)(entity.TestComponent).to.equal(comp);
@@ -903,7 +903,7 @@ should return a promise that sequentially updates/creates each component
 
 ```js
 (0, _chai.expect)(function () {
-    return _entity3.default.updateComponents(engine, entity, {
+    return _Entity2.default.updateComponents(engine, entity, {
         TestComponent: { foo: 'bar' },
         AnotherComponent: { meaning: 42 }
     }).then(function (entity) {
@@ -925,7 +925,7 @@ should dismount the specified component using it's class dismount
 ```js
 var ret = void 0;
 (0, _chai.expect)(function () {
-    return ret = _entity3.default.dismountComponent(engine, entity, 'TestComponent');
+    return ret = _Entity2.default.dismountComponent(engine, entity, 'TestComponent');
 }).to.not.throw(Error);
 (0, _chai.expect)(ret).to.equal(null);
 (0, _chai.expect)(entity.TestComponent).to.equal(null);
@@ -938,7 +938,7 @@ should create a new entity if none provided.
 
 ```js
 (0, _chai.expect)(function () {
-    return _entity3.default.update(engine, null, { id: 'foo' }).then(function (entity) {
+    return _Entity2.default.update(engine, null, { id: 'foo' }).then(function (entity) {
         (0, _chai.expect)(entity).to.exist;
         (0, _chai.expect)(create.callCount).to.equal(1);
         (0, _chai.expect)(updateComponents.callCount).to.equal(0);
@@ -951,7 +951,7 @@ should call updateComponents for existing entity.
 
 ```js
 (0, _chai.expect)(function () {
-    return _entity3.default.update(engine, entity, { id: 'foo' }).then(function (n) {
+    return _Entity2.default.update(engine, entity, { id: 'foo' }).then(function (n) {
         (0, _chai.expect)(n).to.exist;
         (0, _chai.expect)(n).to.equal(entity);
         (0, _chai.expect)(create.callCount).to.equal(0);
@@ -968,7 +968,7 @@ should dismount each component then return null.
 ```js
 var ret = void 0;
 (0, _chai.expect)(function () {
-    return ret = _entity3.default.dismount(engine, entity);
+    return ret = _Entity2.default.dismount(engine, entity);
 }).to.not.throw(Error);
 (0, _chai.expect)(ret).to.equal(null);
 (0, _chai.expect)(entity.id).to.equal('k');
@@ -981,7 +981,7 @@ should call the tick method on the provided entity instance.
 
 ```js
 (0, _chai.expect)(function () {
-    return _entity3.default.tick(engine, entity, 100, 10);
+    return _Entity2.default.tick(engine, entity, 100, 10);
 }).to.not.throw(Error);
 (0, _chai.expect)(tick.callCount).to.equal(1);
 (0, _chai.expect)(tick.calledWithExactly(engine, 100, 10)).to.equal(true);
@@ -1036,8 +1036,8 @@ var ctrl = void 0,
 (0, _chai.expect)(ctrl).to.have.property('player').that.equals(null);
 (0, _chai.expect)(ctrl).to.have.property('target').that.equals(null);
 (0, _chai.expect)(ctrl.engine).to.equal(engine);
-(0, _chai.expect)(EventProxyMock.callCount).to.equal(1);
-(0, _chai.expect)(EventProxyMock.calledWithExactly(ctrl, 'engine.ctrl', ['messages', 'player', 'target'])).to.equal(true);
+(0, _chai.expect)(EventProxyMock.create.callCount).to.equal(1);
+(0, _chai.expect)(EventProxyMock.create.calledWithExactly(ctrl, 'engine.ctrl', ['messages', 'player', 'target'])).to.equal(true);
 ```
 
 <a name="playercontroller-class-playercontroller-instance"></a>
@@ -1324,8 +1324,8 @@ should throw an error when an improper entity or event is passed.
 should be a singleton.
 
 ```js
-(0, _chai.expect)(_scene2.default).to.be.a('function');
-(0, _chai.expect)(_scene2.default.__proto__.name).to.equal('Singleton');
+(0, _chai.expect)(_Scene2.default).to.be.a('function');
+(0, _chai.expect)(_Scene2.default.__proto__.name).to.equal('Singleton');
 ```
 
 <a name="the-scene-class-constructor"></a>
@@ -1336,7 +1336,7 @@ should create a new object with an empty children map and a null
 ```js
 var scene = void 0;
 (0, _chai.expect)(function () {
-    return scene = new _scene2.default();
+    return scene = new _Scene2.default();
 }).to.not.throw(Error);
 (0, _chai.expect)(scene).to.exist;
 (0, _chai.expect)(scene).to.have.all.keys(['children', 'activeCamera']);
@@ -1483,7 +1483,7 @@ should assign proxy properties from a list of keys to the provided object
 ```js
 var obj = { d: null };
 (0, _chai.expect)(function () {
-    return (0, _stateEventProxy2.default)(obj, 'obj', ['a', 'b', 'c'], { def: 0 });
+    return _StateEventProxy2.default.create(obj, 'obj', ['a', 'b', 'c'], { def: 0 });
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.all.keys(['a', 'b', 'c', 'd']);
@@ -1524,7 +1524,7 @@ should assign proxy properties from a map of keys and values to the provided
 ```js
 var obj = { d: 10 };
 (0, _chai.expect)(function () {
-    return (0, _stateEventProxy2.default)(obj, 'obj', {
+    return _StateEventProxy2.default.create(obj, 'obj', {
         a: null,
         b: { foo: 'bar' },
         c: ['foo', 'bar']
@@ -1556,27 +1556,27 @@ should return true if provided key is an Array member-function that mutates
             itself.
 
 ```js
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('copyWithin')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('fill')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('pop')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('push')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('reverse')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('shift')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('sort')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('splice')).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('unshift')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('copyWithin')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('fill')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('pop')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('push')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('reverse')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('shift')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('sort')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('splice')).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('unshift')).to.equal(true);
 ```
 
 should return false if provided key is not an Array member-function that
             mutates itself.
 
 ```js
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('concat')).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('forEach')).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('join')).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('slice')).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('toString')).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn('length')).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('concat')).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('forEach')).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('join')).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('slice')).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('toString')).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn('length')).to.equal(false);
 ```
 
 <a name="stateeventproxy-stateeventproxy-class-emit-method"></a>
@@ -1587,7 +1587,7 @@ should call events.emit if the scope is not disabled.
 var v = 40,
     obj = {};
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.emit('test.scope', v, obj);
+    return _StateEventProxy2.default.emit('test.scope', v, obj);
 }).to.not.throw(Error);
 setTimeout(function () {
     (0, _chai.expect)(emit.callCount).to.equal(1);
@@ -1599,13 +1599,13 @@ setTimeout(function () {
 should not call events.emit if the scope is disabled.
 
 ```js
-_stateEventProxy.DISABLE['test.scope'] = true;
+_StateEventProxy.DISABLE['test.scope'] = true;
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.emit('test.scope', 30, {});
+    return _StateEventProxy2.default.emit('test.scope', 30, {});
 }).to.not.throw(Error);
 setTimeout(function () {
     (0, _chai.expect)(emit.callCount).to.equal(0);
-    _stateEventProxy.DISABLE['test.scope'] = false;
+    _StateEventProxy.DISABLE['test.scope'] = false;
     done();
 }, 1);
 ```
@@ -1620,7 +1620,7 @@ var obj = {},
     prop = 'testProp',
     scope = 'test.obj.testProp';
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop);
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop);
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.property('testProp');
@@ -1647,7 +1647,7 @@ var obj = {},
     v = [1, 2, 3],
     opts = { deep: true, enumerable: true };
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop, v, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.property('test').that.eqls([1, 2, 3]);
@@ -1675,7 +1675,7 @@ var obj = {},
     v = { foo: 'bar' },
     opts = { deep: true, enumerable: true };
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop, v, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.property('test').that.eqls(v);
@@ -1701,7 +1701,7 @@ var obj = {},
     prop = 'testProp',
     scope = 'test.obj.testProp';
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, 42, {
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop, 42, {
         enumerable: false
     });
 }).to.not.throw(Error);
@@ -1734,7 +1734,7 @@ var p = void 0,
 },
     opts = { deep: true };
 (0, _chai.expect)(function () {
-    return p = _stateEventProxy.StateEventProxy.buildProxyObject(scope, obj, opts);
+    return p = _StateEventProxy2.default.buildProxyObject(scope, obj, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(p).to.exist;
 (0, _chai.expect)(proxify.callCount).to.equal(2);
@@ -1755,7 +1755,7 @@ var p = void 0,
     obj = { arr: arr },
     opts = { deep: true };
 (0, _chai.expect)(function () {
-    return p = _stateEventProxy.StateEventProxy.buildProxyArray(scope, obj, arr, opts);
+    return p = _StateEventProxy2.default.buildProxyArray(scope, obj, arr, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(p).to.exist;
 (0, _chai.expect)(p.length).to.equal(4);
@@ -1780,9 +1780,9 @@ should have emit and on methods for dispatching and subscribing to
     events.
 
 ```js
-(0, _chai.expect)(_stateEvents.Events).to.exist;
-(0, _chai.expect)(_stateEvents.Events).to.have.property('emit').that.is.a('function');
-(0, _chai.expect)(_stateEvents.Events).to.have.property('on').that.is.a('function');
+(0, _chai.expect)(_stateEvents2.default).to.exist;
+(0, _chai.expect)(_stateEvents2.default).to.have.property('emit').that.is.a('function');
+(0, _chai.expect)(_stateEvents2.default).to.have.property('on').that.is.a('function');
 ```
 
 should dispatch an event with the emit method and callback the events
@@ -1791,24 +1791,24 @@ should dispatch an event with the emit method and callback the events
 ```js
 var test = 0;
 (0, _chai.expect)(function () {
-    _stateEvents.Events.on('test', function (data) {
+    _stateEvents2.default.on('test', function (data) {
         (0, _chai.expect)(data).to.equal('foobar');
         test++;
     });
-    _stateEvents.Events.on('finish', function () {
+    _stateEvents2.default.on('finish', function () {
         (0, _chai.expect)(test).to.equal(2);
-        _stateEvents.Events.removeAllListeners('test');
-        _stateEvents.Events.removeAllListeners('finish');
-        _stateEvents.Events.removeAllListeners('foo');
+        _stateEvents2.default.removeAllListeners('test');
+        _stateEvents2.default.removeAllListeners('finish');
+        _stateEvents2.default.removeAllListeners('foo');
         done();
     });
-    _stateEvents.Events.on('foo', function () {
+    _stateEvents2.default.on('foo', function () {
         done('No foo event emitted, but handler called.');
     });
-    _stateEvents.Events.emit('test', 'foobar');
-    _stateEvents.Events.emit('bar');
-    _stateEvents.Events.emit('test', 'foobar');
-    _stateEvents.Events.emit('finish');
+    _stateEvents2.default.emit('test', 'foobar');
+    _stateEvents2.default.emit('bar');
+    _stateEvents2.default.emit('test', 'foobar');
+    _stateEvents2.default.emit('finish');
 }).to.not.throw(Error);
 ```
 

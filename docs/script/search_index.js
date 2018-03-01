@@ -1,50 +1,44 @@
 window.esdocSearchIndex = [
   [
     "bavel/src/engine.js~engine",
-    "class/src/engine.js~Engine.html",
-    "<span>Engine</span> <span class=\"search-result-import-path\">bavel/src/engine.js</span>",
+    "class/src/Engine.js~Engine.html",
+    "<span>Engine</span> <span class=\"search-result-import-path\">bavel/src/Engine.js</span>",
     "class"
   ],
   [
-    "bavel/src/scene/entity/entity.js~entity",
-    "class/src/scene/entity/entity.js~Entity.html",
-    "<span>Entity</span> <span class=\"search-result-import-path\">bavel/src/scene/entity/entity.js</span>",
+    "bavel/src/entity/entity.js~entity",
+    "class/src/Entity/Entity.js~Entity.html",
+    "<span>Entity</span> <span class=\"search-result-import-path\">bavel/src/Entity/Entity.js</span>",
     "class"
-  ],
-  [
-    "bavel/src/state-event-proxy.js~eventproxy",
-    "function/index.html#static-function-EventProxy",
-    "<span>EventProxy</span> <span class=\"search-result-import-path\">bavel/src/state-event-proxy.js</span>",
-    "function"
-  ],
-  [
-    "bavel/src/state-events.js~events",
-    "variable/index.html#static-variable-Events",
-    "<span>Events</span> <span class=\"search-result-import-path\">bavel/src/state-events.js</span>",
-    "variable"
   ],
   [
     "bavel/src/engine.js~loadstates",
     "variable/index.html#static-variable-LoadStates",
-    "<span>LoadStates</span> <span class=\"search-result-import-path\">bavel/src/engine.js</span>",
+    "<span>LoadStates</span> <span class=\"search-result-import-path\">bavel/src/Engine.js</span>",
     "variable"
   ],
   [
-    "bavel/src/player-controller.js~playercontroller",
-    "class/src/player-controller.js~PlayerController.html",
-    "<span>PlayerController</span> <span class=\"search-result-import-path\">bavel/src/player-controller.js</span>",
+    "bavel/src/playercontroller.js~playercontroller",
+    "class/src/PlayerController.js~PlayerController.html",
+    "<span>PlayerController</span> <span class=\"search-result-import-path\">bavel/src/PlayerController.js</span>",
     "class"
   ],
   [
     "bavel/src/scene/scene.js~scene",
-    "class/src/scene/scene.js~Scene.html",
-    "<span>Scene</span> <span class=\"search-result-import-path\">bavel/src/scene/scene.js</span>",
+    "class/src/Scene/Scene.js~Scene.html",
+    "<span>Scene</span> <span class=\"search-result-import-path\">bavel/src/Scene/Scene.js</span>",
     "class"
   ],
   [
-    "bavel/src/player-controller.js~round",
+    "bavel/src/stateeventproxy.js~stateeventproxy",
+    "class/src/StateEventProxy.js~StateEventProxy.html",
+    "<span>StateEventProxy</span> <span class=\"search-result-import-path\">bavel/src/StateEventProxy.js</span>",
+    "class"
+  ],
+  [
+    "bavel/src/playercontroller.js~round",
     "function/index.html#static-function-round",
-    "<span>round</span> <span class=\"search-result-import-path\">bavel/src/player-controller.js</span>",
+    "<span>round</span> <span class=\"search-result-import-path\">bavel/src/PlayerController.js</span>",
     "function"
   ],
   [
@@ -378,525 +372,561 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
-    "src/doc-types.js",
-    "file/src/doc-types.js.html",
-    "src/doc-types.js",
+    "src/.doc-types.js",
+    "file/src/.doc-types.js.html",
+    "src/.doc-types.js",
     "file"
   ],
   [
-    "src/doc-types.js~component",
+    "src/.doc-types.js~component",
     "typedef/index.html#static-typedef-Component",
-    "src/doc-types.js~Component",
+    "src/.doc-types.js~Component",
     "typedef"
   ],
   [
-    "src/doc-types.js~componentclass",
+    "src/.doc-types.js~componentclass",
     "typedef/index.html#static-typedef-ComponentClass",
-    "src/doc-types.js~ComponentClass",
+    "src/.doc-types.js~ComponentClass",
     "typedef"
   ],
   [
-    "src/doc-types.js~componentdata",
+    "src/.doc-types.js~componentdata",
     "typedef/index.html#static-typedef-ComponentData",
-    "src/doc-types.js~ComponentData",
+    "src/.doc-types.js~ComponentData",
     "typedef"
   ],
   [
-    "src/doc-types.js~entitydata",
+    "src/.doc-types.js~entitydata",
     "typedef/index.html#static-typedef-EntityData",
-    "src/doc-types.js~EntityData",
+    "src/.doc-types.js~EntityData",
     "typedef"
   ],
   [
-    "src/doc-types.js~entityinstance",
+    "src/.doc-types.js~entityinstance",
     "typedef/index.html#static-typedef-EntityInstance",
-    "src/doc-types.js~EntityInstance",
+    "src/.doc-types.js~EntityInstance",
     "typedef"
   ],
   [
-    "src/doc-types.js~entitymetadata",
+    "src/.doc-types.js~entitymetadata",
     "typedef/index.html#static-typedef-EntityMetaData",
-    "src/doc-types.js~EntityMetaData",
+    "src/.doc-types.js~EntityMetaData",
     "typedef"
   ],
   [
-    "src/doc-types.js~keydefinition",
+    "src/.doc-types.js~keydefinition",
     "typedef/index.html#static-typedef-KeyDefinition",
-    "src/doc-types.js~KeyDefinition",
+    "src/.doc-types.js~KeyDefinition",
     "typedef"
   ],
   [
-    "src/doc-types.js~keyhandler",
+    "src/.doc-types.js~keyhandler",
     "typedef/index.html#static-typedef-KeyHandler",
-    "src/doc-types.js~KeyHandler",
+    "src/.doc-types.js~KeyHandler",
     "typedef"
   ],
   [
-    "src/doc-types.js~logger",
+    "src/.doc-types.js~logger",
     "typedef/index.html#static-typedef-Logger",
-    "src/doc-types.js~Logger",
+    "src/.doc-types.js~Logger",
     "typedef"
   ],
   [
-    "src/doc-types.js~proxyvalue",
+    "src/.doc-types.js~proxyvalue",
     "typedef/index.html#static-typedef-ProxyValue",
-    "src/doc-types.js~ProxyValue",
+    "src/.doc-types.js~ProxyValue",
     "typedef"
   ],
   [
-    "src/doc-types.js~resourceloader",
+    "src/.doc-types.js~resourceloader",
     "typedef/index.html#static-typedef-ResourceLoader",
-    "src/doc-types.js~ResourceLoader",
+    "src/.doc-types.js~ResourceLoader",
     "typedef"
   ],
   [
-    "src/doc-types.js~resourceprovider",
+    "src/.doc-types.js~resourceprovider",
     "typedef/index.html#static-typedef-ResourceProvider",
-    "src/doc-types.js~ResourceProvider",
+    "src/.doc-types.js~ResourceProvider",
     "typedef"
   ],
   [
-    "src/doc-types.js~settings",
+    "src/.doc-types.js~settings",
     "typedef/index.html#static-typedef-Settings",
-    "src/doc-types.js~Settings",
+    "src/.doc-types.js~Settings",
     "typedef"
   ],
   [
     "src/engine.js",
-    "file/src/engine.js.html",
-    "src/engine.js",
+    "file/src/Engine.js.html",
+    "src/Engine.js",
     "file"
   ],
   [
     "src/engine.js~engine#gl",
-    "class/src/engine.js~Engine.html#instance-get-GL",
-    "src/engine.js~Engine#GL",
+    "class/src/Engine.js~Engine.html#instance-get-GL",
+    "src/Engine.js~Engine#GL",
     "member"
   ],
   [
     "src/engine.js~engine#baby",
-    "class/src/engine.js~Engine.html#instance-get-baby",
-    "src/engine.js~Engine#baby",
+    "class/src/Engine.js~Engine.html#instance-get-baby",
+    "src/Engine.js~Engine#baby",
     "member"
   ],
   [
     "src/engine.js~engine#canvas",
-    "class/src/engine.js~Engine.html#instance-get-canvas",
-    "src/engine.js~Engine#canvas",
+    "class/src/Engine.js~Engine.html#instance-get-canvas",
+    "src/Engine.js~Engine#canvas",
     "member"
   ],
   [
     "src/engine.js~engine#ctrl",
-    "class/src/engine.js~Engine.html#instance-get-ctrl",
-    "src/engine.js~Engine#ctrl",
+    "class/src/Engine.js~Engine.html#instance-get-ctrl",
+    "src/Engine.js~Engine#ctrl",
     "member"
   ],
   [
     "src/engine.js~engine#deregistermouseeventsforentity",
-    "class/src/engine.js~Engine.html#instance-method-deregisterMouseEventsForEntity",
-    "src/engine.js~Engine#deregisterMouseEventsForEntity",
+    "class/src/Engine.js~Engine.html#instance-method-deregisterMouseEventsForEntity",
+    "src/Engine.js~Engine#deregisterMouseEventsForEntity",
     "method"
   ],
   [
     "src/engine.js~engine#dismount",
-    "class/src/engine.js~Engine.html#instance-method-dismount",
-    "src/engine.js~Engine#dismount",
+    "class/src/Engine.js~Engine.html#instance-method-dismount",
+    "src/Engine.js~Engine#dismount",
     "method"
   ],
   [
     "src/engine.js~engine#emitdebugevent",
-    "class/src/engine.js~Engine.html#instance-method-emitDebugEvent",
-    "src/engine.js~Engine#emitDebugEvent",
+    "class/src/Engine.js~Engine.html#instance-method-emitDebugEvent",
+    "src/Engine.js~Engine#emitDebugEvent",
     "method"
   ],
   [
     "src/engine.js~engine#emitevent",
-    "class/src/engine.js~Engine.html#instance-method-emitEvent",
-    "src/engine.js~Engine#emitEvent",
+    "class/src/Engine.js~Engine.html#instance-method-emitEvent",
+    "src/Engine.js~Engine#emitEvent",
     "method"
   ],
   [
     "src/engine.js~engine#fps",
-    "class/src/engine.js~Engine.html#instance-member-fps",
-    "src/engine.js~Engine#fps",
+    "class/src/Engine.js~Engine.html#instance-member-fps",
+    "src/Engine.js~Engine#fps",
     "member"
   ],
   [
     "src/engine.js~engine#loading",
-    "class/src/engine.js~Engine.html#instance-member-loading",
-    "src/engine.js~Engine#loading",
+    "class/src/Engine.js~Engine.html#instance-member-loading",
+    "src/Engine.js~Engine#loading",
     "member"
   ],
   [
     "src/engine.js~engine#logger",
-    "class/src/engine.js~Engine.html#instance-get-logger",
-    "src/engine.js~Engine#logger",
+    "class/src/Engine.js~Engine.html#instance-get-logger",
+    "src/Engine.js~Engine#logger",
     "member"
   ],
   [
     "src/engine.js~engine#mount",
-    "class/src/engine.js~Engine.html#instance-method-mount",
-    "src/engine.js~Engine#mount",
+    "class/src/Engine.js~Engine.html#instance-method-mount",
+    "src/Engine.js~Engine#mount",
     "method"
   ],
   [
     "src/engine.js~engine#ondebugevent",
-    "class/src/engine.js~Engine.html#instance-method-onDebugEvent",
-    "src/engine.js~Engine#onDebugEvent",
+    "class/src/Engine.js~Engine.html#instance-method-onDebugEvent",
+    "src/Engine.js~Engine#onDebugEvent",
     "method"
   ],
   [
     "src/engine.js~engine#onevent",
-    "class/src/engine.js~Engine.html#instance-method-onEvent",
-    "src/engine.js~Engine#onEvent",
+    "class/src/Engine.js~Engine.html#instance-method-onEvent",
+    "src/Engine.js~Engine#onEvent",
     "method"
   ],
   [
     "src/engine.js~engine#provider",
-    "class/src/engine.js~Engine.html#instance-get-provider",
-    "src/engine.js~Engine#provider",
+    "class/src/Engine.js~Engine.html#instance-get-provider",
+    "src/Engine.js~Engine#provider",
     "member"
   ],
   [
     "src/engine.js~engine#registerkeyaction",
-    "class/src/engine.js~Engine.html#instance-method-registerKeyAction",
-    "src/engine.js~Engine#registerKeyAction",
+    "class/src/Engine.js~Engine.html#instance-method-registerKeyAction",
+    "src/Engine.js~Engine#registerKeyAction",
     "method"
   ],
   [
     "src/engine.js~engine#registermouseeventsforentity",
-    "class/src/engine.js~Engine.html#instance-method-registerMouseEventsForEntity",
-    "src/engine.js~Engine#registerMouseEventsForEntity",
+    "class/src/Engine.js~Engine.html#instance-method-registerMouseEventsForEntity",
+    "src/Engine.js~Engine#registerMouseEventsForEntity",
     "method"
   ],
   [
     "src/engine.js~engine#resize",
-    "class/src/engine.js~Engine.html#instance-method-resize",
-    "src/engine.js~Engine#resize",
+    "class/src/Engine.js~Engine.html#instance-method-resize",
+    "src/Engine.js~Engine#resize",
     "method"
   ],
   [
     "src/engine.js~engine#run",
-    "class/src/engine.js~Engine.html#instance-method-run",
-    "src/engine.js~Engine#run",
+    "class/src/Engine.js~Engine.html#instance-method-run",
+    "src/Engine.js~Engine#run",
     "method"
   ],
   [
     "src/engine.js~engine#running",
-    "class/src/engine.js~Engine.html#instance-member-running",
-    "src/engine.js~Engine#running",
+    "class/src/Engine.js~Engine.html#instance-member-running",
+    "src/Engine.js~Engine#running",
     "member"
   ],
   [
     "src/engine.js~engine#scene",
-    "class/src/engine.js~Engine.html#instance-member-scene",
-    "src/engine.js~Engine#scene",
+    "class/src/Engine.js~Engine.html#instance-member-scene",
+    "src/Engine.js~Engine#scene",
     "member"
   ],
   [
     "src/engine.js~engine#settings",
-    "class/src/engine.js~Engine.html#instance-member-settings",
-    "src/engine.js~Engine#settings",
+    "class/src/Engine.js~Engine.html#instance-member-settings",
+    "src/Engine.js~Engine#settings",
     "member"
   ],
   [
     "src/engine.js~engine#stop",
-    "class/src/engine.js~Engine.html#instance-method-stop",
-    "src/engine.js~Engine#stop",
+    "class/src/Engine.js~Engine.html#instance-method-stop",
+    "src/Engine.js~Engine#stop",
     "method"
   ],
   [
     "src/engine.js~engine#terrain",
-    "class/src/engine.js~Engine.html#instance-get-terrain",
-    "src/engine.js~Engine#terrain",
+    "class/src/Engine.js~Engine.html#instance-set-terrain",
+    "src/Engine.js~Engine#terrain",
     "member"
   ],
   [
     "src/engine.js~engine#terrain",
-    "class/src/engine.js~Engine.html#instance-set-terrain",
-    "src/engine.js~Engine#terrain",
+    "class/src/Engine.js~Engine.html#instance-get-terrain",
+    "src/Engine.js~Engine#terrain",
     "member"
   ],
   [
     "src/engine.js~engine#tovector",
-    "class/src/engine.js~Engine.html#instance-method-toVector",
-    "src/engine.js~Engine#toVector",
+    "class/src/Engine.js~Engine.html#instance-method-toVector",
+    "src/Engine.js~Engine#toVector",
     "method"
   ],
   [
     "src/engine.js~engine.init",
-    "class/src/engine.js~Engine.html#static-method-init",
-    "src/engine.js~Engine.init",
+    "class/src/Engine.js~Engine.html#static-method-init",
+    "src/Engine.js~Engine.init",
     "method"
   ],
   [
-    "src/player-controller.js",
-    "file/src/player-controller.js.html",
-    "src/player-controller.js",
+    "src/entity/entity.js",
+    "file/src/Entity/Entity.js.html",
+    "src/Entity/Entity.js",
     "file"
   ],
   [
-    "src/player-controller.js~message",
+    "src/entity/entity.js~entity.create",
+    "class/src/Entity/Entity.js~Entity.html#static-method-create",
+    "src/Entity/Entity.js~Entity.create",
+    "method"
+  ],
+  [
+    "src/entity/entity.js~entity.dismount",
+    "class/src/Entity/Entity.js~Entity.html#static-method-dismount",
+    "src/Entity/Entity.js~Entity.dismount",
+    "method"
+  ],
+  [
+    "src/entity/entity.js~entity.dismountcomponent",
+    "class/src/Entity/Entity.js~Entity.html#static-method-dismountComponent",
+    "src/Entity/Entity.js~Entity.dismountComponent",
+    "method"
+  ],
+  [
+    "src/entity/entity.js~entity.tick",
+    "class/src/Entity/Entity.js~Entity.html#static-method-tick",
+    "src/Entity/Entity.js~Entity.tick",
+    "method"
+  ],
+  [
+    "src/entity/entity.js~entity.update",
+    "class/src/Entity/Entity.js~Entity.html#static-method-update",
+    "src/Entity/Entity.js~Entity.update",
+    "method"
+  ],
+  [
+    "src/entity/entity.js~entity.updatecomponent",
+    "class/src/Entity/Entity.js~Entity.html#static-method-updateComponent",
+    "src/Entity/Entity.js~Entity.updateComponent",
+    "method"
+  ],
+  [
+    "src/entity/entity.js~entity.updatecomponents",
+    "class/src/Entity/Entity.js~Entity.html#static-method-updateComponents",
+    "src/Entity/Entity.js~Entity.updateComponents",
+    "method"
+  ],
+  [
+    "src/playercontroller.js",
+    "file/src/PlayerController.js.html",
+    "src/PlayerController.js",
+    "file"
+  ],
+  [
+    "src/playercontroller.js~message",
     "typedef/index.html#static-typedef-Message",
-    "src/player-controller.js~Message",
+    "src/PlayerController.js~Message",
     "typedef"
   ],
   [
-    "src/player-controller.js~playercontroller#dom_events",
-    "class/src/player-controller.js~PlayerController.html#instance-get-DOM_EVENTS",
-    "src/player-controller.js~PlayerController#DOM_EVENTS",
+    "src/playercontroller.js~playercontroller#dom_events",
+    "class/src/PlayerController.js~PlayerController.html#instance-get-DOM_EVENTS",
+    "src/PlayerController.js~PlayerController#DOM_EVENTS",
     "member"
   ],
   [
-    "src/player-controller.js~playercontroller#constructor",
-    "class/src/player-controller.js~PlayerController.html#instance-constructor-constructor",
-    "src/player-controller.js~PlayerController#constructor",
+    "src/playercontroller.js~playercontroller#constructor",
+    "class/src/PlayerController.js~PlayerController.html#instance-constructor-constructor",
+    "src/PlayerController.js~PlayerController#constructor",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#engine",
-    "class/src/player-controller.js~PlayerController.html#instance-get-engine",
-    "src/player-controller.js~PlayerController#engine",
+    "src/playercontroller.js~playercontroller#engine",
+    "class/src/PlayerController.js~PlayerController.html#instance-get-engine",
+    "src/PlayerController.js~PlayerController#engine",
     "member"
   ],
   [
-    "src/player-controller.js~playercontroller#entityaltclick",
-    "class/src/player-controller.js~PlayerController.html#instance-method-entityAltClick",
-    "src/player-controller.js~PlayerController#entityAltClick",
+    "src/playercontroller.js~playercontroller#entityaltclick",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-entityAltClick",
+    "src/PlayerController.js~PlayerController#entityAltClick",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#entityclick",
-    "class/src/player-controller.js~PlayerController.html#instance-method-entityClick",
-    "src/player-controller.js~PlayerController#entityClick",
+    "src/playercontroller.js~playercontroller#entityclick",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-entityClick",
+    "src/PlayerController.js~PlayerController#entityClick",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#entityout",
-    "class/src/player-controller.js~PlayerController.html#instance-method-entityOut",
-    "src/player-controller.js~PlayerController#entityOut",
+    "src/playercontroller.js~playercontroller#entityout",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-entityOut",
+    "src/PlayerController.js~PlayerController#entityOut",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#entityover",
-    "class/src/player-controller.js~PlayerController.html#instance-method-entityOver",
-    "src/player-controller.js~PlayerController#entityOver",
+    "src/playercontroller.js~playercontroller#entityover",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-entityOver",
+    "src/PlayerController.js~PlayerController#entityOver",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#maltclick",
-    "class/src/player-controller.js~PlayerController.html#instance-method-mAltClick",
-    "src/player-controller.js~PlayerController#mAltClick",
+    "src/playercontroller.js~playercontroller#maltclick",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-mAltClick",
+    "src/PlayerController.js~PlayerController#mAltClick",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#mclick",
-    "class/src/player-controller.js~PlayerController.html#instance-method-mClick",
-    "src/player-controller.js~PlayerController#mClick",
+    "src/playercontroller.js~playercontroller#mclick",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-mClick",
+    "src/PlayerController.js~PlayerController#mClick",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#mout",
-    "class/src/player-controller.js~PlayerController.html#instance-method-mOut",
-    "src/player-controller.js~PlayerController#mOut",
+    "src/playercontroller.js~playercontroller#mout",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-mOut",
+    "src/PlayerController.js~PlayerController#mOut",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#mover",
-    "class/src/player-controller.js~PlayerController.html#instance-method-mOver",
-    "src/player-controller.js~PlayerController#mOver",
+    "src/playercontroller.js~playercontroller#mover",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-mOver",
+    "src/PlayerController.js~PlayerController#mOver",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#mwheel",
-    "class/src/player-controller.js~PlayerController.html#instance-method-mWheel",
-    "src/player-controller.js~PlayerController#mWheel",
+    "src/playercontroller.js~playercontroller#mwheel",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-mWheel",
+    "src/PlayerController.js~PlayerController#mWheel",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#message",
-    "class/src/player-controller.js~PlayerController.html#instance-method-message",
-    "src/player-controller.js~PlayerController#message",
+    "src/playercontroller.js~playercontroller#message",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-message",
+    "src/PlayerController.js~PlayerController#message",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#messages",
-    "class/src/player-controller.js~PlayerController.html#instance-member-messages",
-    "src/player-controller.js~PlayerController#messages",
+    "src/playercontroller.js~playercontroller#messages",
+    "class/src/PlayerController.js~PlayerController.html#instance-member-messages",
+    "src/PlayerController.js~PlayerController#messages",
     "member"
   ],
   [
-    "src/player-controller.js~playercontroller#player",
-    "class/src/player-controller.js~PlayerController.html#instance-member-player",
-    "src/player-controller.js~PlayerController#player",
+    "src/playercontroller.js~playercontroller#player",
+    "class/src/PlayerController.js~PlayerController.html#instance-member-player",
+    "src/PlayerController.js~PlayerController#player",
     "member"
   ],
   [
-    "src/player-controller.js~playercontroller#registerkeyactions",
-    "class/src/player-controller.js~PlayerController.html#instance-method-registerKeyActions",
-    "src/player-controller.js~PlayerController#registerKeyActions",
+    "src/playercontroller.js~playercontroller#registerkeyactions",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-registerKeyActions",
+    "src/PlayerController.js~PlayerController#registerKeyActions",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#setup",
-    "class/src/player-controller.js~PlayerController.html#instance-method-setup",
-    "src/player-controller.js~PlayerController#setup",
+    "src/playercontroller.js~playercontroller#setup",
+    "class/src/PlayerController.js~PlayerController.html#instance-method-setup",
+    "src/PlayerController.js~PlayerController#setup",
     "method"
   ],
   [
-    "src/player-controller.js~playercontroller#target",
-    "class/src/player-controller.js~PlayerController.html#instance-member-target",
-    "src/player-controller.js~PlayerController#target",
+    "src/playercontroller.js~playercontroller#target",
+    "class/src/PlayerController.js~PlayerController.html#instance-member-target",
+    "src/PlayerController.js~PlayerController#target",
     "member"
   ],
   [
-    "src/player-controller.js~playercontroller.gettime",
-    "class/src/player-controller.js~PlayerController.html#static-method-getTime",
-    "src/player-controller.js~PlayerController.getTime",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js",
-    "file/src/scene/entity/entity.js.html",
-    "src/scene/entity/entity.js",
-    "file"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.create",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-create",
-    "src/scene/entity/entity.js~Entity.create",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.dismount",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-dismount",
-    "src/scene/entity/entity.js~Entity.dismount",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.dismountcomponent",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-dismountComponent",
-    "src/scene/entity/entity.js~Entity.dismountComponent",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.tick",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-tick",
-    "src/scene/entity/entity.js~Entity.tick",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.update",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-update",
-    "src/scene/entity/entity.js~Entity.update",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.updatecomponent",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-updateComponent",
-    "src/scene/entity/entity.js~Entity.updateComponent",
-    "method"
-  ],
-  [
-    "src/scene/entity/entity.js~entity.updatecomponents",
-    "class/src/scene/entity/entity.js~Entity.html#static-method-updateComponents",
-    "src/scene/entity/entity.js~Entity.updateComponents",
+    "src/playercontroller.js~playercontroller.gettime",
+    "class/src/PlayerController.js~PlayerController.html#static-method-getTime",
+    "src/PlayerController.js~PlayerController.getTime",
     "method"
   ],
   [
     "src/scene/scene.js",
-    "file/src/scene/scene.js.html",
-    "src/scene/scene.js",
+    "file/src/Scene/Scene.js.html",
+    "src/Scene/Scene.js",
     "file"
   ],
   [
     "src/scene/scene.js~scene#activecamera",
-    "class/src/scene/scene.js~Scene.html#instance-member-activeCamera",
-    "src/scene/scene.js~Scene#activeCamera",
+    "class/src/Scene/Scene.js~Scene.html#instance-member-activeCamera",
+    "src/Scene/Scene.js~Scene#activeCamera",
     "member"
   ],
   [
     "src/scene/scene.js~scene#baby",
-    "class/src/scene/scene.js~Scene.html#instance-get-baby",
-    "src/scene/scene.js~Scene#baby",
+    "class/src/Scene/Scene.js~Scene.html#instance-get-baby",
+    "src/Scene/Scene.js~Scene#baby",
     "member"
   ],
   [
     "src/scene/scene.js~scene#children",
-    "class/src/scene/scene.js~Scene.html#instance-member-children",
-    "src/scene/scene.js~Scene#children",
+    "class/src/Scene/Scene.js~Scene.html#instance-member-children",
+    "src/Scene/Scene.js~Scene#children",
     "member"
   ],
   [
     "src/scene/scene.js~scene#constructor",
-    "class/src/scene/scene.js~Scene.html#instance-constructor-constructor",
-    "src/scene/scene.js~Scene#constructor",
+    "class/src/Scene/Scene.js~Scene.html#instance-constructor-constructor",
+    "src/Scene/Scene.js~Scene#constructor",
     "method"
   ],
   [
     "src/scene/scene.js~scene#dismount",
-    "class/src/scene/scene.js~Scene.html#instance-method-dismount",
-    "src/scene/scene.js~Scene#dismount",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-dismount",
+    "src/Scene/Scene.js~Scene#dismount",
     "method"
   ],
   [
     "src/scene/scene.js~scene#getentity",
-    "class/src/scene/scene.js~Scene.html#instance-method-getEntity",
-    "src/scene/scene.js~Scene#getEntity",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-getEntity",
+    "src/Scene/Scene.js~Scene#getEntity",
     "method"
   ],
   [
     "src/scene/scene.js~scene#mount",
-    "class/src/scene/scene.js~Scene.html#instance-method-mount",
-    "src/scene/scene.js~Scene#mount",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-mount",
+    "src/Scene/Scene.js~Scene#mount",
     "method"
   ],
   [
     "src/scene/scene.js~scene#removeentity",
-    "class/src/scene/scene.js~Scene.html#instance-method-removeEntity",
-    "src/scene/scene.js~Scene#removeEntity",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-removeEntity",
+    "src/Scene/Scene.js~Scene#removeEntity",
     "method"
   ],
   [
     "src/scene/scene.js~scene#tick",
-    "class/src/scene/scene.js~Scene.html#instance-method-tick",
-    "src/scene/scene.js~Scene#tick",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-tick",
+    "src/Scene/Scene.js~Scene#tick",
     "method"
   ],
   [
     "src/scene/scene.js~scene#updateentities",
-    "class/src/scene/scene.js~Scene.html#instance-method-updateEntities",
-    "src/scene/scene.js~Scene#updateEntities",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-updateEntities",
+    "src/Scene/Scene.js~Scene#updateEntities",
     "method"
   ],
   [
     "src/scene/scene.js~scene#updateentity",
-    "class/src/scene/scene.js~Scene.html#instance-method-updateEntity",
-    "src/scene/scene.js~Scene#updateEntity",
+    "class/src/Scene/Scene.js~Scene.html#instance-method-updateEntity",
+    "src/Scene/Scene.js~Scene#updateEntity",
     "method"
   ],
   [
-    "src/state-event-proxy.js",
-    "file/src/state-event-proxy.js.html",
-    "src/state-event-proxy.js",
+    "src/stateeventproxy.js",
+    "file/src/StateEventProxy.js.html",
+    "src/StateEventProxy.js",
     "file"
   ],
   [
-    "src/state-event-proxy.js~proxifiedobject",
+    "src/stateeventproxy.js~proxifiedobject",
     "typedef/index.html#static-typedef-ProxifiedObject",
-    "src/state-event-proxy.js~ProxifiedObject",
+    "src/StateEventProxy.js~ProxifiedObject",
     "typedef"
   ],
   [
-    "src/state-event-proxy.js~scopedevent",
+    "src/stateeventproxy.js~scopedevent",
     "typedef/index.html#static-typedef-ScopedEvent",
-    "src/state-event-proxy.js~ScopedEvent",
+    "src/StateEventProxy.js~ScopedEvent",
     "typedef"
   ],
   [
-    "src/state-events.js",
-    "file/src/state-events.js.html",
-    "src/state-events.js",
+    "src/stateeventproxy.js~stateeventproxy.buildproxyarray",
+    "class/src/StateEventProxy.js~StateEventProxy.html#static-method-buildProxyArray",
+    "src/StateEventProxy.js~StateEventProxy.buildProxyArray",
+    "method"
+  ],
+  [
+    "src/stateeventproxy.js~stateeventproxy.buildproxyobject",
+    "class/src/StateEventProxy.js~StateEventProxy.html#static-method-buildProxyObject",
+    "src/StateEventProxy.js~StateEventProxy.buildProxyObject",
+    "method"
+  ],
+  [
+    "src/stateeventproxy.js~stateeventproxy.create",
+    "class/src/StateEventProxy.js~StateEventProxy.html#static-method-create",
+    "src/StateEventProxy.js~StateEventProxy.create",
+    "method"
+  ],
+  [
+    "src/stateeventproxy.js~stateeventproxy.emit",
+    "class/src/StateEventProxy.js~StateEventProxy.html#static-method-emit",
+    "src/StateEventProxy.js~StateEventProxy.emit",
+    "method"
+  ],
+  [
+    "src/stateeventproxy.js~stateeventproxy.ismutatefn",
+    "class/src/StateEventProxy.js~StateEventProxy.html#static-method-isMutateFn",
+    "src/StateEventProxy.js~StateEventProxy.isMutateFn",
+    "method"
+  ],
+  [
+    "src/stateeventproxy.js~stateeventproxy.proxifyproperty",
+    "class/src/StateEventProxy.js~StateEventProxy.html#static-method-proxifyProperty",
+    "src/StateEventProxy.js~StateEventProxy.proxifyProperty",
+    "method"
+  ],
+  [
+    "src/stateevents.js",
+    "file/src/stateEvents.js.html",
+    "src/stateEvents.js",
     "file"
   ]
 ]

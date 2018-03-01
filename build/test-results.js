@@ -1,4 +1,6 @@
-const _ = require('lodash');
+const forEach = require('lodash.foreach');
+const isEmpty = require('lodash.isempty');
+const map = require('lodash.map');
 const fs = require('fs');
 const path = require('path');
 const data = require('./test-results.json');
@@ -15,16 +17,16 @@ let page = `# Test Results
 `;
 
 let suites = {};
-_.forEach(data.tests, t => {
+forEach(data.tests, t => {
     let suite = depad(t.fullTitle.substring(0, t.fullTitle.indexOf(t.title))),
         title = depad(t.title),
         time = t.duration > 100 ? `**${t.duration}**` : t.duration,
-        error = _.isEmpty(t.err) ? '' : `\n${JSON.stringify(t.err, null, 2)}`,
+        error = isEmpty(t.err) ? '' : `\n${JSON.stringify(t.err, null, 2)}`,
         pass = error ? '**FAILED**' : 'OK';
 
     if (!suites[suite]) suites[suite] = [];
     suites[suite].push(`   - ${title}(${time}ms) ... ${pass}${error}\n`);
 });
-page += _.map(suites, (s, k) => `#### ${k}\n${s.join('')}`).join('\n');
+page += map(suites, (s, k) => `#### ${k}\n${s.join('')}`).join('\n');
 
 fs.writeFileSync(path.join(__dirname, 'test-results.md'), page);

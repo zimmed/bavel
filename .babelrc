@@ -1,14 +1,11 @@
 {
   "plugins": [
-    "lodash",
-    "transform-export-extensions",
     "remove-comments"
   ],
   "presets": [
-    "async-to-bluebird",
-    "es2015"
+    "env"
   ],
   "ignore": [
-    "src/doc-types.js"
+    "src/.doc-types.js"
   ]
 }

@@ -1,13 +1,13 @@
-import {_} from '../src/utils';
 import sinon from 'sinon';
+import noop from 'lodash.noop';
 
 export default function PlayerController(...args) {
-    this.DOM_EVENTS = {click: _.noop, contextmenu: _.noop};
-    this.setup = _.noop;
-    this.entityClick = _.noop;
-    this.entityAltClick = _.noop;
-    this.entityOver = _.noop;
-    this.entityOut = _.noop;
+    this.DOM_EVENTS = {click: noop, contextmenu: noop};
+    this.setup = noop;
+    this.entityClick = noop;
+    this.entityAltClick = noop;
+    this.entityOver = noop;
+    this.entityOut = noop;
     this.stubs = {
         constructor: {calledWith: args},
         setup: sinon.stub(this, 'setup'),

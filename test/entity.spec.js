@@ -1,7 +1,6 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import Promise from 'bluebird';
-import Entity from '../src/scene/entity';
+import Entity from '../src/Entity';
 
 const _entity = {id: 'test', _primaryMesh: 'TestComponent', TestComponent: {foo: 'bar'}};
 const _comp = {id: 'TestComponent', dismount: () => null, update: () => Promise.resolve(_comp)};

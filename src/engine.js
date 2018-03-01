@@ -1,9 +1,10 @@
-import {_} from './utils';
 import Singleton from 'basic-singleton';
-import Promise from 'bluebird';
-import Scene from './scene';
-import EventProxy from './state-event-proxy';
-import {Events} from './state-events';
+import forEach from 'lodash.foreach';
+import get from 'lodash.get';
+import noop from 'lodash.noop';
+import Scene from './Scene';
+import StateEventProxy from './StateEventProxy';
+import stateEvents from './stateEvents';
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
@@ -81,9 +82,9 @@ export default class Engine extends Singleton {
      */
     constructorHelper(loggerService, PlayerController, settings) {
         if (!PlayerController) {
-            PlayerController = require('./player-controller').default;
+            PlayerController = require('./PlayerController').default;
         }
-        EventProxy(this, 'engine', ['fps', 'loading']);
+        StateEventProxy.create(this, 'engine', ['fps', 'loading']);
         /**
          * The currently rendered frames-per-second.
          *
@@ -202,7 +203,7 @@ export default class Engine extends Singleton {
                 this.stop();
             }
             this.scene = this.scene.dismount(this);
-            _.get(babylonEngine, 'dispose', _.noop)();
+            get(babylonEngine, 'dispose', noop)();
             babylonEngine = null;
             canvasElement = null;
             logger.info('Engine dismounted.');
@@ -232,7 +233,7 @@ export default class Engine extends Singleton {
             }
             defer = defer.then(() => {
                 this.ctrl.setup(this.settings);
-                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =>
+                forEach(this.ctrl.DOM_EVENTS, (fn, name) =>
                     canvasElement.addEventListener(name, e =>
                         e.preventDefault() && false || this.ctrl[fn](e)));
                 this.loading = LoadStates.REND;
@@ -285,7 +286,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     resize() {
-        return _.get(babylonEngine, 'resize', _.noop)();
+        return get(babylonEngine, 'resize', noop)();
     }
 
     /**
@@ -299,7 +300,7 @@ export default class Engine extends Singleton {
      * @return {BabylonJS.Vector3}
      */
     toVector({x=0, y=0, z=0}={}) {
-        return new this.GL.Vector3(..._.values({x, y, z}));
+        return new this.GL.Vector3(x, y, z);
     }
 
     /**
@@ -332,7 +333,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     emitEvent(scope, v, obj) {
-        return Events.emit(scope, v, obj);
+        return stateEvents.emit(scope, v, obj);
     }
 
     /**
@@ -344,7 +345,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     onEvent(event, handler) {
-        return Events.on(event, handler);
+        return stateEvents.on(event, handler);
     }
 
     /**

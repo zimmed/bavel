@@ -1,4 +1,4 @@
-import {_} from '../src/utils';
+import noop from 'lodash.noop';
 import sinon from 'sinon';
 
 const mock = {
@@ -17,10 +17,10 @@ const mock = {
     Vector3: sinon.spy(function Vector3() {}),
     Engine: sinon.spy(function Engine(...args) {
         this.fps = 60;
-        this.runRenderLoop = _.noop;
-        this.stopRenderLoop = _.noop;
-        this.dispose = _.noop;
-        this.resize = _.noop;
+        this.runRenderLoop = noop;
+        this.stopRenderLoop = noop;
+        this.dispose = noop;
+        this.resize = noop;
         this.stubs = {
             constructor: {
                 calledWith: args

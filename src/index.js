@@ -1,5 +1,4 @@
-export {default} from './engine';
-export PlayerController from './player-controller';
-export EventProxy from './state-event-proxy';
-export {Events} from './state-events';
-export * as Utils from './utils';
+export { default as Engine } from './Engine';
+export { default as PlayerController } from './PlayerController';
+export { default as StateEventProxy } from './StateEventProxy';
+export { default as stateEvents } from './stateEvents';

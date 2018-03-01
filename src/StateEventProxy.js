@@ -1,6 +1,9 @@
-import {_} from './utils';
 import Static from 'basic-static';
-import {Events} from './state-events';
+import forEach from 'lodash.foreach';
+import isObject from 'lodash.isobject';
+import isPlainObject from 'lodash.isplainobject';
+import isNumber from 'lodash.isnumber';
+import stateEvents from './stateEvents';
 
 /**
  * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener
@@ -13,20 +16,24 @@ import {Events} from './state-events';
  */
 
 /**
- * Convenience function that passes through to {@link StateEventProxy.create}.
- *
- * @return {ProxifiedObject}
+ * @access private
+ */
+export const DISABLE = {};
+
+/**
+ * The StateEventProxy class.
+ * 
  * @example <caption>Setup</caption>
- * const EventProxy = require('state-event-proxy');
+ * const StateEventProxy = require('./StateEventProxy');
  * let myObject = {};
  * @example <caption>Property Keys</caption>
- * EventProxy(myObject, 'myObject', ['myPropA', 'myPropB']);
+ * StateEventProxy.create(myObject, 'myObject', ['myPropA', 'myPropB']);
  * console.log(myObject) // {myPropA: undefined, myPropB: undeinfed}
  * myObject.myPropA = 10; // Emits event w/ args: 'myObject.myPropA', 10, myObject
  * myObject.myPropB = {}; // Emits event w/ args: 'myObject.myPropB', {}, myObject
  * console.log(myObject) // {myPropA: 10, myPropB: {}}
  * @example <caption>Property Map</caption>
- * EventProxy(myObject, 'myObject', {
+ * StateEventProxy.create(myObject, 'myObject', {
  *     myPropA: 42,
  *     myPropB: {foo: 'bar'}
  * });
@@ -35,7 +42,7 @@ import {Events} from './state-events';
  * myObject.myPropB.foo = 'foo'; // Does not emit an event.
  * console.log(myObject) // {myPropA: 10, myPropB: {foo: 'foo'}}
  * @example <caption>Property Map w/ Deep Proxy</caption>
- * EventProxy(myObject, 'myObject', {
+ * StateEventProxy.create(myObject, 'myObject', {
  *     myPropA: [{id: 'foo'}, {id: 'bar'}],
  *     myPropB: {a: 1, b: 2, c: 3}
  * }, {deep: true});
@@ -45,29 +52,19 @@ import {Events} from './state-events';
  * myObject.myPropA[0].id = 42; // Emits event w/ args: 'myObject.myPropA[0].id', 42, myObject.myPropA[0]
  * myObject.myPropA.push('foobar'); // Emits event w/ args: 'myObject.myPropA', myObject.myPropA, myObject
  * console.log(myObject) // {myPropA: [{id: 42}, {id: 'bar'}, 'foobar'], myPropB: {}}
- */
-export default function EventProxy(obj, scope, properties, options={}) {
-    return StateEventProxy.create(obj, scope, properties, options);
-}
 
-/**
- * @access private
  */
-export const DISABLE = {};
+export default class StateEventProxy extends Static {
 
-/**
- * The StateEventProxy class.
- *
- * @access private
- */
-export class StateEventProxy extends Static {
-
-    static create(obj, scope, properties, options) {
+    /**
+    * @return {ProxifiedObject}
+    */
+    static create(obj, scope, properties, options={}) {
         let self = obj || {};
 
-        _.forEach(properties, (prop, k) => {
-            let name = _.isNumber(k) ? prop : k,
-                value = _.isNumber(k) ? options.def : prop;
+        forEach(properties, (prop, k) => {
+            let name = isNumber(k) ? prop : k,
+                value = isNumber(k) ? options.def : prop;
 
             this.proxifyProperty(
                 `${scope}.${name}`,
@@ -84,16 +81,16 @@ export class StateEventProxy extends Static {
     }={}) {
         let p = value;
 
-        if (deep && _.isPlainObject(value)) {
+        if (deep && isPlainObject(value)) {
             p = this.buildProxyObject(scope, value, {deep, enumerable});
-        } else if (deep && _.isArray(value)) {
+        } else if (deep && Array.isArray(value)) {
             p = this.buildProxyArray(scope, obj, value, {deep, enumerable});
         }
         Object.defineProperty(obj, prop, {
             get: () => p,
             set: (v) => {
-                if (deep && _.isObject(v)) {
-                    v = _.isArray(v)
+                if (deep && isObject(v)) {
+                    v = Array.isArray(v)
                         ? this.buildProxyArray(scope, obj, v, {deep, enumerable})
                         : this.buildProxyObject(scope, v, {deep, enumerable});
                 }
@@ -109,15 +106,15 @@ export class StateEventProxy extends Static {
     static buildProxyObject(scope, obj, o) {
         let p = {};
 
-        _.forEach(obj, (v, k) => this.proxifyProperty(`${scope}.${k}`, p, k, v, o));
+        forEach(obj, (v, k) => this.proxifyProperty(`${scope}.${k}`, p, k, v, o));
         return p;
     }
 
     static buildProxyArray(scope, parent, arr, o) {
         const ret = new Proxy(
-            _.map(arr, (e, i) =>
-                _.isPlainObject(e) && this.buildProxyObject(`${scope}[${i}]`, e, o) ||
-                _.isArray(e) && this.buildProxyArray(`${scope}[${i}]`, ret, e, o) || e),
+            arr.map((e, i) =>
+                isPlainObject(e) && this.buildProxyObject(`${scope}[${i}]`, e, o) ||
+                Array.isArray(e) && this.buildProxyArray(`${scope}[${i}]`, ret, e, o) || e),
             {
                 get: (target, key) => {
                     if (this.isMutateFn(key)) {
@@ -134,8 +131,8 @@ export class StateEventProxy extends Static {
                 },
                 set: (target, i, v) => {
                     if (!isNaN(i)) {
-                        v = _.isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||
-                            _.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;
+                        v = isPlainObject(v) && this.buildProxyObject(`${scope}[${i}]`, v, o) ||
+                            Array.isArray(v) && this.buildProxyArray(`${scope}[${i}]`, ret, v, o) || v;
                         this.emit(`${scope}[${i}]`, v, ret);
                     }
                     target[i] = v;
@@ -156,12 +153,12 @@ export class StateEventProxy extends Static {
 
     static emit(scope, v, obj) {
         if (!DISABLE[scope]) {
-            setTimeout(() => Events.emit(scope, v, obj));
+            setTimeout(() => stateEvents.emit(scope, v, obj));
         }
     }
 
     static isMutateFn(key) {
-        return _.includes([
+        return [
             'copyWithin',
             'fill',
             'pop',
@@ -170,7 +167,7 @@ export class StateEventProxy extends Static {
             'shift',
             'sort',
             'splice',
-            'unshift'
-        ], key);
+            'unshift',
+        ].includes(key);
     }
 }

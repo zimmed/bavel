@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-const events = new EventEmitter();
+const stateEvents = new EventEmitter();
 
 /**
  * The EventEmitter for proxified object state changes.
@@ -8,5 +8,4 @@ const events = new EventEmitter();
  * @access public
  * @type {EventEmitter}
  */
-export const Events = events;
-
+export default stateEvents;

@@ -32,12 +32,11 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
@@ -54,8 +53,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -267,7 +266,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, k: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, down: <span>bool</span>)</span></span></span>
+          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(engine: <span><a href="class/src/Engine.js~Engine.html">Engine</a></span>, k: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, down: <span>bool</span>)</span></span></span>
         </p>
       </div>
       <div>
@@ -514,7 +513,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -557,7 +556,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -624,14 +623,14 @@
 
         return someFancyAsyncAction().then(() =&gt; {
             comp.baby = engine.GL.Mesh.CreateSphere(&apos;mySphere&apos;, 10, 2, engine.scene.baby);
-            _.assign(comp.baby, meshData);
+            Object.assign(comp.baby, meshData);
             return comp;
          });
     static update(engine, entity, comp, id, data) {
         if (!comp) {
             return this.create(engine, entity, id, data);
         }
-        _.assign(comp.baby, data);
+        Object.assign(comp.baby, data);
         return Promise.resolve(comp);
     }
     static dismount(engine, entity, comp) {
@@ -660,7 +659,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -728,7 +727,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -810,7 +809,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -853,7 +852,7 @@
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">tick</td>
-      <td data-ice="type"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, time: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, deltaTime: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span></td>
+      <td data-ice="type"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(engine: <span><a href="class/src/Engine.js~Engine.html">Engine</a></span>, time: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, deltaTime: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Executes all registered component tick methods.</p>
 </td>
@@ -900,7 +899,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -984,7 +983,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1060,11 +1059,11 @@
     
     
     
-    <span data-ice="name">KeyHandler</span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(engine: <span><a href="class/src/engine.js~Engine.html">Engine</a></span>, k: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, down: <span>bool</span>)</span></span></span>
+    <span data-ice="name">KeyHandler</span><span data-ice="signature">: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(engine: <span><a href="class/src/Engine.js~Engine.html">Engine</a></span>, k: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, down: <span>bool</span>)</span></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1107,7 +1106,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1184,7 +1183,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/player-controller.js.html#lineNumber13">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/PlayerController.js.html#lineNumber16">source</a></span></span>
     </span>
   </h3>
 
@@ -1261,7 +1260,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/state-event-proxy.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/StateEventProxy.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1317,7 +1316,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1360,7 +1359,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1403,7 +1402,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1470,7 +1469,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/state-event-proxy.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/StateEventProxy.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 
@@ -1513,7 +1512,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/doc-types.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/.doc-types.js.html#lineNumberundefined">source</a></span></span>
     </span>
   </h3>
 

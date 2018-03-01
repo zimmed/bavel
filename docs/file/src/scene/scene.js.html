@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/scene/scene.js | API Document</title>
+  <title data-ice="title">src/Scene/Scene.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -32,12 +32,11 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
@@ -54,17 +53,21 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span></li>
 </ul>
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/scene/scene.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import {_} from &apos;../utils&apos;;
-import reducePromise from &apos;reduce-promise&apos;;
+<div class="content" data-ice="content"><h1 data-ice="title">src/Scene/Scene.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import reducePromise from &apos;reduce-promise&apos;;
 import Singleton from &apos;basic-singleton&apos;;
-import Entity from &apos;./entity&apos;;
+import mapValues from &apos;lodash.mapvalues&apos;;
+import pickBy from &apos;lodash.pickby&apos;;
+import get from &apos;lodash.get&apos;;
+import forEach from &apos;lodash.foreach&apos;;
+import noop from &apos;lodash.noop&apos;;
+import Entity from &apos;../Entity&apos;;
 
 /**
  * The Scene class
@@ -114,8 +117,8 @@ export default class Scene extends Singleton {
      * @return {null}
      */
     dismount(engine) {
-        this.children = _.pickBy(_.mapValues(this.children, e =&gt; Entity.dismount(engine, e)));
-        _.get(this, &apos;_baby.dispose&apos;, _.noop)();
+        this.children = pickBy(mapValues(this.children, e =&gt; Entity.dismount(engine, e)));
+        get(this, &apos;_baby.dispose&apos;, noop)();
         this._baby = null;
         return null;
     }
@@ -128,7 +131,7 @@ export default class Scene extends Singleton {
      * @return {undefined} if entity is not found.
      */
     getEntity(uid) {
-        return _.get(this.children, uid);
+        return get(this.children, uid);
     }
 
     /**
@@ -163,7 +166,7 @@ export default class Scene extends Singleton {
      * @return {null}
      */
     removeEntity(engine, entityUid) {
-        return this.children[entityUid] = Entity.dismount(engine, _.get(this.children, entityUid));
+        return this.children[entityUid] = Entity.dismount(engine, get(this.children, entityUid));
     }
 
     /**
@@ -174,7 +177,7 @@ export default class Scene extends Singleton {
      * @param {number} dt - The elapsed miliseconds since the last tick.
      */
     tick(engine, t, dt) {
-        _.forEach(this.children, e =&gt; { Entity.tick(engine, e, t, dt) });
+        forEach(this.children, e =&gt; { Entity.tick(engine, e, t, dt) });
     }
 }
 </code></pre>

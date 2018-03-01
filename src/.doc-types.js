@@ -96,14 +96,14 @@
  *
  *         return someFancyAsyncAction().then(() => {
  *             comp.baby = engine.GL.Mesh.CreateSphere('mySphere', 10, 2, engine.scene.baby);
- *             _.assign(comp.baby, meshData);
+ *             Object.assign(comp.baby, meshData);
  *             return comp;
  *          });
  *     static update(engine, entity, comp, id, data) {
  *         if (!comp) {
  *             return this.create(engine, entity, id, data);
  *         }
- *         _.assign(comp.baby, data);
+ *         Object.assign(comp.baby, data);
  *         return Promise.resolve(comp);
  *     }
  *     static dismount(engine, entity, comp) {

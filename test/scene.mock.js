@@ -1,12 +1,12 @@
-import {_} from '../src/utils';
 import sinon from 'sinon';
+import noop from 'lodash.noop';
 
 export default function Scene(...args) {
-    this.baby = {render: _.noop};
-    this.mount = _.noop;
-    this.dismount = _.noop;
-    this.tick = _.noop;
-    this.updateEntities = _.noop;
+    this.baby = {render: noop};
+    this.mount = noop;
+    this.dismount = noop;
+    this.tick = noop;
+    this.updateEntities = noop;
     this.stubs = {
         constructor: {calledWith: args},
         mount: sinon.stub(this, 'mount'),

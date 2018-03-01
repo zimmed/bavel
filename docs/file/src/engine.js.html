@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/engine.js | API Document</title>
+  <title data-ice="title">src/Engine.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -32,12 +32,11 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/engine.js~Engine.html">Engine</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/player-controller.js~PlayerController.html">PlayerController</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-EventProxy">EventProxy</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Events">Events</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
@@ -54,19 +53,20 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/scene.js~Scene.html">Scene</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">scene/entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/scene/entity/entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span></li>
 </ul>
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/engine.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import {_} from &apos;./utils&apos;;
-import Singleton from &apos;basic-singleton&apos;;
-import Promise from &apos;bluebird&apos;;
-import Scene from &apos;./scene&apos;;
-import EventProxy from &apos;./state-event-proxy&apos;;
-import {Events} from &apos;./state-events&apos;;
+<div class="content" data-ice="content"><h1 data-ice="title">src/Engine.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Singleton from &apos;basic-singleton&apos;;
+import forEach from &apos;lodash.foreach&apos;;
+import get from &apos;lodash.get&apos;;
+import noop from &apos;lodash.noop&apos;;
+import Scene from &apos;./Scene&apos;;
+import StateEventProxy from &apos;./StateEventProxy&apos;;
+import stateEvents from &apos;./stateEvents&apos;;
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
@@ -144,9 +144,9 @@ export default class Engine extends Singleton {
      */
     constructorHelper(loggerService, PlayerController, settings) {
         if (!PlayerController) {
-            PlayerController = require(&apos;./player-controller&apos;).default;
+            PlayerController = require(&apos;./PlayerController&apos;).default;
         }
-        EventProxy(this, &apos;engine&apos;, [&apos;fps&apos;, &apos;loading&apos;]);
+        StateEventProxy.create(this, &apos;engine&apos;, [&apos;fps&apos;, &apos;loading&apos;]);
         /**
          * The currently rendered frames-per-second.
          *
@@ -265,7 +265,7 @@ export default class Engine extends Singleton {
                 this.stop();
             }
             this.scene = this.scene.dismount(this);
-            _.get(babylonEngine, &apos;dispose&apos;, _.noop)();
+            get(babylonEngine, &apos;dispose&apos;, noop)();
             babylonEngine = null;
             canvasElement = null;
             logger.info(&apos;Engine dismounted.&apos;);
@@ -295,7 +295,7 @@ export default class Engine extends Singleton {
             }
             defer = defer.then(() =&gt; {
                 this.ctrl.setup(this.settings);
-                _.forEach(this.ctrl.DOM_EVENTS, (fn, name) =&gt;
+                forEach(this.ctrl.DOM_EVENTS, (fn, name) =&gt;
                     canvasElement.addEventListener(name, e =&gt;
                         e.preventDefault() &amp;&amp; false || this.ctrl[fn](e)));
                 this.loading = LoadStates.REND;
@@ -348,7 +348,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     resize() {
-        return _.get(babylonEngine, &apos;resize&apos;, _.noop)();
+        return get(babylonEngine, &apos;resize&apos;, noop)();
     }
 
     /**
@@ -362,7 +362,7 @@ export default class Engine extends Singleton {
      * @return {BabylonJS.Vector3}
      */
     toVector({x=0, y=0, z=0}={}) {
-        return new this.GL.Vector3(..._.values({x, y, z}));
+        return new this.GL.Vector3(x, y, z);
     }
 
     /**
@@ -395,7 +395,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     emitEvent(scope, v, obj) {
-        return Events.emit(scope, v, obj);
+        return stateEvents.emit(scope, v, obj);
     }
 
     /**
@@ -407,7 +407,7 @@ export default class Engine extends Singleton {
      * @return {undefined}
      */
     onEvent(event, handler) {
-        return Events.on(event, handler);
+        return stateEvents.on(event, handler);
     }
 
     /**

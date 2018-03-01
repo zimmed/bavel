@@ -1,7 +1,11 @@
-import {_} from '../utils';
 import reducePromise from 'reduce-promise';
 import Singleton from 'basic-singleton';
-import Entity from './entity';
+import mapValues from 'lodash.mapvalues';
+import pickBy from 'lodash.pickby';
+import get from 'lodash.get';
+import forEach from 'lodash.foreach';
+import noop from 'lodash.noop';
+import Entity from '../Entity';
 
 /**
  * The Scene class
@@ -51,8 +55,8 @@ export default class Scene extends Singleton {
      * @return {null}
      */
     dismount(engine) {
-        this.children = _.pickBy(_.mapValues(this.children, e => Entity.dismount(engine, e)));
-        _.get(this, '_baby.dispose', _.noop)();
+        this.children = pickBy(mapValues(this.children, e => Entity.dismount(engine, e)));
+        get(this, '_baby.dispose', noop)();
         this._baby = null;
         return null;
     }
@@ -65,7 +69,7 @@ export default class Scene extends Singleton {
      * @return {undefined} if entity is not found.
      */
     getEntity(uid) {
-        return _.get(this.children, uid);
+        return get(this.children, uid);
     }
 
     /**
@@ -100,7 +104,7 @@ export default class Scene extends Singleton {
      * @return {null}
      */
     removeEntity(engine, entityUid) {
-        return this.children[entityUid] = Entity.dismount(engine, _.get(this.children, entityUid));
+        return this.children[entityUid] = Entity.dismount(engine, get(this.children, entityUid));
     }
 
     /**
@@ -111,6 +115,6 @@ export default class Scene extends Singleton {
      * @param {number} dt - The elapsed miliseconds since the last tick.
      */
     tick(engine, t, dt) {
-        _.forEach(this.children, e => { Entity.tick(engine, e, t, dt) });
+        forEach(this.children, e => { Entity.tick(engine, e, t, dt) });
     }
 }

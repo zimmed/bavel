@@ -1,8 +1,9 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import {Events as events} from '../src/state-events';
-import {StateEventProxy, DISABLE, default as StateProxy} from '../src/state-event-proxy';
-
+import events from '../src/stateEvents';
+import StateEventProxy, {
+    DISABLE,
+} from '../src/StateEventProxy';
 
 describe('StateEventProxy', () => {
 
@@ -24,7 +25,7 @@ describe('StateEventProxy', () => {
         and emit state events when a property is reassigned`, (done) => {
             let obj = {d: null};
 
-            expect(() => StateProxy(obj, 'obj', ['a', 'b', 'c'], {def: 0})).to.not.throw(Error);
+            expect(() => StateEventProxy.create(obj, 'obj', ['a', 'b', 'c'], { def: 0 })).to.not.throw(Error);
             expect(obj).to.exist;
             expect(obj).to.have.all.keys(['a', 'b', 'c', 'd']);
             expect(obj).to.eql({a: 0, b: 0, c: 0, d: null});
@@ -54,7 +55,7 @@ describe('StateEventProxy', () => {
         object and emit state events when a property is reassigned`, (done) => {
             let obj = {d: 10};
 
-            expect(() => StateProxy(obj, 'obj', {
+            expect(() => StateEventProxy.create(obj, 'obj', {
                 a: null,
                 b: {foo: 'bar'},
                 c: ['foo', 'bar']

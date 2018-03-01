@@ -1,41 +1,40 @@
-import {_} from '../src/utils';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import Promise from 'bluebird';
-import {instances} from 'basic-singleton';
+import { instances } from 'basic-singleton';
+import noop from 'lodash.noop'
 
-require.ensure = _.noop;
-const SceneMock = require('./scene.mock');
-const PlayerControllerMock = require('./player-controller.mock');
+require.ensure = noop;
+const SceneMock = require('./Scene.mock');
+const PlayerControllerMock = require('./PlayerController.mock');
 const BabylonJSMock = require('./babylonjs.mock');
-const EventProxyMock = sinon.spy(function (obj, s, p) { return _.assign(obj, p); });
+const EventProxyMock = {
+    create: sinon.spy(function (obj, s, p) { return Object.assign(obj, p); }),
+};
 const eventsMock = {
-    Events: {
-        emit: sinon.spy(_.noop),
-        on: sinon.spy(_.noop),
-        reset: () => {eventsMock.Events.emit.reset(); eventsMock.Events.on.reset();}
-    }
+    emit: sinon.spy(noop),
+    on: sinon.spy(noop),
+    reset: () => { eventsMock.emit.reset(); eventsMock.on.reset(); },
 };
 
 proxyquire.noCallThru();
-const EngineModule = proxyquire('../src/engine.js', {
-    './scene': SceneMock,
-    './player-controller': PlayerControllerMock,
-    './state-event-proxy': EventProxyMock,
-    './state-events': eventsMock,
+const EngineModule = proxyquire('../src/Engine.js', {
+    './Scene': SceneMock,
+    './PlayerController': PlayerControllerMock,
+    './StateEventProxy': EventProxyMock,
+    './stateEvents': eventsMock,
     'babylonjs': BabylonJSMock
 });
 const Engine = EngineModule.default;
-const {getPrivateDataForTest, LoadStates} = EngineModule;
+const { getPrivateDataForTest, LoadStates } = EngineModule;
 
 const params = {
-    logger: {info: _.noop, debug: _.noop, error: _.noop, warn: _.noop},
+    logger: {info: noop, debug: noop, error: noop, warn: noop},
     provider: {},
     resourceLoader: () => Promise.resolve(params.provider),
     settings: {debug: true},
     canvas: {
-        addEventListener: _.noop
+        addEventListener: noop
     }
 };
 
@@ -51,8 +50,8 @@ describe('The Engine Class', () => {
         sceneSpy.reset();
         playerCtrlSpy.reset();
         BabylonJSMock.reset();
-        EventProxyMock.reset();
-        eventsMock.Events.reset();
+        EventProxyMock.create.reset();
+        eventsMock.reset();
     });
 
     it(`should be a singleton class`, () => {
@@ -65,7 +64,7 @@ describe('The Engine Class', () => {
 
         beforeEach(() => {
             loader = sinon.stub(params, 'resourceLoader', () => Promise.resolve(params.provider));
-            initialize = sinon.stub(Engine, 'constructorHelper', _.noop);
+            initialize = sinon.stub(Engine, 'constructorHelper', noop);
         });
         afterEach(() => {
             loader.restore();
@@ -123,8 +122,8 @@ describe('The Engine Class', () => {
             expect(() => engine = new Engine(params.logger, null, params.settings))
                 .to.not.throw(Error);
             expect(engine).to.exist;
-            expect(EventProxyMock.callCount).to.equal(1);
-            expect(EventProxyMock.calledWithExactly(engine, 'engine', {fps: 0, loading: LoadStates.BOOT}));
+            expect(EventProxyMock.create.callCount).to.equal(1);
+            expect(EventProxyMock.create.calledWithExactly(engine, 'engine', {fps: 0, loading: LoadStates.BOOT}));
             expect(engine).to.have.property('fps').that.equals(0);
             expect(engine).to.have.property('loading').that.equals(LoadStates.BOOT);
             expect(engine).to.have.property('scene').that.equals(null);
@@ -267,7 +266,7 @@ describe('The Engine Class', () => {
             let stop, scene, baby;
 
             beforeEach(() => engine.mount({}).then(() => {
-                stop = sinon.stub(engine, 'stop', _.noop);
+                stop = sinon.stub(engine, 'stop',noop);
                 expect(engine.scene).to.exist;
                 scene = engine.scene;
                 baby = engine.baby;
@@ -465,7 +464,7 @@ describe('The Engine Class', () => {
             let emit;
 
             beforeEach(() => {
-                emit = sinon.stub(engine, 'emitEvent', _.noop);
+                emit = sinon.stub(engine, 'emitEvent', noop);
             });
             afterEach(() => {
                 emit.restore();
@@ -489,7 +488,7 @@ describe('The Engine Class', () => {
             let on;
 
             beforeEach(() => {
-                on = sinon.stub(engine, 'onEvent', _.noop);
+                on = sinon.stub(engine, 'onEvent', noop);
             });
             afterEach(() => {
                 on.restore();
@@ -497,13 +496,13 @@ describe('The Engine Class', () => {
             });
 
             it(`should add an event listener if settings.debug = true`, () => {
-                expect(() => engine.onDebugEvent('test', _.noop)).to.not.throw(Error);
+                expect(() => engine.onDebugEvent('test', noop)).to.not.throw(Error);
                 expect(on.callCount).to.equal(1);
-                expect(on.calledWithExactly('test', _.noop)).to.equal(true);
+                expect(on.calledWithExactly('test', noop)).to.equal(true);
             });
             it(`should not add an event listener if settings.debug = false`, () => {
                 params.settings.debug = false;
-                expect(() => engine.onDebugEvent('test', _.noop)).to.not.throw(Error);
+                expect(() => engine.onDebugEvent('test', noop)).to.not.throw(Error);
                 expect(on.callCount).to.equal(0);
             });
         });
@@ -512,22 +511,22 @@ describe('The Engine Class', () => {
 
             it(`should unconditionally emit a state event`, () => {
                 expect(() => engine.emitEvent('test', 40, {})).to.not.throw(Error);
-                expect(eventsMock.Events.emit.callCount).to.equal(1);
-                expect(eventsMock.Events.emit.calledWithExactly('test', 40, {})).to.equal(true);
+                expect(eventsMock.emit.callCount).to.equal(1);
+                expect(eventsMock.emit.calledWithExactly('test', 40, {})).to.equal(true);
             });
         });
 
         describe('onEvent method', () => {
 
             it(`should unconditionally listen to a state event`, () => {
-                expect(() => engine.onEvent('test', _.noop)).to.not.throw(Error);
-                expect(eventsMock.Events.on.callCount).to.equal(1);
-                expect(eventsMock.Events.on.calledWithExactly('test', _.noop)).to.equal(true);
+                expect(() => engine.onEvent('test', noop)).to.not.throw(Error);
+                expect(eventsMock.on.callCount).to.equal(1);
+                expect(eventsMock.on.calledWithExactly('test', noop)).to.equal(true);
             });
         });
 
         describe('registerKeyAction method', () => {
-            let handler = _.noop;
+            let handler = noop;
 
             beforeEach(() => engine.mount({}));
 
@@ -582,7 +581,7 @@ describe('The Engine Class', () => {
                         ready: () => Promise.resolve({baby})
                     })
                 },
-                handler = _.noop;
+                handler = noop;
 
             beforeEach(() => {
                 baby = {};
@@ -685,7 +684,7 @@ describe('The Engine Class', () => {
                         ready: () => Promise.resolve({baby})
                     })
                 },
-                handler = _.noop;
+                handler = noop;
 
             beforeEach(() => engine.mount({}).then(() => {
                 return engine.registerMouseEventsForEntity(entity, {

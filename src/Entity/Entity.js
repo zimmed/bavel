@@ -1,7 +1,9 @@
-import {_} from '../../utils';
-import Promise from 'bluebird';
 import Static from 'basic-static';
 import reducePromise from 'reduce-promise';
+import merge from 'lodash.merge';
+import omit from 'lodash.omit';
+import get from 'lodash.get';
+import forEach from 'lodash.foreach';
 
 // List of entity keys that are not components.
 const nonCompKeys = ['id', 'uid', 'tick', 'mesh', '_primaryMesh'];
@@ -26,13 +28,13 @@ export default class Entity extends Static {
     static create(engine, data) {
         const ticks = {};
         const {id, uid} = data;
-        const polyData = _.merge(engine.provider.getEntity(id), data);
-        const componentData = _.omit(polyData, nonCompKeys);
+        const polyData = merge(engine.provider.getEntity(id), data);
+        const componentData = omit(polyData, nonCompKeys);
         const entity = Object.defineProperties({id, uid}, {
-            mesh: { get: () => _.get(entity, polyData._primaryMesh) },
+            mesh: { get: () => get(entity, polyData._primaryMesh) },
             tick: {
                 get: () => (eng, t, dt) =>
-                    _.forEach(ticks, (v, k) => { v(eng, entity, entity[k], t, dt); }),
+                    forEach(ticks, (v, k) => { v(eng, entity, entity[k], t, dt); }),
                 set: ({id, tick}) => tick ? (ticks[id] = tick) : (delete ticks[id])
             },
             meshAsync: {
@@ -116,7 +118,7 @@ export default class Entity extends Static {
         if (!entity) {
             return this.create(engine, data);
         }
-        return this.updateComponents(engine, entity, _.omit(data, nonCompKeys));
+        return this.updateComponents(engine, entity, omit(data, nonCompKeys));
     }
 
     /**
@@ -127,8 +129,8 @@ export default class Entity extends Static {
      * @return {null}
      */
     static dismount(engine, entity) {
-        _.forEach(
-            _.omit(entity, nonCompKeys),
+        forEach(
+            omit(entity, nonCompKeys),
             (v, k) => { this.dismountComponent(engine, entity, k); });
         return null;
     }

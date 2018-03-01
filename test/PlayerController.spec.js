@@ -1,27 +1,32 @@
-import _ from 'lodash';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
-import {instances} from 'basic-singleton';
+import { instances } from 'basic-singleton';
+import zipObject from 'lodash.zipobject';
+import noop from 'lodash.noop';
 
 proxyquire.noCallThru();
-const EventProxyMock = sinon.spy(function (obj, s, p) { return _.assign(obj, _.zipObject(p)); });
-const CtrlModule = proxyquire('../src/player-controller', {
-    './state-event-proxy': EventProxyMock
+const EventProxyMock = {
+    create: sinon.spy(function (obj, s, p) {
+        return Object.assign(obj, zipObject(p));
+    }),
+};
+const CtrlModule = proxyquire('../src/PlayerController', {
+    './StateEventProxy': EventProxyMock,
 });
 const PlayerController = CtrlModule.default;
-const {round} = CtrlModule;
+const { round } = CtrlModule;
 const engine = {
-    logger: {debug: _.noop},
-    scene: {baby: {pick: () => ({pickedPoint: {x: 0, y: 0, z: 0}})}},
-    registerKeyAction: _.noop
+    logger: { debug: noop },
+    scene: { baby: { pick: () => ({ pickedPoint: { x: 0, y: 0, z: 0 } }) } },
+    registerKeyAction: noop
 };
 
 describe('PlayerController Class', () => {
 
     afterEach(() => {
         delete instances['PlayerController'];
-        EventProxyMock.reset();
+        EventProxyMock.create.reset();
     });
 
     it(`should be a singleton class`, () => {
@@ -65,8 +70,8 @@ describe('PlayerController Class', () => {
             expect(ctrl).to.have.property('player').that.equals(null);
             expect(ctrl).to.have.property('target').that.equals(null);
             expect(ctrl.engine).to.equal(engine);
-            expect(EventProxyMock.callCount).to.equal(1);
-            expect(EventProxyMock.calledWithExactly(ctrl, 'engine.ctrl', [
+            expect(EventProxyMock.create.callCount).to.equal(1);
+            expect(EventProxyMock.create.calledWithExactly(ctrl, 'engine.ctrl', [
                 'messages', 'player', 'target'
             ])).to.equal(true);
         });
@@ -79,7 +84,7 @@ describe('PlayerController Class', () => {
 
         describe('setup method', () => {
             let register, settings = {
-                input: {keys: [{key: 'f', handler: _.noop}, {key: 'g', handler: _.noop}]}
+                input: {keys: [{key: 'f', handler: noop}, {key: 'g', handler: noop}]}
             };
 
             beforeEach(() => register = sinon.stub(ctrl, 'registerKeyActions'));
@@ -95,7 +100,7 @@ describe('PlayerController Class', () => {
 
         describe('registerKeyActions method', () => {
             let register, handlers = [
-                {key: 'f', handler: _.noop}, {key: 'g', handler: _.noop}
+                {key: 'f', handler: noop}, {key: 'g', handler: noop}
             ];
 
             beforeEach(() => register = sinon.stub(engine, 'registerKeyAction'));

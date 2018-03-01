@@ -1,8 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
-import Promise from 'bluebird';
-import Scene from '../src/scene';
-import Entity from '../src/scene/entity';
+import Scene from '../src/Scene';
+import Entity from '../src/Entity';
 import {instances} from 'basic-singleton';
 
 const engine = {
