@@ -1,36 +1,33 @@
-import {_} from '../src/utils';
 import sinon from 'sinon';
 
-const mock = {
+const mock = module.exports = {
     reset: () => {
-        mock.Engine.reset();
-        mock.Vector3.reset();
-        mock.ActionManager.reset();
-        mock.ExecuteCodeAction.reset();
+        mock.Engine.resetHistory();
+        mock.Vector3.resetHistory();
+        mock.ActionManager.resetHistory();
+        mock.ExecuteCodeAction.resetHistory();
     },
     ActionManager: sinon.spy(function ActionManager() {
         this.actions = []
-        this.registerAction = sinon.spy(function registerAction(t) {this.actions.push(t);});
-        this.reset = () => this.registerAction.reset();
+        this.registerAction = sinon.spy(t => { this.actions.push(t); });
+        this.resetHistory = () => this.registerAction.resetHistory();
     }),
     ExecuteCodeAction: sinon.spy(function ExecuteCodeAction() {}),
     Vector3: sinon.spy(function Vector3() {}),
     Engine: sinon.spy(function Engine(...args) {
-        this.fps = 60;
-        this.runRenderLoop = _.noop;
-        this.stopRenderLoop = _.noop;
-        this.dispose = _.noop;
-        this.resize = _.noop;
-        this.stubs = {
-            constructor: {
-                calledWith: args
-            },
-            runRenderLoop: sinon.stub(this, 'runRenderLoop'),
-            stopRenderLoop: sinon.stub(this, 'stopRenderLoop'),
-            dispose: sinon.stub(this, 'dispose'),
-            resize: sinon.stub(this, 'resize')
-        };
-    })
+        const sb = sinon.createSandbox();
+
+        Object.assign(this, {
+            fps: 60,
+            constructor: sb.spy(),
+            runRenderLoop: sb.spy(),
+            stopRenderLoop: sb.spy(),
+            dispose: sb.spy(),
+            resize: sb.spy(),
+            reset: () => sb.resetHistory(),
+        });
+        this.constructor(...args);
+    }),
 };
 
 mock.ActionManager.OnKeyUpTrigger = 'up';
@@ -39,5 +36,3 @@ mock.ActionManager.OnLeftPickTrigger = 'left';
 mock.ActionManager.OnRightPickTrigger = 'right';
 mock.ActionManager.OnPointerOverTrigger = 'over';
 mock.ActionManager.OnPointerOutTrigger = 'out';
-
-module.exports = mock;

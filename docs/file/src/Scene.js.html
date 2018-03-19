@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Scene.js | bavel</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="BabylonJS game framework with proper entity/component structure."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="bavel"><meta property="twitter:description" content="BabylonJS game framework with proper entity/component structure."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity.js~Entity.html">Entity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene.js~Scene.html">Scene</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrivateDataForTest">getPrivateDataForTest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityData">EntityData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyDefinition">KeyDefinition</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Scene.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import mapValues from &apos;lodash.mapvalues&apos;;
+import pickBy from &apos;lodash.pickby&apos;;
+import get from &apos;lodash.get&apos;;
+import forEach from &apos;lodash.foreach&apos;;
+import noop from &apos;lodash.noop&apos;;
+import Entity from &apos;src/Entity&apos;;
+
+/**
+ * local vars for read-only class members
+ * 
+ * @access private
+ */
+let instance = null;
+
+/**
+ * The Scene class
+ */
+export default class Scene {
+    /**
+     * Singleton instance of Scene
+     * 
+     * @type {?Scene}
+     */
+    static get instance() { return instance; }
+
+    /**
+     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).
+     */
+    static destroy() {
+        instance = null;
+    }
+
+    /**
+     * Helper method to create a new Scene instance, or return an existing one.
+     * 
+     * @returns {Scene}
+     */
+    static create() {
+        return (instance) ? instance : new Scene();
+    }
+
+    /**
+     * Scene constructor.
+     */
+    constructor() {
+        if (instance) throw new Error(&apos;Cannot instantiate more than one instance of Scene&apos;);
+        /**
+         * The map of entities registered to the scene (keys are entity.uid).
+         *
+         * @type {Object}
+         */
+        this.children = {};
+        /**
+         * The active camera entity.
+         *
+         * @type {?EntityInstance}
+         */
+        this.activeCamera = null;
+        Object.defineProperty(this, &apos;_baby&apos;, {
+            value: null,
+            writable: true
+        });
+        /**
+         * The underlying BabylonJS scene object.
+         * 
+         * @type {?BabylonJS#Scene}
+         */
+        this._baby = null;
+        instance = this;
+    }
+
+    /**
+     * The BabylonJS.Scene instance.
+     *
+     * @type {?BabylonJS.Scene}
+     */
+    get baby() { return this._baby; }
+
+    /**
+     * Instantiates the {@link Scene#baby} object.
+     *
+     * @param {Engine} engine
+     */
+    mount(engine) {
+        this._baby = new engine.GL.Scene(engine.baby);
+    }
+
+    /**
+     * Dismounts all child entities and disposes {@link Scene#baby} property.
+     *
+     * @param {Engine} engine
+     * @return {null}
+     */
+    dismount(engine) {
+        this.children = pickBy(mapValues(this.children, e =&gt; Entity.dismount(engine, e)));
+        get(this, &apos;_baby.dispose&apos;, noop)();
+        this._baby = null;
+        return null;
+    }
+
+    /**
+     * Gets child entity by EntityInstance#uid.
+     *
+     * @param {string} uid
+     * @return {EntityInstance} if entity is found.
+     * @return {undefined} if entity is not found.
+     */
+    getEntity(uid) {
+        return get(this.children, uid);
+    }
+
+    /**
+     * Updates/creates an entity with the provided data, and saves it to {@link Scene#children}.
+     *
+     * @param {Engine} engine
+     * @param {EntityMetaData} entityData
+     * @return {Promise&lt;EntityInstance&gt;} - The new/updated entity.
+     */
+    updateEntity(engine, entityData) {
+        return Entity.update(engine, this.children[entityData.uid], entityData)
+            .then(e =&gt; this.children[entityData.uid] = e);
+    }
+
+    /**
+     * Updates all entities in the provided list of entity data.
+     *
+     * @param {Engine} engine
+     * @param {EntityMetaData[]} entities
+     * @return {Promise&lt;Scene&gt;}
+     */
+    async updateEntities(engine, entities) {
+        await entities.reduce(
+            (promise, e) =&gt; promise.then(() =&gt; this.updateEntity(engine, e)),
+            Promise.resolve()
+        );
+        return this;
+    }
+
+    /**
+     * Dismounts and removes child entity by EntityInstance#uid.
+     *
+     * @param {Engine} engine
+     * @param {string} entityUid
+     * @return {null}
+     */
+    removeEntity(engine, entityUid) {
+        return this.children[entityUid] = Entity.dismount(engine, get(this.children, entityUid));
+    }
+
+    /**
+     * Executes registered tick methods for all child entities.
+     *
+     * @param {Engine} engine
+     * @param {number} t - The current timestamp in miliseconds.
+     * @param {number} dt - The elapsed miliseconds since the last tick.
+     */
+    tick(engine, t, dt) {
+        forEach(this.children, e =&gt; { Entity.tick(engine, e, t, dt) });
+    }
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

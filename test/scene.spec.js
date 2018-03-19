@@ -1,9 +1,5 @@
-import {expect} from 'chai';
-import sinon from 'sinon';
-import Promise from 'bluebird';
-import Scene from '../src/scene';
-import Entity from '../src/scene/entity';
-import {instances} from 'basic-singleton';
+import Scene from 'src/Scene';
+import Entity from 'src/Entity';
 
 const engine = {
     GL: {
@@ -12,38 +8,28 @@ const engine = {
 };
 
 describe('The Scene Class', () => {
-    let dismount, update, tick;
-
-    before(() => {
-        dismount = sinon.stub(Entity, 'dismount', () => null);
-        tick = sinon.stub(Entity, 'tick', () => null);
-        update = sinon.stub(Entity, 'update', (e, et) => Promise.resolve(et));
-    });
-    after(() => {
-        dismount.restore();
-        update.restore();
-        tick.restore();
+    beforeEach(() => {
+        sandbox.stub(Entity, 'dismount').returns(null);
+        sandbox.stub(Entity, 'tick').returns(null);
+        sandbox.stub(Entity, 'update').callsFake((e, et) => Promise.resolve(et));
     });
     afterEach(() => {
-        dismount.reset();
-        update.reset();
-        delete instances['Scene'];
+        Scene.destroy();
     });
 
     it(`should be a singleton`, () => {
-        expect(Scene).to.be.a('function');
-        expect(Scene.__proto__.name).to.equal('Singleton');
+        let scene = new Scene();
+        expect(() => scene = new Scene()).to.throw(Error);
     });
 
     describe('Constructor', () => {
 
         it(`should create a new object with an empty children map and a null
         activeCamera property, as well as a non-enumerable _baby property`, () => {
-            let scene;
+            let scene = new Scene();
 
-            expect(() => scene = new Scene()).to.not.throw(Error);
             expect(scene).to.exist;
-            expect(scene).to.have.all.keys(['children', 'activeCamera']);
+            expect(scene).to.have.all.keys([ 'children', 'activeCamera' ]);
             expect(scene.children).to.eql({});
             expect(scene.activeCamera).to.equal(null);
             expect(scene._baby).to.equal(null);
@@ -53,9 +39,7 @@ describe('The Scene Class', () => {
     describe('scene instance', () => {
         let scene;
 
-        beforeEach(() => {
-            scene = new Scene();
-        });
+        beforeEach(() => scene = new Scene());
 
         describe('baby getter method', () => {
 
@@ -69,7 +53,7 @@ describe('The Scene Class', () => {
         describe('mount method', () => {
 
             it('should set the scene._baby property to a new BabylonJS Scene', () => {
-                expect(() => scene.mount(engine)).to.not.throw(Error);
+                scene.mount(engine);
                 expect(scene.baby.isBaby).to.equal(true);
             });
         });
@@ -80,14 +64,14 @@ describe('The Scene Class', () => {
             property before returning null`, () => {
                 let ret;
 
-                scene.children = {foo: {uid: 'foo'}, bar: {uid: 'bar'}};
-                expect(() => ret = scene.dismount(engine)).to.not.throw(Error);
+                scene.children = { foo: { uid: 'foo' }, bar: { uid: 'bar' } };
+                ret = scene.dismount(engine);
                 expect(ret).to.equal(null);
                 expect(scene.baby).to.equal(null);
                 expect(scene.children).to.eql({});
-                expect(dismount.callCount).to.equal(2);
-                expect(dismount.calledWithExactly(engine, {uid: 'foo'})).to.equal(true);
-                expect(dismount.calledWithExactly(engine, {uid: 'bar'})).to.equal(true);
+                expect(Entity.dismount.callCount).to.equal(2);
+                expect(Entity.dismount).to.have.been.calledWithExactly(engine, { uid: 'foo' });
+                expect(Entity.dismount).to.have.been.calledWithExactly(engine, { uid: 'bar' });
             });
         });
 
@@ -96,10 +80,10 @@ describe('The Scene Class', () => {
             it(`should get a child entity by uid`, () => {
                 let e;
 
-                scene.children = {bar: {uid: 'bar'}};
-                expect(() => e = scene.getEntity('bar')).to.not.throw(Error);
-                expect(e).to.eql({uid: 'bar'});
-                expect(() => e = scene.getEntity('foo')).to.not.throw(Error);
+                scene.children = { bar: { uid: 'bar' } };
+                e = scene.getEntity('bar');
+                expect(e).to.eql({ uid: 'bar' });
+                e = scene.getEntity('foo');
                 expect(e).to.not.exist;
             });
         });
@@ -107,42 +91,36 @@ describe('The Scene Class', () => {
         describe('updateEntity method', () => {
 
             it(`should return a promise that updates an entity by uid with
-            Entity.update, then saves the updated entity back in children`, (done) => {
-                scene.children = {bar: {uid: 'bar', d: 0}};
-                expect(() => scene.updateEntity(engine, {uid: 'bar'})
-                    .then(entity => {
-                        expect(entity).to.eql({uid: 'bar', d: 0});
-                        expect(update.callCount).to.equal(1);
-                        expect(update.calledWithExactly(engine, {uid: 'bar', d: 0}, {uid: 'bar'})).to.equal(true);
-                        expect(scene.children.bar).to.eql({uid: 'bar', d: 0});
-                        done();
-                    }).catch(done)
-                ).to.not.throw(Error);
+            Entity.update, then saves the updated entity back in children`, async () => {
+                scene.children = { bar: { uid: 'bar', d: 0 } };
+                const entity = await scene.updateEntity(engine, { uid: 'bar' });
+
+                expect(entity).to.eql({ uid: 'bar', d: 0 });
+                expect(Entity.update.callCount).to.equal(1);
+                expect(Entity.update).to.have.been.calledWithExactly(engine, { uid: 'bar', d: 0 }, { uid: 'bar' });
+                expect(scene.children.bar).to.eql({ uid: 'bar', d: 0 });
             });
         });
 
         describe('updateEntities method', () => {
-            let updateEntity;
-
-            beforeEach(() => updateEntity = sinon.stub(scene, 'updateEntity', function(en, et) {
+            beforeEach(() => sandbox.stub(scene, 'updateEntity').callsFake(function(en, et) {
                 return this.children[et.uid] = et;
             }));
-            afterEach(() => updateEntity.restore());
 
             it(`should return a promise that sequentially updates/creates each entity
             from the provided data using the updateEntity method, then resolve
-            to the updated scene`, (done) => {
-                expect(() => scene.updateEntities(engine, [
-                    {uid: 'foo', data: 42},
-                    {data: 0, uid: 'bar'}
-                ]).then(scene => {
-                    expect(scene).to.exist;
-                    expect(scene.children).to.have.all.keys(['foo', 'bar']);
-                    expect(scene.children.foo.data).to.equal(42);
-                    expect(scene.children.bar.data).to.equal(0);
-                    expect(updateEntity.callCount).to.equal(2);
-                    done();
-                }).catch(done)).to.not.throw(Error);
+            to the updated scene`, async () => {
+                const n = await scene.updateEntities(engine, [
+                    { uid: 'foo', data: 42 },
+                    { data: 0, uid: 'bar' }
+                ]);
+
+                expect(n).to.exist;
+                expect(n).to.equal(scene);
+                expect(scene.children).to.have.all.keys([ 'foo', 'bar' ]);
+                expect(scene.children.foo.data).to.equal(42);
+                expect(scene.children.bar.data).to.equal(0);
+                expect(scene.updateEntity.callCount).to.equal(2);
             });
         });
 
@@ -151,26 +129,26 @@ describe('The Scene Class', () => {
             it(`should call Entity.dismount for the entity at the provided uid,
             and replace the entity in scene.children with the result (null)`, () => {
                 scene.children = {foo: {uid: 'foo'}, bar: {uid: 'bar'}};
-                expect(() => scene.removeEntity(engine, 'bar')).to.not.throw(Error);
+                scene.removeEntity(engine, 'bar');
                 expect(scene.children.bar).to.equal(null);
                 expect(scene.children.foo.uid).to.equal('foo');
-                expect(dismount.callCount).to.equal(1);
-                expect(dismount.calledWithExactly(engine, {uid: 'bar'})).to.equal(true);
+                expect(Entity.dismount.callCount).to.equal(1);
+                expect(Entity.dismount).to.have.been.calledWithExactly(engine, { uid: 'bar' });
             });
         });
 
         describe('tick method', () => {
 
             it(`should call Entity.tick for each entity in its children`, () => {
-                let foo = {uid: 'foo'}, bar = {uid: 'bar'};
+                const foo = { uid: 'foo' };
+                const bar = { uid: 'bar'};
 
-                scene.children = {foo, bar};
-                expect(() => scene.tick(engine, 100, 10)).to.not.throw(Error);
-                expect(tick.callCount).to.equal(2);
-                expect(tick.calledWithExactly(engine, foo, 100, 10)).to.equal(true);
-                expect(tick.calledWithExactly(engine, bar, 100, 10)).to.equal(true);
+                scene.children = { foo, bar };
+                scene.tick(engine, 100, 10);
+                expect(Entity.tick.callCount).to.equal(2);
+                expect(Entity.tick).to.have.been.calledWithExactly(engine, foo, 100, 10);
+                expect(Entity.tick).to.have.been.calledWithExactly(engine, bar, 100, 10);
             });
         });
-
     });
 });

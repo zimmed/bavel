@@ -1,14 +1,32 @@
 {
-  "plugins": [
-    "lodash",
-    "transform-export-extensions",
-    "remove-comments"
-  ],
   "presets": [
-    "async-to-bluebird",
-    "es2015"
+    "env"
   ],
+  "env": {
+    "development": {
+      "plugins": [
+        ["module-resolver", {
+          "root": ["./"],
+          "alias": {
+            "src": "./src/"
+          }
+        }]
+      ],
+      "comments": false
+    },
+    "production": {
+      "plugins": [
+        ["module-resolver", {
+          "root": ["./"],
+          "alias": {
+            "src": "./src/"
+          }
+        }]
+      ],
+      "comments": false
+    }
+  },
   "ignore": [
-    "src/doc-types.js"
+    "src/.doc-types.js"
   ]
 }

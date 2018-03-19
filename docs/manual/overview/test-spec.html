@@ -368,8 +368,8 @@ initialize.reset();
     return engine = new Engine(params.logger, null, params.settings);
 }).to.not.throw(Error);
 (0, _chai.expect)(engine).to.exist;
-(0, _chai.expect)(EventProxyMock.callCount).to.equal(1);
-(0, _chai.expect)(EventProxyMock.calledWithExactly(engine, &apos;engine&apos;, { fps: 0, loading: LoadStates.BOOT }));
+(0, _chai.expect)(EventProxyMock.create.callCount).to.equal(1);
+(0, _chai.expect)(EventProxyMock.create.calledWithExactly(engine, &apos;engine&apos;, { fps: 0, loading: LoadStates.BOOT }));
 (0, _chai.expect)(engine).to.have.property(&apos;fps&apos;).that.equals(0);
 (0, _chai.expect)(engine).to.have.property(&apos;loading&apos;).that.equals(LoadStates.BOOT);
 (0, _chai.expect)(engine).to.have.property(&apos;scene&apos;).that.equals(null);
@@ -701,15 +701,15 @@ engine.running = false;
 <h3 id="ondebugevent-method">onDebugEvent method</h3>
 <p>should add an event listener if settings.debug = true.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return engine.onDebugEvent(&apos;test&apos;, _utils._.noop);
+    return engine.onDebugEvent(&apos;test&apos;, _lodash2.default);
 }).to.not.throw(Error);
 (0, _chai.expect)(on.callCount).to.equal(1);
-(0, _chai.expect)(on.calledWithExactly(&apos;test&apos;, _utils._.noop)).to.equal(true);</code>
+(0, _chai.expect)(on.calledWithExactly(&apos;test&apos;, _lodash2.default)).to.equal(true);</code>
 </code></pre>
 <p>should not add an event listener if settings.debug = false.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">params.settings.debug = false;
 (0, _chai.expect)(function () {
-    return engine.onDebugEvent(&apos;test&apos;, _utils._.noop);
+    return engine.onDebugEvent(&apos;test&apos;, _lodash2.default);
 }).to.not.throw(Error);
 (0, _chai.expect)(on.callCount).to.equal(0);</code>
 </code></pre>
@@ -719,17 +719,17 @@ engine.running = false;
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
     return engine.emitEvent(&apos;test&apos;, 40, {});
 }).to.not.throw(Error);
-(0, _chai.expect)(eventsMock.Events.emit.callCount).to.equal(1);
-(0, _chai.expect)(eventsMock.Events.emit.calledWithExactly(&apos;test&apos;, 40, {})).to.equal(true);</code>
+(0, _chai.expect)(eventsMock.emit.callCount).to.equal(1);
+(0, _chai.expect)(eventsMock.emit.calledWithExactly(&apos;test&apos;, 40, {})).to.equal(true);</code>
 </code></pre>
 <p><a name="the-engine-class-engine-instance-onevent-method"></a></p>
 <h3 id="onevent-method">onEvent method</h3>
 <p>should unconditionally listen to a state event.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return engine.onEvent(&apos;test&apos;, _utils._.noop);
+    return engine.onEvent(&apos;test&apos;, _lodash2.default);
 }).to.not.throw(Error);
-(0, _chai.expect)(eventsMock.Events.on.callCount).to.equal(1);
-(0, _chai.expect)(eventsMock.Events.on.calledWithExactly(&apos;test&apos;, _utils._.noop)).to.equal(true);</code>
+(0, _chai.expect)(eventsMock.on.callCount).to.equal(1);
+(0, _chai.expect)(eventsMock.on.calledWithExactly(&apos;test&apos;, _lodash2.default)).to.equal(true);</code>
 </code></pre>
 <p><a name="the-engine-class-engine-instance-registerkeyaction-method"></a></p>
 <h3 id="registerkeyaction-method">registerKeyAction method</h3>
@@ -860,9 +860,9 @@ engine.running = false;
 <p><a name="the-entity-class"></a></p>
 <h1 id="the-entity-class">The Entity Class</h1>
 <p>should be a class that inherits from Static.</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_entity3.default).to.exist;
-(0, _chai.expect)(_entity3.default).to.be.a(&apos;function&apos;);
-(0, _chai.expect)(_entity3.default.__proto__.name).to.equal(&apos;Static&apos;);</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_Entity2.default).to.exist;
+(0, _chai.expect)(_Entity2.default).to.be.a(&apos;function&apos;);
+(0, _chai.expect)(_Entity2.default.__proto__.name).to.equal(&apos;Static&apos;);</code>
 </code></pre>
 <p><a name="the-entity-class-create-method"></a></p>
 <h2 id="create-method">create method</h2>
@@ -871,7 +871,7 @@ engine.running = false;
         return the updateComponents method with the new object and the aggregated
         component data (which is a promise that eventually resolves to entity).</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return _entity3.default.create(engine, { id: &apos;test&apos;, uid: &apos;foo&apos; }).then(function (entity) {
+    return _Entity2.default.create(engine, { id: &apos;test&apos;, uid: &apos;foo&apos; }).then(function (entity) {
         (0, _chai.expect)(entity).to.exist;
         (0, _chai.expect)(entity).to.have.all.keys([&apos;id&apos;, &apos;uid&apos;]);
         (0, _chai.expect)(entity).to.have.property(&apos;mesh&apos;);
@@ -983,7 +983,7 @@ entity.tick();
         updated component.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(entity.TestComponent).to.not.exist;
 (0, _chai.expect)(function () {
-    return _entity3.default.updateComponent(engine, entity, &apos;TestComponent&apos;).then(function (comp) {
+    return _Entity2.default.updateComponent(engine, entity, &apos;TestComponent&apos;).then(function (comp) {
         (0, _chai.expect)(comp).to.exist;
         (0, _chai.expect)(comp).to.equal(_comp);
         (0, _chai.expect)(entity.TestComponent).to.equal(comp);
@@ -999,7 +999,7 @@ entity.tick();
         from the provided data using the updateComponent method, then resolve
         to the updated entity.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return _entity3.default.updateComponents(engine, entity, {
+    return _Entity2.default.updateComponents(engine, entity, {
         TestComponent: { foo: &apos;bar&apos; },
         AnotherComponent: { meaning: 42 }
     }).then(function (entity) {
@@ -1018,7 +1018,7 @@ entity.tick();
         entity.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">var ret = void 0;
 (0, _chai.expect)(function () {
-    return ret = _entity3.default.dismountComponent(engine, entity, &apos;TestComponent&apos;);
+    return ret = _Entity2.default.dismountComponent(engine, entity, &apos;TestComponent&apos;);
 }).to.not.throw(Error);
 (0, _chai.expect)(ret).to.equal(null);
 (0, _chai.expect)(entity.TestComponent).to.equal(null);
@@ -1028,7 +1028,7 @@ entity.tick();
 <h2 id="update-method">update method</h2>
 <p>should create a new entity if none provided.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return _entity3.default.update(engine, null, { id: &apos;foo&apos; }).then(function (entity) {
+    return _Entity2.default.update(engine, null, { id: &apos;foo&apos; }).then(function (entity) {
         (0, _chai.expect)(entity).to.exist;
         (0, _chai.expect)(create.callCount).to.equal(1);
         (0, _chai.expect)(updateComponents.callCount).to.equal(0);
@@ -1038,7 +1038,7 @@ entity.tick();
 </code></pre>
 <p>should call updateComponents for existing entity.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return _entity3.default.update(engine, entity, { id: &apos;foo&apos; }).then(function (n) {
+    return _Entity2.default.update(engine, entity, { id: &apos;foo&apos; }).then(function (n) {
         (0, _chai.expect)(n).to.exist;
         (0, _chai.expect)(n).to.equal(entity);
         (0, _chai.expect)(create.callCount).to.equal(0);
@@ -1052,7 +1052,7 @@ entity.tick();
 <p>should dismount each component then return null.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">var ret = void 0;
 (0, _chai.expect)(function () {
-    return ret = _entity3.default.dismount(engine, entity);
+    return ret = _Entity2.default.dismount(engine, entity);
 }).to.not.throw(Error);
 (0, _chai.expect)(ret).to.equal(null);
 (0, _chai.expect)(entity.id).to.equal(&apos;k&apos;);
@@ -1062,7 +1062,7 @@ entity.tick();
 <h2 id="tick-method">tick method</h2>
 <p>should call the tick method on the provided entity instance.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(function () {
-    return _entity3.default.tick(engine, entity, 100, 10);
+    return _Entity2.default.tick(engine, entity, 100, 10);
 }).to.not.throw(Error);
 (0, _chai.expect)(tick.callCount).to.equal(1);
 (0, _chai.expect)(tick.calledWithExactly(engine, 100, 10)).to.equal(true);</code>
@@ -1105,8 +1105,8 @@ date = new Date(&apos;February 02, 2017 13:09:22&apos;);
 (0, _chai.expect)(ctrl).to.have.property(&apos;player&apos;).that.equals(null);
 (0, _chai.expect)(ctrl).to.have.property(&apos;target&apos;).that.equals(null);
 (0, _chai.expect)(ctrl.engine).to.equal(engine);
-(0, _chai.expect)(EventProxyMock.callCount).to.equal(1);
-(0, _chai.expect)(EventProxyMock.calledWithExactly(ctrl, &apos;engine.ctrl&apos;, [&apos;messages&apos;, &apos;player&apos;, &apos;target&apos;])).to.equal(true);</code>
+(0, _chai.expect)(EventProxyMock.create.callCount).to.equal(1);
+(0, _chai.expect)(EventProxyMock.create.calledWithExactly(ctrl, &apos;engine.ctrl&apos;, [&apos;messages&apos;, &apos;player&apos;, &apos;target&apos;])).to.equal(true);</code>
 </code></pre>
 <p><a name="playercontroller-class-playercontroller-instance"></a></p>
 <h2 id="playercontroller-instance">PlayerController instance</h2>
@@ -1321,8 +1321,8 @@ ctrl.target = entity2;
 <p><a name="the-scene-class"></a></p>
 <h1 id="the-scene-class">The Scene Class</h1>
 <p>should be a singleton.</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_scene2.default).to.be.a(&apos;function&apos;);
-(0, _chai.expect)(_scene2.default.__proto__.name).to.equal(&apos;Singleton&apos;);</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_Scene2.default).to.be.a(&apos;function&apos;);
+(0, _chai.expect)(_Scene2.default.__proto__.name).to.equal(&apos;Singleton&apos;);</code>
 </code></pre>
 <p><a name="the-scene-class-constructor"></a></p>
 <h2 id="constructor">Constructor</h2>
@@ -1330,7 +1330,7 @@ ctrl.target = entity2;
         activeCamera property, as well as a non-enumerable _baby property.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">var scene = void 0;
 (0, _chai.expect)(function () {
-    return scene = new _scene2.default();
+    return scene = new _Scene2.default();
 }).to.not.throw(Error);
 (0, _chai.expect)(scene).to.exist;
 (0, _chai.expect)(scene).to.have.all.keys([&apos;children&apos;, &apos;activeCamera&apos;]);
@@ -1450,7 +1450,7 @@ scene.children = { foo: foo, bar: bar };
         and emit state events when a property is reassigned.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">var obj = { d: null };
 (0, _chai.expect)(function () {
-    return (0, _stateEventProxy2.default)(obj, &apos;obj&apos;, [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;], { def: 0 });
+    return _StateEventProxy2.default.create(obj, &apos;obj&apos;, [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;], { def: 0 });
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.all.keys([&apos;a&apos;, &apos;b&apos;, &apos;c&apos;, &apos;d&apos;]);
@@ -1488,7 +1488,7 @@ setTimeout(function () {
         object and emit state events when a property is reassigned.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">var obj = { d: 10 };
 (0, _chai.expect)(function () {
-    return (0, _stateEventProxy2.default)(obj, &apos;obj&apos;, {
+    return _StateEventProxy2.default.create(obj, &apos;obj&apos;, {
         a: null,
         b: { foo: &apos;bar&apos; },
         c: [&apos;foo&apos;, &apos;bar&apos;]
@@ -1517,24 +1517,24 @@ setTimeout(function () {
 <h3 id="ismutatefn-method">isMutateFn method</h3>
 <p>should return true if provided key is an Array member-function that mutates
             itself.</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;copyWithin&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;fill&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;pop&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;push&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;reverse&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;shift&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;sort&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;splice&apos;)).to.equal(true);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;unshift&apos;)).to.equal(true);</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;copyWithin&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;fill&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;pop&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;push&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;reverse&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;shift&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;sort&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;splice&apos;)).to.equal(true);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;unshift&apos;)).to.equal(true);</code>
 </code></pre>
 <p>should return false if provided key is not an Array member-function that
             mutates itself.</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;concat&apos;)).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;forEach&apos;)).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;join&apos;)).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;slice&apos;)).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;toString&apos;)).to.equal(false);
-(0, _chai.expect)(_stateEventProxy.StateEventProxy.isMutateFn(&apos;length&apos;)).to.equal(false);</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;concat&apos;)).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;forEach&apos;)).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;join&apos;)).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;slice&apos;)).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;toString&apos;)).to.equal(false);
+(0, _chai.expect)(_StateEventProxy2.default.isMutateFn(&apos;length&apos;)).to.equal(false);</code>
 </code></pre>
 <p><a name="stateeventproxy-stateeventproxy-class-emit-method"></a></p>
 <h3 id="emit-method">emit method</h3>
@@ -1542,7 +1542,7 @@ setTimeout(function () {
 <pre><code class="lang-js"><code class="source-code prettyprint">var v = 40,
     obj = {};
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.emit(&apos;test.scope&apos;, v, obj);
+    return _StateEventProxy2.default.emit(&apos;test.scope&apos;, v, obj);
 }).to.not.throw(Error);
 setTimeout(function () {
     (0, _chai.expect)(emit.callCount).to.equal(1);
@@ -1551,13 +1551,13 @@ setTimeout(function () {
 }, 1);</code>
 </code></pre>
 <p>should not call events.emit if the scope is disabled.</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">_stateEventProxy.DISABLE[&apos;test.scope&apos;] = true;
+<pre><code class="lang-js"><code class="source-code prettyprint">_StateEventProxy.DISABLE[&apos;test.scope&apos;] = true;
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.emit(&apos;test.scope&apos;, 30, {});
+    return _StateEventProxy2.default.emit(&apos;test.scope&apos;, 30, {});
 }).to.not.throw(Error);
 setTimeout(function () {
     (0, _chai.expect)(emit.callCount).to.equal(0);
-    _stateEventProxy.DISABLE[&apos;test.scope&apos;] = false;
+    _StateEventProxy.DISABLE[&apos;test.scope&apos;] = false;
     done();
 }, 1);</code>
 </code></pre>
@@ -1569,7 +1569,7 @@ setTimeout(function () {
     prop = &apos;testProp&apos;,
     scope = &apos;test.obj.testProp&apos;;
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop);
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop);
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.property(&apos;testProp&apos;);
@@ -1593,7 +1593,7 @@ setTimeout(function () {
     v = [1, 2, 3],
     opts = { deep: true, enumerable: true };
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop, v, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.property(&apos;test&apos;).that.eqls([1, 2, 3]);
@@ -1618,7 +1618,7 @@ setTimeout(function () {
     v = { foo: &apos;bar&apos; },
     opts = { deep: true, enumerable: true };
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop, v, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(obj).to.exist;
 (0, _chai.expect)(obj).to.have.property(&apos;test&apos;).that.eqls(v);
@@ -1641,7 +1641,7 @@ setTimeout(function () {
     prop = &apos;testProp&apos;,
     scope = &apos;test.obj.testProp&apos;;
 (0, _chai.expect)(function () {
-    return _stateEventProxy.StateEventProxy.proxifyProperty(scope, obj, prop, 42, {
+    return _StateEventProxy2.default.proxifyProperty(scope, obj, prop, 42, {
         enumerable: false
     });
 }).to.not.throw(Error);
@@ -1671,7 +1671,7 @@ setTimeout(function () {
 },
     opts = { deep: true };
 (0, _chai.expect)(function () {
-    return p = _stateEventProxy.StateEventProxy.buildProxyObject(scope, obj, opts);
+    return p = _StateEventProxy2.default.buildProxyObject(scope, obj, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(p).to.exist;
 (0, _chai.expect)(proxify.callCount).to.equal(2);
@@ -1689,7 +1689,7 @@ setTimeout(function () {
     obj = { arr: arr },
     opts = { deep: true };
 (0, _chai.expect)(function () {
-    return p = _stateEventProxy.StateEventProxy.buildProxyArray(scope, obj, arr, opts);
+    return p = _StateEventProxy2.default.buildProxyArray(scope, obj, arr, opts);
 }).to.not.throw(Error);
 (0, _chai.expect)(p).to.exist;
 (0, _chai.expect)(p.length).to.equal(4);
@@ -1711,32 +1711,32 @@ setTimeout(function () {
 <h1 id="stateeventmanager">StateEventManager</h1>
 <p>should have emit and on methods for dispatching and subscribing to
     events.</p>
-<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEvents.Events).to.exist;
-(0, _chai.expect)(_stateEvents.Events).to.have.property(&apos;emit&apos;).that.is.a(&apos;function&apos;);
-(0, _chai.expect)(_stateEvents.Events).to.have.property(&apos;on&apos;).that.is.a(&apos;function&apos;);</code>
+<pre><code class="lang-js"><code class="source-code prettyprint">(0, _chai.expect)(_stateEvents2.default).to.exist;
+(0, _chai.expect)(_stateEvents2.default).to.have.property(&apos;emit&apos;).that.is.a(&apos;function&apos;);
+(0, _chai.expect)(_stateEvents2.default).to.have.property(&apos;on&apos;).that.is.a(&apos;function&apos;);</code>
 </code></pre>
 <p>should dispatch an event with the emit method and callback the events
     listener for that event, registered with the on method.</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">var test = 0;
 (0, _chai.expect)(function () {
-    _stateEvents.Events.on(&apos;test&apos;, function (data) {
+    _stateEvents2.default.on(&apos;test&apos;, function (data) {
         (0, _chai.expect)(data).to.equal(&apos;foobar&apos;);
         test++;
     });
-    _stateEvents.Events.on(&apos;finish&apos;, function () {
+    _stateEvents2.default.on(&apos;finish&apos;, function () {
         (0, _chai.expect)(test).to.equal(2);
-        _stateEvents.Events.removeAllListeners(&apos;test&apos;);
-        _stateEvents.Events.removeAllListeners(&apos;finish&apos;);
-        _stateEvents.Events.removeAllListeners(&apos;foo&apos;);
+        _stateEvents2.default.removeAllListeners(&apos;test&apos;);
+        _stateEvents2.default.removeAllListeners(&apos;finish&apos;);
+        _stateEvents2.default.removeAllListeners(&apos;foo&apos;);
         done();
     });
-    _stateEvents.Events.on(&apos;foo&apos;, function () {
+    _stateEvents2.default.on(&apos;foo&apos;, function () {
         done(&apos;No foo event emitted, but handler called.&apos;);
     });
-    _stateEvents.Events.emit(&apos;test&apos;, &apos;foobar&apos;);
-    _stateEvents.Events.emit(&apos;bar&apos;);
-    _stateEvents.Events.emit(&apos;test&apos;, &apos;foobar&apos;);
-    _stateEvents.Events.emit(&apos;finish&apos;);
+    _stateEvents2.default.emit(&apos;test&apos;, &apos;foobar&apos;);
+    _stateEvents2.default.emit(&apos;bar&apos;);
+    _stateEvents2.default.emit(&apos;test&apos;, &apos;foobar&apos;);
+    _stateEvents2.default.emit(&apos;finish&apos;);
 }).to.not.throw(Error);</code>
 </code></pre>
 </div>
