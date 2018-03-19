@@ -66,21 +66,7 @@ import Scene from &apos;src/Scene&apos;;
 import StateEventProxy from &apos;src/StateEventProxy&apos;;
 import stateEvents from &apos;src/stateEvents&apos;;
 import PlayerController from &apos;src/PlayerController&apos;;
-
-// Cannot use require.ensure when not using webpack (i.e., mocha environment)
-//  so this polyfill is required to not break run.
-if (typeof require.ensure !== &apos;function&apos;) {
-    require.ensure = (dep=&apos;&apos;, cb) =&gt; cb(dep);
-}
-
-/**
- * Promisified require.ensure.
- * 
- * @param {Array|string} deps - Dependencies to ensure.
- * @param {string} [chunk] - Optional chunk name.
- * @returns {Promise&lt;undefined&gt;}
- */ 
-const ensureAsync = (deps, chunk) =&gt; new Promise(res =&gt; require.ensure(deps, res, chunk));
+import BabylonJS from &apos;babylonjs&apos;;
 
 /**
  * local vars for read-only class members
@@ -256,8 +242,7 @@ export default class Engine {
         await loader;
         logger.debug(&apos;Mounting engine to canvas...&apos;);
         this.loading = LoadStates.GL;
-        await ensureAsync([&apos;babylonjs&apos;], &apos;graphics&apos;);
-        GraphicsLibrary = require(&apos;babylonjs&apos;);
+        GraphicsLibrary = BabylonJS;
         this.loading = LoadStates.GAME;
         babylonEngine = new GraphicsLibrary.Engine(canvas, true);
         canvasElement = canvas;

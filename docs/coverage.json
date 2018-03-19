@@ -1,11 +1,11 @@
 {
   "coverage": "100%",
-  "expectCount": 98,
-  "actualCount": 98,
+  "expectCount": 97,
+  "actualCount": 97,
   "files": {
     "src/Engine.js": {
-      "expectCount": 37,
-      "actualCount": 37,
+      "expectCount": 36,
+      "actualCount": 36,
       "undocumentLines": []
     },
     "src/Entity.js": {
