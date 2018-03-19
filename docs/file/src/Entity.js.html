@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/stateEvents.js | bavel</title>
+  <title data-ice="title">src/Entity.js | bavel</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -58,18 +58,182 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/stateEvents.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import EventEmitter from &apos;events&apos;;
-
-const stateEvents = new EventEmitter();
+<div class="content" data-ice="content"><h1 data-ice="title">src/Entity.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import merge from &apos;lodash.merge&apos;;
+import omit from &apos;lodash.omit&apos;;
+import get from &apos;lodash.get&apos;;
+import forEach from &apos;lodash.foreach&apos;;
 
 /**
- * The EventEmitter for proxified object state changes.
- *
- * @access public
- * @type {EventEmitter}
+ * List of entity keys that are not components.
+ * 
+ * @access private
+ * @type {Array&lt;string&gt;}
+ */ 
+const nonCompKeys = [&apos;id&apos;, &apos;uid&apos;, &apos;tick&apos;, &apos;mesh&apos;, &apos;_primaryMesh&apos;];
+/**
+ * Time in MS to tick a check when waiting for entity&apos;s primary mesh to resolve.
+ * 
+ * @access private
+ * @type {number}
  */
-export default stateEvents;
+const asyncStep = 50;
+/**
+ * Time in MS to wait before the primary mesh resolution times out.
+ * 
+ * @access private
+ * @type {number}
+ */
+const asyncTimeout = 2000;
+
+/**
+ * The Entity class
+ */
+export default class Entity {
+
+    /**
+     * Un-used constructor. Throws an error if instantiation is attempted.
+     * 
+     * @access private
+     * @throws {Error}
+     */
+    constructor() {
+        throw new Error(&apos;Cannot instantiate static class Entity&apos;);
+    }
+
+    /**
+     * Uses the provided metadata and the engine&apos;s resourceProvider to create a
+     *  new entity.
+     *
+     * @param {Engine} engine
+     * @param {EntityMetaData} data
+     * @return {EntityInstance}
+     */
+    static create(engine, data) {
+        const ticks = {};
+        const { id, uid } = data;
+        const polyData = merge(engine.provider.getEntity(id), data);
+        const componentData = omit(polyData, nonCompKeys);
+        const entity = Object.defineProperties({ id, uid }, {
+            mesh: { get: () =&gt; get(entity, polyData._primaryMesh) },
+            tick: {
+                get: () =&gt; (eng, t, dt) =&gt;
+                    forEach(ticks, (v, k) =&gt; { v(eng, entity, entity[k], t, dt); }),
+                set: ({ id, tick }) =&gt; tick ? (ticks[id] = tick) : (delete ticks[id])
+            },
+            meshAsync: {
+                get: () =&gt; new Promise((res, rej) =&gt; {
+                    const t = Date.now();
+                    const stop = setInterval(() =&gt; {
+                        if (entity.mesh) {
+                            clearInterval(stop);
+                            if (Object.getOwnPropertyDescriptor(entity, &apos;meshAsync&apos;).get) {
+                                Object.defineProperty(entity, &apos;meshAsync&apos;, {
+                                    value: Promise.resolve(entity.mesh),
+                                    configurable: false,
+                                    writable: false
+                                });
+                            }
+                            res(entity.mesh);
+                        } else if (Date.now() - t &gt; asyncTimeout) {
+                            clearInterval(stop);
+                            rej(new Error(&apos;Timed out waiting for mesh of entity: &apos; + uid));
+                        }
+                    }, asyncStep);
+                }),
+                configurable: true
+            }
+        });
+
+        return this.updateComponents(engine, entity, componentData);
+    }
+
+    /**
+     * Updates/creates the component for the specified id.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {string} id - The component ID
+     * @param {ComponentData} data - The data with which to initialize/update the component.
+     * @return {Promise&lt;Component&gt;}
+     */
+    static async updateComponent(engine, entity, id, data) {
+        return entity[id] = await engine.provider.getComponent(id)
+            .update(engine, entity, entity[id], id, data);
+    }
+
+    /**
+     * Update/create all the components in the provided list of component data.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {ComponentData[]} componentData
+     * @return {Promise&lt;EntityInstance&gt;}
+     */
+    static async updateComponents(engine, entity, componentData) {
+        await Object.entries(componentData).reduce(
+            (promise, [ k, v ]) =&gt; promise.then(() =&gt; this.updateComponent(engine, entity, k, v)),
+            Promise.resolve()
+        );
+        return entity;
+    }
+
+    /**
+     * Dismount the specified component.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {string} id - The component ID.
+     * @return {null}
+     */
+    static dismountComponent(engine, entity, id) {
+        return entity[id] = engine.provider
+            .getComponent(id)
+            .dismount(engine, entity, entity[id]);
+    }
+
+    /**
+     * Update the entity or create if it doesn&apos;t exist.
+     *
+     * @param {Engine} engine
+     * @param {?EntityInstance} entity
+     * @param {EntityMetaData} data
+     * @return {Promise&lt;EntityInstance&gt;}
+     */
+    static update(engine, entity, data) {
+        if (!entity) {
+            return this.create(engine, data);
+        }
+        return this.updateComponents(engine, entity, omit(data, nonCompKeys));
+    }
+
+    /**
+     * Dismount the entity and all of its components.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @return {null}
+     */
+    static dismount(engine, entity) {
+        forEach(
+            omit(entity, nonCompKeys),
+            (v, k) =&gt; { this.dismountComponent(engine, entity, k); }
+        );
+        return null;
+    }
+
+    /**
+     * Execute the tick method for the provided EntityInstance.
+     *
+     * @param {Engine} engine
+     * @param {EntityInstance} entity
+     * @param {number} t
+     * @param {number} dt
+     */
+    static tick(engine, entity, t, dt) {
+        entity.tick(engine, t, dt);
+    }
+}
 </code></pre>
 
 </div>

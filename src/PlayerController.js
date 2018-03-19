@@ -1,9 +1,8 @@
-import Singleton from 'basic-singleton';
 import moment from 'moment';
 import get from 'lodash.get';
 import take from 'lodash.take';
 import isNumber from 'lodash.isnumber';
-import StateEventProxy from './StateEventProxy';
+import StateEventProxy from 'src/StateEventProxy';
 
 /**
  * @typedef {Object} Message
@@ -13,7 +12,7 @@ import StateEventProxy from './StateEventProxy';
  * @property {string} message
  */
 
-let _engine;
+let _engine, instance = null;
 
 /**
  * Controller for player logic and interactions.
@@ -40,7 +39,26 @@ let _engine;
  * @example <caption>Implementation</caption>
  * let engine = Engine.init(myLogger, myResourceLoader, MyGamePlayerController, {});
  */
-export default class PlayerController extends Singleton {
+export default class PlayerController {
+
+    /**
+     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).
+     */
+    static destroy() {
+        instance = null;
+    }
+
+    /**
+     * Helper method for instantiating a new PlayerController.
+     * 
+     * @param {Engine} engine - Game Engine instance.
+     * @param {?PlayerController} [Ctrl=PlayerController] - Optional controller subclass to instantiate.
+     * @returns {PlayerController}
+     */
+    static create(engine, Ctrl=this) {
+        return (instance) ? instance : new Ctrl(engine);
+    }
+
     /**
      * Used for generating readable-timestamps in messages.
      *
@@ -75,7 +93,7 @@ export default class PlayerController extends Singleton {
      * @param {Engine} engine - The reference to the parent game engine.
      */
     constructor(engine) {
-        super();
+        if (instance) throw new Error('Cannot instantiate more than one instance of PlayerController');
         StateEventProxy.create(this, `engine.ctrl`, ['messages', 'player', 'target']);
         /**
          * The list of logged game messages. New messages are inserted into the
@@ -97,6 +115,7 @@ export default class PlayerController extends Singleton {
          */
         this.target = null;
         _engine = engine;
+        instance = this;
     }
 
     /**
@@ -182,7 +201,7 @@ export default class PlayerController extends Singleton {
         if (!entity || !isNumber(pointerX) || !isNumber(pointerY)) {
             throw new Error('Improper arguments passed to entityClick');
         }
-        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
+        const {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
 
         this.engine.logger.debug(`3D Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
     }
@@ -198,7 +217,7 @@ export default class PlayerController extends Singleton {
         if (!entity || !isNumber(pointerX) || !isNumber(pointerY)) {
             throw new Error('Improper arguments passed to entityAltClick');
         }
-        let {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
+        const {x, y, z} = this.engine.scene.baby.pick(pointerX, pointerY).pickedPoint;
 
         this.engine.logger.debug(`3D Alt Click on ${entity.uid} at (${round(x)}, ${round(y)}, ${round(z)})`);
     }
@@ -302,4 +321,4 @@ PlayerController.MAX_MESSAGES = 100;
  * @example
  * console.assert(round(Math.PI) === 3.14);
  */
-export const round = (x) => Math.floor(x * 100 + .5) / 100;
+export const round = x => Math.round(x * 100) / 100;

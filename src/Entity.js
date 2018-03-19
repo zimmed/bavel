@@ -1,21 +1,44 @@
-import Static from 'basic-static';
-import reducePromise from 'reduce-promise';
 import merge from 'lodash.merge';
 import omit from 'lodash.omit';
 import get from 'lodash.get';
 import forEach from 'lodash.foreach';
 
-// List of entity keys that are not components.
+/**
+ * List of entity keys that are not components.
+ * 
+ * @access private
+ * @type {Array<string>}
+ */ 
 const nonCompKeys = ['id', 'uid', 'tick', 'mesh', '_primaryMesh'];
-// Time in MS to tick a check when waiting for entity's primary mesh to resolve.
-const asyncStep = 10;
-// Time in MS to wait before the primary mesh resolution times out.
+/**
+ * Time in MS to tick a check when waiting for entity's primary mesh to resolve.
+ * 
+ * @access private
+ * @type {number}
+ */
+const asyncStep = 50;
+/**
+ * Time in MS to wait before the primary mesh resolution times out.
+ * 
+ * @access private
+ * @type {number}
+ */
 const asyncTimeout = 2000;
 
 /**
  * The Entity class
  */
-export default class Entity extends Static {
+export default class Entity {
+
+    /**
+     * Un-used constructor. Throws an error if instantiation is attempted.
+     * 
+     * @access private
+     * @throws {Error}
+     */
+    constructor() {
+        throw new Error('Cannot instantiate static class Entity');
+    }
 
     /**
      * Uses the provided metadata and the engine's resourceProvider to create a
@@ -27,15 +50,15 @@ export default class Entity extends Static {
      */
     static create(engine, data) {
         const ticks = {};
-        const {id, uid} = data;
+        const { id, uid } = data;
         const polyData = merge(engine.provider.getEntity(id), data);
         const componentData = omit(polyData, nonCompKeys);
-        const entity = Object.defineProperties({id, uid}, {
+        const entity = Object.defineProperties({ id, uid }, {
             mesh: { get: () => get(entity, polyData._primaryMesh) },
             tick: {
                 get: () => (eng, t, dt) =>
                     forEach(ticks, (v, k) => { v(eng, entity, entity[k], t, dt); }),
-                set: ({id, tick}) => tick ? (ticks[id] = tick) : (delete ticks[id])
+                set: ({ id, tick }) => tick ? (ticks[id] = tick) : (delete ticks[id])
             },
             meshAsync: {
                 get: () => new Promise((res, rej) => {
@@ -73,10 +96,9 @@ export default class Entity extends Static {
      * @param {ComponentData} data - The data with which to initialize/update the component.
      * @return {Promise<Component>}
      */
-    static updateComponent(engine, entity, id, data) {
-        return engine.provider.getComponent(id)
-            .update(engine, entity, entity[id], id, data)
-            .then(comp => entity[id] = comp);
+    static async updateComponent(engine, entity, id, data) {
+        return entity[id] = await engine.provider.getComponent(id)
+            .update(engine, entity, entity[id], id, data);
     }
 
     /**
@@ -87,9 +109,12 @@ export default class Entity extends Static {
      * @param {ComponentData[]} componentData
      * @return {Promise<EntityInstance>}
      */
-    static updateComponents(engine, entity, componentData) {
-        return reducePromise(componentData, (v, k) => this.updateComponent(engine, entity, k, v))
-            .then(() => entity);
+    static async updateComponents(engine, entity, componentData) {
+        await Object.entries(componentData).reduce(
+            (promise, [ k, v ]) => promise.then(() => this.updateComponent(engine, entity, k, v)),
+            Promise.resolve()
+        );
+        return entity;
     }
 
     /**
@@ -131,7 +156,8 @@ export default class Entity extends Static {
     static dismount(engine, entity) {
         forEach(
             omit(entity, nonCompKeys),
-            (v, k) => { this.dismountComponent(engine, entity, k); });
+            (v, k) => { this.dismountComponent(engine, entity, k); }
+        );
         return null;
     }
 

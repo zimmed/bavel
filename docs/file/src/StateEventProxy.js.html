@@ -3,22 +3,19 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/StateEventProxy.js | API Document</title>
+  <title data-ice="title">src/StateEventProxy.js | bavel</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
-  
-  
   <script src="script/manual.js"></script>
-</head>
+<meta name="description" content="BabylonJS game framework with proper entity/component structure."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="bavel"><meta property="twitter:description" content="BabylonJS game framework with proper entity/component structure."></head>
 <body class="layout-container" data-ice="rootContainer">
 
 <header>
   <a href="./">Home</a>
-  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
-  
   
   <div class="search-box">
   <span>
@@ -33,10 +30,14 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity.js~Entity.html">Entity</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene.js~Scene.html">Scene</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrivateDataForTest">getPrivateDataForTest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
@@ -53,19 +54,16 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/StateEventProxy.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Static from &apos;basic-static&apos;;
-import forEach from &apos;lodash.foreach&apos;;
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import forEach from &apos;lodash.foreach&apos;;
 import isObject from &apos;lodash.isobject&apos;;
 import isPlainObject from &apos;lodash.isplainobject&apos;;
 import isNumber from &apos;lodash.isnumber&apos;;
-import stateEvents from &apos;./stateEvents&apos;;
+import stateEvents from &apos;src/stateEvents&apos;;
 
 /**
  * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener
@@ -78,6 +76,8 @@ import stateEvents from &apos;./stateEvents&apos;;
  */
 
 /**
+ * Exported disable map for testing purposes.
+ * 
  * @access private
  */
 export const DISABLE = {};
@@ -116,7 +116,17 @@ export const DISABLE = {};
  * console.log(myObject) // {myPropA: [{id: 42}, {id: &apos;bar&apos;}, &apos;foobar&apos;], myPropB: {}}
 
  */
-export default class StateEventProxy extends Static {
+export default class StateEventProxy {
+
+    /**
+     * Un-used constructor. Throws an error if instantiation is attempted.
+     * 
+     * @access private
+     * @throws {Error}
+     */
+    constructor() {
+        throw new Error(&apos;Cannot instantiate static class StateEventProxy&apos;);
+    }
 
     /**
     * @return {ProxifiedObject}
@@ -138,23 +148,26 @@ export default class StateEventProxy extends Static {
         return self;
     }
 
+    /**
+     * @access private
+     */
     static proxifyProperty(scope, obj, prop, value, {
         deep=false, enumerable=true
     }={}) {
         let p = value;
 
         if (deep &amp;&amp; isPlainObject(value)) {
-            p = this.buildProxyObject(scope, value, {deep, enumerable});
+            p = this.buildProxyObject(scope, value, { deep, enumerable });
         } else if (deep &amp;&amp; Array.isArray(value)) {
-            p = this.buildProxyArray(scope, obj, value, {deep, enumerable});
+            p = this.buildProxyArray(scope, obj, value, { deep, enumerable });
         }
         Object.defineProperty(obj, prop, {
             get: () =&gt; p,
             set: (v) =&gt; {
                 if (deep &amp;&amp; isObject(v)) {
                     v = Array.isArray(v)
-                        ? this.buildProxyArray(scope, obj, v, {deep, enumerable})
-                        : this.buildProxyObject(scope, v, {deep, enumerable});
+                        ? this.buildProxyArray(scope, obj, v, { deep, enumerable })
+                        : this.buildProxyObject(scope, v, { deep, enumerable });
                 }
                 this.emit(scope, v, obj);
                 p = v;
@@ -165,6 +178,9 @@ export default class StateEventProxy extends Static {
         });
     }
 
+    /**
+     * @access private
+     */
     static buildProxyObject(scope, obj, o) {
         let p = {};
 
@@ -172,6 +188,9 @@ export default class StateEventProxy extends Static {
         return p;
     }
 
+    /**
+     * @access private
+     */
     static buildProxyArray(scope, parent, arr, o) {
         const ret = new Proxy(
             arr.map((e, i) =&gt;
@@ -213,12 +232,18 @@ export default class StateEventProxy extends Static {
         return ret;
     }
 
+    /**
+     * @access private
+     */
     static emit(scope, v, obj) {
         if (!DISABLE[scope]) {
             setTimeout(() =&gt; stateEvents.emit(scope, v, obj));
         }
     }
 
+    /**
+     * @access private
+     */
     static isMutateFn(key) {
         return [
             &apos;copyWithin&apos;,
@@ -238,7 +263,7 @@ export default class StateEventProxy extends Static {
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

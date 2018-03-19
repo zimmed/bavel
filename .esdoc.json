@@ -1,12 +1,21 @@
 {
   "source": "./src",
   "destination": "./docs",
-  "manual": {
-    "index": "./README.md",
-    "overview": ["./README.md", "./CHANGELOG.md", "./build/test-results.md", "./build/test-spec.md"]
-  },
+  "plugins": [
+    {
+      "name": "esdoc-standard-plugin",
+      "options": {
+        "manual": {
+          "index": "./README.md",
+          "overview": [ "./README.md", "./CHANGELOG.md", "./build/test-results.md", "./build/test-spec.md" ]
+        },
+        "lint": { "enable": true },
+        "coverage": { "enable": true },
+        "accessor": { "access": [ "public", "protected" ], "autoPrivate": true }
+      }
+    }
+  ],
   "excludes": [
-    "index\\.js$",
-    "lodash\\.js$"
+    "index\\.js$"
   ]
 }

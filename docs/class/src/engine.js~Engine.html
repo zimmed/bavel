@@ -3,22 +3,19 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">Engine | API Document</title>
+  <title data-ice="title">Engine | bavel</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
-  
-  
   <script src="script/manual.js"></script>
-</head>
+<meta name="description" content="BabylonJS game framework with proper entity/component structure."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="bavel"><meta property="twitter:description" content="BabylonJS game framework with proper entity/component structure."></head>
 <body class="layout-container" data-ice="rootContainer">
 
 <header>
   <a href="./">Home</a>
-  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
-  
   
   <div class="search-box">
   <span>
@@ -33,10 +30,14 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity.js~Entity.html">Entity</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene.js~Scene.html">Scene</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrivateDataForTest">getPrivateDataForTest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
@@ -53,20 +54,18 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Engine from &apos;<span><a href="file/src/Engine.js.html#lineNumber36">bavel/src/Engine.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import Engine from &apos;<span><a href="file/src/Engine.js.html#lineNumber50">bavel/src/Engine.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/Engine.js.html#lineNumber36">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/Engine.js.html#lineNumber50">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -76,7 +75,7 @@
 
   
   
-  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span>basic-singleton~Singleton</span> &#x2192; Engine</div></div>
+  
   
   
   
@@ -113,7 +112,42 @@
   
 </div>
 
-
+<div data-ice="staticMemberSummary"><h2>Static Member Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Static Public Members</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      <span class="kind" data-ice="kind">get</span>
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#static-get-instance">instance</a></span></span><span class="code" data-ice="signature">: <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The singleton Engine instance.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
 <div data-ice="staticMethodSummary"><h2>Static Method Summary</h2><table class="summary" data-ice="summary">
   <thead><tr><td data-ice="title" colspan="3">Static Public Methods</td></tr></thead>
   <tbody>
@@ -131,7 +165,37 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#static-method-init">init</a></span></span><span data-ice="signature">(loggerService: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span>, resourceProviderLoader: <span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span>, PlayerController: <span>class</span>, settings: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span>): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#static-method-destroy">destroy</a></span></span><span class="code" data-ice="signature">()</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Destroys singleton instance of class.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#static-method-init">init</a></span></span><span class="code" data-ice="signature">(loggerService: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span>, resourceProviderLoader: <span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span>, PlayerController: <span>class</span>, settings: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span>): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
         </p>
       </div>
       <div>
@@ -148,8 +212,77 @@
   </tr>
 </tbody>
 </table>
+<table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Static Private Methods</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">private</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#static-method-constructorHelper">constructorHelper</a></span></span><span class="code" data-ice="signature">(engine: <span>*</span>, args: ...<span>*</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>For testing purposes -- cannot stub constructor</p>
 </div>
-
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div data-ice="constructorSummary"><h2>Constructor Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Private Constructor</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">private</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">()</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
 <div data-ice="memberSummary"><h2>Member Summary</h2><table class="summary" data-ice="summary">
   <thead><tr><td data-ice="title" colspan="3">Public Members</td></tr></thead>
   <tbody>
@@ -167,7 +300,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-GL">GL</a></span></span><span data-ice="signature">: <span>BabylonJS</span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-GL">GL</a></span></span><span class="code" data-ice="signature">: <span>BabylonJS</span></span>
         </p>
       </div>
       <div>
@@ -195,7 +329,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-baby">baby</a></span></span><span data-ice="signature">: <span>BabylonJS.Engine</span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-baby">baby</a></span></span><span class="code" data-ice="signature">: <span>BabylonJS.Engine</span></span>
         </p>
       </div>
       <div>
@@ -223,7 +358,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-canvas">canvas</a></span></span><span data-ice="signature">: <span>DOMElement</span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-canvas">canvas</a></span></span><span class="code" data-ice="signature">: <span>DOMElement</span></span>
         </p>
       </div>
       <div>
@@ -251,7 +387,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-ctrl">ctrl</a></span></span><span data-ice="signature">: <span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-ctrl">ctrl</a></span></span><span class="code" data-ice="signature">: <span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span>
         </p>
       </div>
       <div>
@@ -278,7 +415,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-fps">fps</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-fps">fps</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
         </p>
       </div>
       <div>
@@ -306,7 +444,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-loading">loading</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-loading">loading</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
         </p>
       </div>
       <div>
@@ -334,7 +473,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-logger">logger</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-logger">logger</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span>
         </p>
       </div>
       <div>
@@ -361,7 +501,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-provider">provider</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-provider">provider</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span>
         </p>
       </div>
       <div>
@@ -388,7 +529,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-running">running</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-running">running</a></span></span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
         </p>
       </div>
       <div>
@@ -415,7 +557,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-scene">scene</a></span></span><span data-ice="signature">: <span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-scene">scene</a></span></span><span class="code" data-ice="signature">: <span><a href="class/src/Scene.js~Scene.html">Scene</a></span></span>
         </p>
       </div>
       <div>
@@ -442,7 +585,36 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-settings">settings</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-settings">settings</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-member-statsInterval">statsInterval</a></span></span><span class="code" data-ice="signature">: <span>Interval</span></span>
         </p>
       </div>
       <div>
@@ -469,7 +641,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-terrain">terrain</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-get-terrain">terrain</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
         </p>
       </div>
       <div>
@@ -497,7 +670,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-set-terrain">terrain</a></span></span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-set-terrain">terrain</a></span></span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
         </p>
       </div>
       <div>
@@ -531,7 +705,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-deregisterMouseEventsForEntity">deregisterMouseEventsForEntity</a></span></span><span data-ice="signature">(entity: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-deregisterMouseEventsForEntity">deregisterMouseEventsForEntity</a></span></span><span class="code" data-ice="signature">(entity: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -559,7 +734,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-dismount">dismount</a></span></span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-dismount">dismount</a></span></span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
         </p>
       </div>
       <div>
@@ -587,7 +763,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-emitDebugEvent">emitDebugEvent</a></span></span><span data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-emitDebugEvent">emitDebugEvent</a></span></span><span class="code" data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -615,7 +792,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-emitEvent">emitEvent</a></span></span><span data-ice="signature">(scope: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, v: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-emitEvent">emitEvent</a></span></span><span class="code" data-ice="signature">(scope: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, v: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -642,8 +820,9 @@
       <div>
         <p>
           
+          <span data-ice="async">async</span>
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-mount">mount</a></span></span><span data-ice="signature">(canvas: <span>DOMElement</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-mount">mount</a></span></span><span class="code" data-ice="signature">(canvas: <span>DOMElement</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
         </p>
       </div>
       <div>
@@ -671,7 +850,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-onDebugEvent">onDebugEvent</a></span></span><span data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-onDebugEvent">onDebugEvent</a></span></span><span class="code" data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -699,7 +879,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-onEvent">onEvent</a></span></span><span data-ice="signature">(event: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handler: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(value: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-onEvent">onEvent</a></span></span><span class="code" data-ice="signature">(event: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handler: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(value: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -727,7 +908,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-registerKeyAction">registerKeyAction</a></span></span><span data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handlers: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-registerKeyAction">registerKeyAction</a></span></span><span class="code" data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handlers: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -754,8 +936,9 @@
       <div>
         <p>
           
+          <span data-ice="async">async</span>
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-registerMouseEventsForEntity">registerMouseEventsForEntity</a></span></span><span data-ice="signature">(entity: <span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span>, opts: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-registerMouseEventsForEntity">registerMouseEventsForEntity</a></span></span><span class="code" data-ice="signature">(entity: <span><a href="class/src/Entity.js~Entity.html">Entity</a></span>, opts: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -783,7 +966,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-resize">resize</a></span></span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-resize">resize</a></span></span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
         </p>
       </div>
       <div>
@@ -810,8 +994,9 @@
       <div>
         <p>
           
+          <span data-ice="async">async</span>
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-run">run</a></span></span><span data-ice="signature">(entities: <span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-run">run</a></span></span><span class="code" data-ice="signature">(entities: <span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
         </p>
       </div>
       <div>
@@ -839,7 +1024,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-stop">stop</a></span></span><span data-ice="signature">(): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-stop">stop</a></span></span><span class="code" data-ice="signature">(): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
         </p>
       </div>
       <div>
@@ -867,7 +1053,8 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-toVector">toVector</a></span></span><span data-ice="signature">(param: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>BabylonJS.Vector3</span></span>
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-toVector">toVector</a></span></span><span class="code" data-ice="signature">(param: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>BabylonJS.Vector3</span></span>
         </p>
       </div>
       <div>
@@ -884,13 +1071,138 @@
   </tr>
 </tbody>
 </table>
+<table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Private Methods</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">private</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/Engine.js~Engine.html#instance-method-constructorHelper">constructorHelper</a></span></span><span class="code" data-ice="signature">(loggerService: <span>*</span>, PlayerCtrlClass: <span>*</span>, settings: <span>*</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>For testing purposes -- cannot stub constructor</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
 </div>
 
 
 
+<div data-ice="staticMemberDetails"><h2 data-ice="title">Static Public Members</h2>
 
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-get-instance">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    <span class="kind" data-ice="kind">get</span>
+    
+    
+    
+    <span class="code" data-ice="name">instance</span><span class="code" data-ice="signature">: <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber57">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The singleton Engine instance.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+</div>
 <div data-ice="staticMethodDetails"><h2 data-ice="title">Static Public Methods</h2>
 
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-destroy">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">destroy</span><span class="code" data-ice="signature">()</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber62">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Destroys singleton instance of class. (Hack until Singleton has own destroy method).</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
 <div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="static-method-init">
     <span class="access" data-ice="access">public</span>
@@ -899,11 +1211,11 @@
     
     
     
-    <span data-ice="name">init</span><span data-ice="signature">(loggerService: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span>, resourceProviderLoader: <span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span>, PlayerController: <span>class</span>, settings: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span>): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
+    <span class="code" data-ice="name">init</span><span class="code" data-ice="signature">(loggerService: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span>, resourceProviderLoader: <span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span>, PlayerController: <span>class</span>, settings: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span>): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber48">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber76">source</a></span></span>
     </span>
   </h3>
 
@@ -925,26 +1237,26 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">loggerService</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">loggerService</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">resourceProviderLoader</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">resourceProviderLoader</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-ResourceLoader">ResourceLoader</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">PlayerController</td>
-      <td data-ice="type"><span>class</span></td>
+      <td data-ice="name" class="code" data-depth="0">PlayerController</td>
+      <td data-ice="type" class="code"><span>class</span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">settings</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">settings</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
 <li>default: {}</li></ul></td>
       <td data-ice="description"></td>
@@ -959,7 +1271,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></td>
           
         </tr>
       </tbody>
@@ -983,8 +1295,121 @@ engine instance or returns the existing one if already instantiated.</p>
   
   
 </div>
+<h2 data-ice="title">Static Private Methods</h2>
+
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-constructorHelper">
+    <span class="access" data-ice="access">private</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">constructorHelper</span><span class="code" data-ice="signature">(engine: <span>*</span>, args: ...<span>*</span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber102">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>For testing purposes -- cannot stub constructor</p>
 </div>
 
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">engine</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">args</td>
+      <td data-ice="type" class="code">...<span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+</div>
+<div data-ice="constructorDetails"><h2 data-ice="title">Private Constructors</h2>
+
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-constructor-constructor">
+    <span class="access" data-ice="access">private</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">()</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber140">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+</div>
 <div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
 <div class="detail" data-ice="detail">
@@ -995,11 +1420,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">GL</span><span data-ice="signature">: <span>BabylonJS</span></span>
+    <span class="code" data-ice="name">GL</span><span class="code" data-ice="signature">: <span>BabylonJS</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber123">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber151">source</a></span></span>
     </span>
   </h3>
 
@@ -1039,11 +1464,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">baby</span><span data-ice="signature">: <span>BabylonJS.Engine</span></span>
+    <span class="code" data-ice="name">baby</span><span class="code" data-ice="signature">: <span>BabylonJS.Engine</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber129">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber157">source</a></span></span>
     </span>
   </h3>
 
@@ -1083,11 +1508,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">canvas</span><span data-ice="signature">: <span>DOMElement</span></span>
+    <span class="code" data-ice="name">canvas</span><span class="code" data-ice="signature">: <span>DOMElement</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber135">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber163">source</a></span></span>
     </span>
   </h3>
 
@@ -1127,11 +1552,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">ctrl</span><span data-ice="signature">: <span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span>
+    <span class="code" data-ice="name">ctrl</span><span class="code" data-ice="signature">: <span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber143">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber171">source</a></span></span>
     </span>
   </h3>
 
@@ -1170,11 +1595,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">fps</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
+    <span class="code" data-ice="name">fps</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber93">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber118">source</a></span></span>
     </span>
   </h3>
 
@@ -1214,11 +1639,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">loading</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
+    <span class="code" data-ice="name">loading</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ProxyValue">ProxyValue</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber99">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber124">source</a></span></span>
     </span>
   </h3>
 
@@ -1258,11 +1683,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">logger</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span>
+    <span class="code" data-ice="name">logger</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Logger">Logger</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber147">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber175">source</a></span></span>
     </span>
   </h3>
 
@@ -1301,11 +1726,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">provider</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span>
+    <span class="code" data-ice="name">provider</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-ResourceProvider">ResourceProvider</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber139">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber167">source</a></span></span>
     </span>
   </h3>
 
@@ -1344,11 +1769,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">running</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="code" data-ice="name">running</span><span class="code" data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber103">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber128">source</a></span></span>
     </span>
   </h3>
 
@@ -1387,11 +1812,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">scene</span><span data-ice="signature">: <span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span>
+    <span class="code" data-ice="name">scene</span><span class="code" data-ice="signature">: <span><a href="class/src/Scene.js~Scene.html">Scene</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber101">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber126">source</a></span></span>
     </span>
   </h3>
 
@@ -1430,11 +1855,54 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">settings</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span>
+    <span class="code" data-ice="name">settings</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-Settings">Settings</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber105">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber130">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-statsInterval">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">statsInterval</span><span class="code" data-ice="signature">: <span>Interval</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber132">source</a></span></span>
     </span>
   </h3>
 
@@ -1473,11 +1941,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">terrain</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
+    <span class="code" data-ice="name">terrain</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber153">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber181">source</a></span></span>
     </span>
   </h3>
 
@@ -1517,11 +1985,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">terrain</span><span data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
+    <span class="code" data-ice="name">terrain</span><span class="code" data-ice="signature">: <span><a href="typedef/index.html#static-typedef-EntityInstance">EntityInstance</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber157">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber185">source</a></span></span>
     </span>
   </h3>
 
@@ -1563,11 +2031,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">deregisterMouseEventsForEntity</span><span data-ice="signature">(entity: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">deregisterMouseEventsForEntity</span><span class="code" data-ice="signature">(entity: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber439">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber461">source</a></span></span>
     </span>
   </h3>
 
@@ -1588,8 +2056,8 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">entity</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="name" class="code" data-depth="0">entity</td>
+      <td data-ice="type" class="code"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1603,7 +2071,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -1635,11 +2103,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">dismount</span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
+    <span class="code" data-ice="name">dismount</span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber199">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber216">source</a></span></span>
     </span>
   </h3>
 
@@ -1659,7 +2127,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -1691,11 +2159,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">emitDebugEvent</span><span data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">emitDebugEvent</span><span class="code" data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber312">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber331">source</a></span></span>
     </span>
   </h3>
 
@@ -1716,8 +2184,8 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">args</td>
-      <td data-ice="type">...<span>*</span></td>
+      <td data-ice="name" class="code" data-depth="0">args</td>
+      <td data-ice="type" class="code">...<span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1731,7 +2199,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -1763,11 +2231,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">emitEvent</span><span data-ice="signature">(scope: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, v: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">emitEvent</span><span class="code" data-ice="signature">(scope: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, v: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber335">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber354">source</a></span></span>
     </span>
   </h3>
 
@@ -1788,22 +2256,22 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">scope</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">scope</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The scoped event name (e.g., &apos;engine.fps&apos;).</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">v</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="name" class="code" data-depth="0">v</td>
+      <td data-ice="type" class="code"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The changed value.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">obj</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">obj</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The parent object who&apos;s property changed.</p>
 </td>
@@ -1818,7 +2286,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -1848,13 +2316,13 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
+    <span data-ice="async">async</span>
     
-    
-    <span data-ice="name">mount</span><span data-ice="signature">(canvas: <span>DOMElement</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
+    <span class="code" data-ice="name">mount</span><span class="code" data-ice="signature">(canvas: <span>DOMElement</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber166">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber194">source</a></span></span>
     </span>
   </h3>
 
@@ -1875,8 +2343,8 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">canvas</td>
-      <td data-ice="type"><span>DOMElement</span></td>
+      <td data-ice="name" class="code" data-depth="0">canvas</td>
+      <td data-ice="type" class="code"><span>DOMElement</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1890,7 +2358,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -1922,11 +2390,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">onDebugEvent</span><span data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">onDebugEvent</span><span class="code" data-ice="signature">(args: ...<span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber322">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber341">source</a></span></span>
     </span>
   </h3>
 
@@ -1947,8 +2415,8 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">args</td>
-      <td data-ice="type">...<span>*</span></td>
+      <td data-ice="name" class="code" data-depth="0">args</td>
+      <td data-ice="type" class="code">...<span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1962,7 +2430,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -1994,11 +2462,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">onEvent</span><span data-ice="signature">(event: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handler: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(value: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">onEvent</span><span class="code" data-ice="signature">(event: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handler: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(value: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber347">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber366">source</a></span></span>
     </span>
   </h3>
 
@@ -2019,15 +2487,15 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">event</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">event</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The scoped event name.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">handler</td>
-      <td data-ice="type"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(value: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span></span></td>
+      <td data-ice="name" class="code" data-depth="0">handler</td>
+      <td data-ice="type" class="code"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(value: <span>*</span>, obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>)</span></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The event handler.</p>
 </td>
@@ -2042,7 +2510,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -2074,11 +2542,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">registerKeyAction</span><span data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handlers: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">registerKeyAction</span><span class="code" data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, handlers: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber362">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber381">source</a></span></span>
     </span>
   </h3>
 
@@ -2099,35 +2567,35 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">key</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">key</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>The event key to listen for (e.g., &apos;w&apos;, &apos;a&apos;, &apos;s&apos;, &apos;d&apos;, &apos; &apos;, etc.).</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">handlers</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">handlers</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">handlers.downHandler</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">handlers.downHandler</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Handler method for KeyDown event.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">handlers.upHandler</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">handlers.upHandler</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Handler method for KeyUp event.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">handlers.handler</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">handlers.handler</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-KeyHandler">KeyHandler</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Handler method for both events.</p>
 </td>
@@ -2142,7 +2610,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -2172,13 +2640,13 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
+    <span data-ice="async">async</span>
     
-    
-    <span data-ice="name">registerMouseEventsForEntity</span><span data-ice="signature">(entity: <span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span>, opts: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">registerMouseEventsForEntity</span><span class="code" data-ice="signature">(entity: <span><a href="class/src/Entity.js~Entity.html">Entity</a></span>, opts: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber396">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber417">source</a></span></span>
     </span>
   </h3>
 
@@ -2199,48 +2667,48 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">entity</td>
-      <td data-ice="type"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">entity</td>
+      <td data-ice="type" class="code"><span><a href="class/src/Entity.js~Entity.html">Entity</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">opts</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">opts</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">opts.click</td>
-      <td data-ice="type"><span>bool</span></td>
+      <td data-ice="name" class="code" data-depth="1">opts.click</td>
+      <td data-ice="type" class="code"><span>bool</span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Hooks the left-click (or equivalent) when true.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">opts.altClick</td>
-      <td data-ice="type"><span>bool</span></td>
+      <td data-ice="name" class="code" data-depth="1">opts.altClick</td>
+      <td data-ice="type" class="code"><span>bool</span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Hooks the right-click (or equivalent) when true.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">opts.over</td>
-      <td data-ice="type"><span>bool</span></td>
+      <td data-ice="name" class="code" data-depth="1">opts.over</td>
+      <td data-ice="type" class="code"><span>bool</span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Hooks the mouse-over when true.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">opts.out</td>
-      <td data-ice="type"><span>bool</span></td>
+      <td data-ice="name" class="code" data-depth="1">opts.out</td>
+      <td data-ice="type" class="code"><span>bool</span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Hooks the mouse-out when true.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">opts.cursor</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">opts.cursor</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Changes the mouse-over cursor when set.</p>
 </td>
@@ -2255,7 +2723,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -2287,11 +2755,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">resize</span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
+    <span class="code" data-ice="name">resize</span><span class="code" data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber288">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber307">source</a></span></span>
     </span>
   </h3>
 
@@ -2311,7 +2779,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></span></td>
           
         </tr>
       </tbody>
@@ -2341,13 +2809,13 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
+    <span data-ice="async">async</span>
     
-    
-    <span data-ice="name">run</span><span data-ice="signature">(entities: <span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
+    <span class="code" data-ice="name">run</span><span class="code" data-ice="signature">(entities: <span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber221">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber236">source</a></span></span>
     </span>
   </h3>
 
@@ -2368,8 +2836,8 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">entities</td>
-      <td data-ice="type"><span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span></td>
+      <td data-ice="name" class="code" data-depth="0">entities</td>
+      <td data-ice="type" class="code"><span><span><a href="typedef/index.html#static-typedef-EntityMetaData">EntityMetaData</a></span><span>[]</span></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"></td>
     </tr>
@@ -2383,7 +2851,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</td>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span>&lt;<span><a href="class/src/Engine.js~Engine.html">Engine</a></span>&gt;</td>
           
         </tr>
       </tbody>
@@ -2415,11 +2883,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">stop</span><span data-ice="signature">(): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
+    <span class="code" data-ice="name">stop</span><span class="code" data-ice="signature">(): <span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber272">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber290">source</a></span></span>
     </span>
   </h3>
 
@@ -2439,7 +2907,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></td>
           
         </tr>
       </tbody>
@@ -2471,11 +2939,11 @@ engine instance or returns the existing one if already instantiated.</p>
     
     
     
-    <span data-ice="name">toVector</span><span data-ice="signature">(param: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>BabylonJS.Vector3</span></span>
+    <span class="code" data-ice="name">toVector</span><span class="code" data-ice="signature">(param: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span>BabylonJS.Vector3</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber302">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber321">source</a></span></span>
     </span>
   </h3>
 
@@ -2496,28 +2964,28 @@ engine instance or returns the existing one if already instantiated.</p>
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">param</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="name" class="code" data-depth="0">param</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">param.x</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">param.x</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
 <li>default: 0</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">param.y</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">param.y</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
 <li>default: 0</li></ul></td>
       <td data-ice="description"></td>
     </tr>
 <tr data-ice="property" data-depth="1">
-      <td data-ice="name" data-depth="1">param.z</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="name" class="code" data-depth="1">param.z</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
 <li>default: 0</li></ul></td>
       <td data-ice="description"></td>
@@ -2532,7 +3000,7 @@ engine instance or returns the existing one if already instantiated.</p>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span>BabylonJS.Vector3</span></td>
+          <td class="return-type code" data-ice="returnType"><span>BabylonJS.Vector3</span></td>
           
         </tr>
       </tbody>
@@ -2556,11 +3024,85 @@ engine instance or returns the existing one if already instantiated.</p>
   
   
 </div>
+<h2 data-ice="title">Private Methods</h2>
+
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-constructorHelper">
+    <span class="access" data-ice="access">private</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">constructorHelper</span><span class="code" data-ice="signature">(loggerService: <span>*</span>, PlayerCtrlClass: <span>*</span>, settings: <span>*</span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Engine.js.html#lineNumber111">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>For testing purposes -- cannot stub constructor</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">loggerService</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">PlayerCtrlClass</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">settings</td>
+      <td data-ice="type" class="code"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
 </div>
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

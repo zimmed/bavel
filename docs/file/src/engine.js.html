@@ -3,22 +3,19 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/Engine.js | API Document</title>
+  <title data-ice="title">src/Engine.js | bavel</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
-  
-  
   <script src="script/manual.js"></script>
-</head>
+<meta name="description" content="BabylonJS game framework with proper entity/component structure."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="bavel"><meta property="twitter:description" content="BabylonJS game framework with proper entity/component structure."></head>
 <body class="layout-container" data-ice="rootContainer">
 
 <header>
   <a href="./">Home</a>
-  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
-  
   
   <div class="search-box">
   <span>
@@ -33,10 +30,14 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity.js~Entity.html">Entity</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PlayerController.js~PlayerController.html">PlayerController</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene.js~Scene.html">Scene</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StateEventProxy.js~StateEventProxy.html">StateEventProxy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getPrivateDataForTest">getPrivateDataForTest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-round">round</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-LoadStates">LoadStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DISABLE">DISABLE</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Component">Component</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentClass">ComponentClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ComponentData">ComponentData</a></span></span></li>
@@ -53,36 +54,48 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Message">Message</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ProxifiedObject">ProxifiedObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ScopedEvent">ScopedEvent</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Entity</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Entity/Entity.js~Entity.html">Entity</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">Scene</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scene/Scene.js~Scene.html">Scene</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/Engine.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Singleton from &apos;basic-singleton&apos;;
-import forEach from &apos;lodash.foreach&apos;;
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import forEach from &apos;lodash.foreach&apos;;
 import get from &apos;lodash.get&apos;;
 import noop from &apos;lodash.noop&apos;;
-import Scene from &apos;./Scene&apos;;
-import StateEventProxy from &apos;./StateEventProxy&apos;;
-import stateEvents from &apos;./stateEvents&apos;;
+import Scene from &apos;src/Scene&apos;;
+import StateEventProxy from &apos;src/StateEventProxy&apos;;
+import stateEvents from &apos;src/stateEvents&apos;;
+import PlayerController from &apos;src/PlayerController&apos;;
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
 if (typeof require.ensure !== &apos;function&apos;) {
-    require.ensure = (dep, cb) =&gt; cb(dep);
+    require.ensure = (dep=&apos;&apos;, cb) =&gt; cb(dep);
 }
 
-let // Local vars for read-only class members
-    loader,
+/**
+ * Promisified require.ensure.
+ * 
+ * @param {Array|string} deps - Dependencies to ensure.
+ * @param {string} [chunk] - Optional chunk name.
+ * @returns {Promise&lt;undefined&gt;}
+ */ 
+const ensureAsync = (deps, chunk) =&gt; new Promise(res =&gt; require.ensure(deps, res, chunk));
+
+/**
+ * local vars for read-only class members
+ * 
+ * @access private
+ */
+let loader,
     logger,
     playerController,
     GraphicsLibrary,
     resourceProvider,
     canvasElement,
     babylonEngine,
-    terrainEntity;
+    terrainEntity,
+    instance = null;
 
 /**
  * The game engine class (abstraction of BabylonJS Engine).
@@ -95,7 +108,21 @@ let // Local vars for read-only class members
  *     .then(engine =&gt; engine.run(entityData))
  *     .then(engine =&gt; window.addEventListener(&apos;resize&apos;, () =&gt; engine.resize()));
  */
-export default class Engine extends Singleton {
+export default class Engine {
+
+    /**
+     * The singleton Engine instance.
+     * 
+     * @type {?Engine}
+     */
+    static get instance() { return instance; }
+
+    /**
+     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).
+     */
+    static destroy() {
+        instance = null;
+    }
 
     /**
      * The general creation/initialization method for the class. Creates an
@@ -113,7 +140,7 @@ export default class Engine extends Singleton {
         PlayerController,
         settings={}
     ) {
-        let engine = this.instance;
+        let engine = instance;
 
         if (engine) return engine;
         loader = logger = playerController = GraphicsLibrary = terrainEntity =
@@ -123,7 +150,7 @@ export default class Engine extends Singleton {
         loader = resourceProviderLoader().then(provider =&gt; {
             resourceProvider = provider;
             engine.loading = LoadStates.INIT;
-            engine.scene = new Scene(engine);
+            engine.scene = Scene.create();
         });
         return engine;
     }
@@ -142,10 +169,7 @@ export default class Engine extends Singleton {
      *
      * @access private
      */
-    constructorHelper(loggerService, PlayerController, settings) {
-        if (!PlayerController) {
-            PlayerController = require(&apos;./PlayerController&apos;).default;
-        }
+    constructorHelper(loggerService, PlayerCtrlClass, settings) {
         StateEventProxy.create(this, &apos;engine&apos;, [&apos;fps&apos;, &apos;loading&apos;]);
         /**
          * The currently rendered frames-per-second.
@@ -165,16 +189,19 @@ export default class Engine extends Singleton {
         this.running = false;
         /** @type {Settings} **/
         this.settings = settings;
+        /** @type {?Interval} **/
+        this.statsInterval = null;
         logger = loggerService;
-        playerController = new PlayerController(this);
+        playerController = PlayerController.create(this, PlayerCtrlClass);
     }
 
     /**
      * @access private
      */
     constructor(...args) {
-        super();
+        if (instance) throw new Error(&apos;Cannot instantiate more than one instance of Engine&apos;);
         Engine.constructorHelper(this, ...args);
+        instance = this;
     }
 
     /**
@@ -225,31 +252,20 @@ export default class Engine extends Singleton {
      * @param {DOMElement} canvas
      * @return {Promise&lt;Engine&gt;}
      */
-    mount(canvas) {
-        return loader
-            .then(() =&gt; {
-                logger.debug(&apos;Mounting engine to canvas...&apos;);
-                this.loading = LoadStates.GL;
-                return new Promise(res =&gt; {
-                    require.ensure([&apos;babylonjs&apos;], () =&gt; {
-                        res(require(&apos;babylonjs&apos;));
-                    }, &apos;graphics&apos;);
-                });
-            })
-            .then(BabylonJS =&gt; {
-                GraphicsLibrary = BabylonJS;
-
-                this.loading = LoadStates.GAME;
-                babylonEngine = new GraphicsLibrary.Engine(canvas, true);
-                canvasElement = canvas;
-                logger.debug(&apos;Loading scene...&apos;);
-                return this.scene.mount(this);
-            })
-            .then(() =&gt; {
-                this.loading = LoadStates.DATA;
-                logger.info(&apos;Engine mounted.&apos;);
-                return this;
-            });
+    async mount(canvas) {
+        await loader;
+        logger.debug(&apos;Mounting engine to canvas...&apos;);
+        this.loading = LoadStates.GL;
+        await ensureAsync([&apos;babylonjs&apos;], &apos;graphics&apos;);
+        GraphicsLibrary = require(&apos;babylonjs&apos;);
+        this.loading = LoadStates.GAME;
+        babylonEngine = new GraphicsLibrary.Engine(canvas, true);
+        canvasElement = canvas;
+        logger.debug(&apos;Loading scene...&apos;);
+        await this.scene.mount(this);
+        this.loading = LoadStates.DATA;
+        logger.info(&apos;Engine mounted.&apos;);
+        return this;
     }
 
     /**
@@ -260,17 +276,15 @@ export default class Engine extends Singleton {
      */
     dismount() {
         logger.debug(&apos;Dismounting from to canvas...&apos;);
-        return new Promise(res =&gt; {
-            if (this.running) {
-                this.stop();
-            }
-            this.scene = this.scene.dismount(this);
-            get(babylonEngine, &apos;dispose&apos;, noop)();
-            babylonEngine = null;
-            canvasElement = null;
-            logger.info(&apos;Engine dismounted.&apos;);
-            res(this);
-        });
+        if (this.running) {
+            this.stop();
+        }
+        this.scene = this.scene.dismount(this);
+        get(babylonEngine, &apos;dispose&apos;, noop)();
+        babylonEngine = null;
+        canvasElement = null;
+        logger.info(&apos;Engine dismounted.&apos;);
+        return Promise.resolve(this);
     }
 
     /**
@@ -280,7 +294,7 @@ export default class Engine extends Singleton {
      * @param {EntityMetaData[]} [entities]
      * @return {Promise&lt;Engine&gt;}
      */
-    run(entities) {
+    async run(entities) {
         const step = 1000 / 60;
         let count,
             time,
@@ -293,36 +307,39 @@ export default class Engine extends Singleton {
                 logger.debug(&apos;Adding initial entities to scene...&apos;);
                 defer = this.scene.updateEntities(this, entities);
             }
-            defer = defer.then(() =&gt; {
-                this.ctrl.setup(this.settings);
-                forEach(this.ctrl.DOM_EVENTS, (fn, name) =&gt;
-                    canvasElement.addEventListener(name, e =&gt;
-                        e.preventDefault() &amp;&amp; false || this.ctrl[fn](e)));
-                this.loading = LoadStates.REND;
-                logger.debug(&apos;Starting engine render loop. ENGINE: &apos;, this);
-                babylonEngine.runRenderLoop(() =&gt; {
-                    count = 0;
-                    time = Date.now();
-                    accum = babylonEngine.getDeltaTime();
-                    // accum += engine.baby.getDeltaTime();
-                    // while (accum &gt;= step) {
-                    //     count++;
-                    //     engine.scene.tick(engine, time, step);
-                    //     accum -= step;
-                    //     if (count &gt; 5) accum = 0;
-                    // }
-                    this.scene.tick(this, time, accum);
-                    this.scene.baby.render();
-                });
-                this.loading = LoadStates.DONE;
-                setInterval(() =&gt; {
-                    this.fps = Math.floor(this.baby.fps)
-                }, 500);
-                this.running = true;
-                return this;
+            await defer;
+            this.ctrl.setup(this.settings);
+            forEach(
+                this.ctrl.DOM_EVENTS,
+                (fn, name) =&gt; canvasElement.addEventListener(
+                    name,
+                    e =&gt; e.preventDefault() &amp;&amp; false || this.ctrl[fn](e)
+                )
+            );
+            this.loading = LoadStates.REND;
+            logger.debug(&apos;Starting engine render loop. ENGINE: &apos;);
+            babylonEngine.runRenderLoop(() =&gt; {
+                count = 0;
+                time = Date.now();
+                accum = babylonEngine.getDeltaTime();
+                // accum += engine.baby.getDeltaTime();
+                // while (accum &gt;= step) {
+                //     count++;
+                //     engine.scene.tick(engine, time, step);
+                //     accum -= step;
+                //     if (count &gt; 5) accum = 0;
+                // }
+                this.scene.tick(this, time, accum);
+                this.scene.baby.render();
             });
+            this.loading = LoadStates.DONE;
+            this.statsInterval = setInterval(() =&gt; {
+                this.fps = Math.floor(this.baby.fps)
+            }, this.settings.statsInterval || 1000);
+            this.running = true;
+            return this;
         }
-        return defer;
+        return this;
     }
 
     /**
@@ -337,6 +354,7 @@ export default class Engine extends Singleton {
             babylonEngine.stopRenderLoop();
             this.running = false;
             this.loading = LoadStates.DATA;
+            clearInterval(this.statsInterval);
         }
         return this;
     }
@@ -432,13 +450,15 @@ export default class Engine extends Singleton {
         }
         if (handler || downHandler) {
             am.registerAction(new ExecuteCodeAction(
-                {trigger: kDn, parameter: key},
-                () =&gt; (handler || downHandler)(this, key, true)));
+                { trigger: kDn, parameter: key },
+                () =&gt; (handler || downHandler)(this, key, true))
+            );
         }
         if (handler || upHandler) {
             am.registerAction(new ExecuteCodeAction(
-                {trigger: kUp, parameter: key},
-                () =&gt; (handler || upHandler)(this, key, false)));
+                { trigger: kUp, parameter: key },
+                () =&gt; (handler || upHandler)(this, key, false))
+            );
         }
     }
 
@@ -455,41 +475,42 @@ export default class Engine extends Singleton {
      * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.
      * @return {undefined}
      */
-    registerMouseEventsForEntity(entity, {click, altClick, over, out, cursor}={}) {
-        const {ActionManager, ExecuteCodeAction} = this.GL;
+    async registerMouseEventsForEntity(entity, { click, altClick, over, out, cursor }={}) {
+        const { ActionManager, ExecuteCodeAction } = this.GL;
         const clickT = ActionManager.OnLeftPickTrigger;
         const altClickT = ActionManager.OnRightPickTrigger;
         const overT = ActionManager.OnPointerOverTrigger;
         const outT = ActionManager.OnPointerOutTrigger;
+        const mesh = await entity.meshAsync;
+        const { baby } = await mesh.ready();
+        let am = baby.actionManager;
 
-        return entity.meshAsync
-            .then(mesh =&gt; mesh.ready())
-            .then(({baby}) =&gt; {
-                let am = baby.actionManager;
-
-                if (!am) {
-                    am = baby.actionManager = new ActionManager(this.scene.baby);
-                }
-                if (cursor) {
-                    am.hoverCursor = cursor;
-                }
-                if (click) {
-                    am.registerAction(new ExecuteCodeAction(
-                        clickT, e =&gt; this.ctrl.entityClick(entity, e)));
-                }
-                if (altClick) {
-                    am.registerAction(new ExecuteCodeAction(
-                        altClickT, e =&gt; this.ctrl.entityAltClick(entity, e)));
-                }
-                if (over) {
-                    am.registerAction(new ExecuteCodeAction(
-                        overT, e =&gt; this.ctrl.entityOver(entity, e)));
-                }
-                if (out) {
-                    am.registerAction(new ExecuteCodeAction(
-                        outT, e =&gt; this.ctrl.entityOut(entity, e)));
-                }
-            });
+        if (!am) {
+            am = baby.actionManager = new ActionManager(this.scene.baby);
+        }
+        if (cursor) {
+            am.hoverCursor = cursor;
+        }
+        if (click) {
+            am.registerAction(new ExecuteCodeAction(
+                clickT, e =&gt; this.ctrl.entityClick(entity, e))
+            );
+        }
+        if (altClick) {
+            am.registerAction(new ExecuteCodeAction(
+                altClickT, e =&gt; this.ctrl.entityAltClick(entity, e))
+            );
+        }
+        if (over) {
+            am.registerAction(new ExecuteCodeAction(
+                overT, e =&gt; this.ctrl.entityOver(entity, e))
+            );
+        }
+        if (out) {
+            am.registerAction(new ExecuteCodeAction(
+                outT, e =&gt; this.ctrl.entityOut(entity, e))
+            );
+        }
     }
 
     /**
@@ -536,6 +557,8 @@ export const LoadStates = {
 };
 
 /**
+ * Exports private members for unit tests.
+ * 
  * @access private
  */
 export const getPrivateDataForTest = () =&gt; ({
@@ -553,7 +576,7 @@ export const getPrivateDataForTest = () =&gt; ({
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

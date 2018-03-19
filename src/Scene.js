@@ -1,19 +1,49 @@
-import reducePromise from 'reduce-promise';
-import Singleton from 'basic-singleton';
 import mapValues from 'lodash.mapvalues';
 import pickBy from 'lodash.pickby';
 import get from 'lodash.get';
 import forEach from 'lodash.foreach';
 import noop from 'lodash.noop';
-import Entity from '../Entity';
+import Entity from 'src/Entity';
+
+/**
+ * local vars for read-only class members
+ * 
+ * @access private
+ */
+let instance = null;
 
 /**
  * The Scene class
  */
-export default class Scene extends Singleton {
+export default class Scene {
+    /**
+     * Singleton instance of Scene
+     * 
+     * @type {?Scene}
+     */
+    static get instance() { return instance; }
 
+    /**
+     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).
+     */
+    static destroy() {
+        instance = null;
+    }
+
+    /**
+     * Helper method to create a new Scene instance, or return an existing one.
+     * 
+     * @returns {Scene}
+     */
+    static create() {
+        return (instance) ? instance : new Scene();
+    }
+
+    /**
+     * Scene constructor.
+     */
     constructor() {
-        super();
+        if (instance) throw new Error('Cannot instantiate more than one instance of Scene');
         /**
          * The map of entities registered to the scene (keys are entity.uid).
          *
@@ -30,6 +60,13 @@ export default class Scene extends Singleton {
             value: null,
             writable: true
         });
+        /**
+         * The underlying BabylonJS scene object.
+         * 
+         * @type {?BabylonJS#Scene}
+         */
+        this._baby = null;
+        instance = this;
     }
 
     /**
@@ -91,9 +128,12 @@ export default class Scene extends Singleton {
      * @param {EntityMetaData[]} entities
      * @return {Promise<Scene>}
      */
-    updateEntities(engine, entities) {
-        return reducePromise(entities, e => this.updateEntity(engine, e))
-            .then(() => this);
+    async updateEntities(engine, entities) {
+        await entities.reduce(
+            (promise, e) => promise.then(() => this.updateEntity(engine, e)),
+            Promise.resolve()
+        );
+        return this;
     }
 
     /**

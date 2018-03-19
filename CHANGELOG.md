@@ -5,10 +5,14 @@
 Long overdue refactor (best practices, etc.)
 
 ##### Details
- - ...
+ - Updated syntax to use ES7 async/await
+ - Reached 100% doc coverage
+ - Updated dependencies
+ - Removed hard lodash dependency
 
 ##### 0.2 Todo
- - Refactor to best practices
+ - Refactor for best practices
+ - Implement strongly-typed framework
  - Optimize state sharing
 
 #### Roadmap

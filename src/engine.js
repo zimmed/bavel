@@ -1,26 +1,40 @@
-import Singleton from 'basic-singleton';
 import forEach from 'lodash.foreach';
 import get from 'lodash.get';
 import noop from 'lodash.noop';
-import Scene from './Scene';
-import StateEventProxy from './StateEventProxy';
-import stateEvents from './stateEvents';
+import Scene from 'src/Scene';
+import StateEventProxy from 'src/StateEventProxy';
+import stateEvents from 'src/stateEvents';
+import PlayerController from 'src/PlayerController';
 
 // Cannot use require.ensure when not using webpack (i.e., mocha environment)
 //  so this polyfill is required to not break run.
 if (typeof require.ensure !== 'function') {
-    require.ensure = (dep, cb) => cb(dep);
+    require.ensure = (dep='', cb) => cb(dep);
 }
 
-let // Local vars for read-only class members
-    loader,
+/**
+ * Promisified require.ensure.
+ * 
+ * @param {Array|string} deps - Dependencies to ensure.
+ * @param {string} [chunk] - Optional chunk name.
+ * @returns {Promise<undefined>}
+ */ 
+const ensureAsync = (deps, chunk) => new Promise(res => require.ensure(deps, res, chunk));
+
+/**
+ * local vars for read-only class members
+ * 
+ * @access private
+ */
+let loader,
     logger,
     playerController,
     GraphicsLibrary,
     resourceProvider,
     canvasElement,
     babylonEngine,
-    terrainEntity;
+    terrainEntity,
+    instance = null;
 
 /**
  * The game engine class (abstraction of BabylonJS Engine).
@@ -33,7 +47,21 @@ let // Local vars for read-only class members
  *     .then(engine => engine.run(entityData))
  *     .then(engine => window.addEventListener('resize', () => engine.resize()));
  */
-export default class Engine extends Singleton {
+export default class Engine {
+
+    /**
+     * The singleton Engine instance.
+     * 
+     * @type {?Engine}
+     */
+    static get instance() { return instance; }
+
+    /**
+     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).
+     */
+    static destroy() {
+        instance = null;
+    }
 
     /**
      * The general creation/initialization method for the class. Creates an
@@ -51,7 +79,7 @@ export default class Engine extends Singleton {
         PlayerController,
         settings={}
     ) {
-        let engine = this.instance;
+        let engine = instance;
 
         if (engine) return engine;
         loader = logger = playerController = GraphicsLibrary = terrainEntity =
@@ -61,7 +89,7 @@ export default class Engine extends Singleton {
         loader = resourceProviderLoader().then(provider => {
             resourceProvider = provider;
             engine.loading = LoadStates.INIT;
-            engine.scene = new Scene(engine);
+            engine.scene = Scene.create();
         });
         return engine;
     }
@@ -80,10 +108,7 @@ export default class Engine extends Singleton {
      *
      * @access private
      */
-    constructorHelper(loggerService, PlayerController, settings) {
-        if (!PlayerController) {
-            PlayerController = require('./PlayerController').default;
-        }
+    constructorHelper(loggerService, PlayerCtrlClass, settings) {
         StateEventProxy.create(this, 'engine', ['fps', 'loading']);
         /**
          * The currently rendered frames-per-second.
@@ -103,16 +128,19 @@ export default class Engine extends Singleton {
         this.running = false;
         /** @type {Settings} **/
         this.settings = settings;
+        /** @type {?Interval} **/
+        this.statsInterval = null;
         logger = loggerService;
-        playerController = new PlayerController(this);
+        playerController = PlayerController.create(this, PlayerCtrlClass);
     }
 
     /**
      * @access private
      */
     constructor(...args) {
-        super();
+        if (instance) throw new Error('Cannot instantiate more than one instance of Engine');
         Engine.constructorHelper(this, ...args);
+        instance = this;
     }
 
     /**
@@ -163,31 +191,20 @@ export default class Engine extends Singleton {
      * @param {DOMElement} canvas
      * @return {Promise<Engine>}
      */
-    mount(canvas) {
-        return loader
-            .then(() => {
-                logger.debug('Mounting engine to canvas...');
-                this.loading = LoadStates.GL;
-                return new Promise(res => {
-                    require.ensure(['babylonjs'], () => {
-                        res(require('babylonjs'));
-                    }, 'graphics');
-                });
-            })
-            .then(BabylonJS => {
-                GraphicsLibrary = BabylonJS;
-
-                this.loading = LoadStates.GAME;
-                babylonEngine = new GraphicsLibrary.Engine(canvas, true);
-                canvasElement = canvas;
-                logger.debug('Loading scene...');
-                return this.scene.mount(this);
-            })
-            .then(() => {
-                this.loading = LoadStates.DATA;
-                logger.info('Engine mounted.');
-                return this;
-            });
+    async mount(canvas) {
+        await loader;
+        logger.debug('Mounting engine to canvas...');
+        this.loading = LoadStates.GL;
+        await ensureAsync(['babylonjs'], 'graphics');
+        GraphicsLibrary = require('babylonjs');
+        this.loading = LoadStates.GAME;
+        babylonEngine = new GraphicsLibrary.Engine(canvas, true);
+        canvasElement = canvas;
+        logger.debug('Loading scene...');
+        await this.scene.mount(this);
+        this.loading = LoadStates.DATA;
+        logger.info('Engine mounted.');
+        return this;
     }
 
     /**
@@ -198,17 +215,15 @@ export default class Engine extends Singleton {
      */
     dismount() {
         logger.debug('Dismounting from to canvas...');
-        return new Promise(res => {
-            if (this.running) {
-                this.stop();
-            }
-            this.scene = this.scene.dismount(this);
-            get(babylonEngine, 'dispose', noop)();
-            babylonEngine = null;
-            canvasElement = null;
-            logger.info('Engine dismounted.');
-            res(this);
-        });
+        if (this.running) {
+            this.stop();
+        }
+        this.scene = this.scene.dismount(this);
+        get(babylonEngine, 'dispose', noop)();
+        babylonEngine = null;
+        canvasElement = null;
+        logger.info('Engine dismounted.');
+        return Promise.resolve(this);
     }
 
     /**
@@ -218,7 +233,7 @@ export default class Engine extends Singleton {
      * @param {EntityMetaData[]} [entities]
      * @return {Promise<Engine>}
      */
-    run(entities) {
+    async run(entities) {
         const step = 1000 / 60;
         let count,
             time,
@@ -231,36 +246,39 @@ export default class Engine extends Singleton {
                 logger.debug('Adding initial entities to scene...');
                 defer = this.scene.updateEntities(this, entities);
             }
-            defer = defer.then(() => {
-                this.ctrl.setup(this.settings);
-                forEach(this.ctrl.DOM_EVENTS, (fn, name) =>
-                    canvasElement.addEventListener(name, e =>
-                        e.preventDefault() && false || this.ctrl[fn](e)));
-                this.loading = LoadStates.REND;
-                logger.debug('Starting engine render loop. ENGINE: ', this);
-                babylonEngine.runRenderLoop(() => {
-                    count = 0;
-                    time = Date.now();
-                    accum = babylonEngine.getDeltaTime();
-                    // accum += engine.baby.getDeltaTime();
-                    // while (accum >= step) {
-                    //     count++;
-                    //     engine.scene.tick(engine, time, step);
-                    //     accum -= step;
-                    //     if (count > 5) accum = 0;
-                    // }
-                    this.scene.tick(this, time, accum);
-                    this.scene.baby.render();
-                });
-                this.loading = LoadStates.DONE;
-                setInterval(() => {
-                    this.fps = Math.floor(this.baby.fps)
-                }, 500);
-                this.running = true;
-                return this;
+            await defer;
+            this.ctrl.setup(this.settings);
+            forEach(
+                this.ctrl.DOM_EVENTS,
+                (fn, name) => canvasElement.addEventListener(
+                    name,
+                    e => e.preventDefault() && false || this.ctrl[fn](e)
+                )
+            );
+            this.loading = LoadStates.REND;
+            logger.debug('Starting engine render loop. ENGINE: ');
+            babylonEngine.runRenderLoop(() => {
+                count = 0;
+                time = Date.now();
+                accum = babylonEngine.getDeltaTime();
+                // accum += engine.baby.getDeltaTime();
+                // while (accum >= step) {
+                //     count++;
+                //     engine.scene.tick(engine, time, step);
+                //     accum -= step;
+                //     if (count > 5) accum = 0;
+                // }
+                this.scene.tick(this, time, accum);
+                this.scene.baby.render();
             });
+            this.loading = LoadStates.DONE;
+            this.statsInterval = setInterval(() => {
+                this.fps = Math.floor(this.baby.fps)
+            }, this.settings.statsInterval || 1000);
+            this.running = true;
+            return this;
         }
-        return defer;
+        return this;
     }
 
     /**
@@ -275,6 +293,7 @@ export default class Engine extends Singleton {
             babylonEngine.stopRenderLoop();
             this.running = false;
             this.loading = LoadStates.DATA;
+            clearInterval(this.statsInterval);
         }
         return this;
     }
@@ -370,13 +389,15 @@ export default class Engine extends Singleton {
         }
         if (handler || downHandler) {
             am.registerAction(new ExecuteCodeAction(
-                {trigger: kDn, parameter: key},
-                () => (handler || downHandler)(this, key, true)));
+                { trigger: kDn, parameter: key },
+                () => (handler || downHandler)(this, key, true))
+            );
         }
         if (handler || upHandler) {
             am.registerAction(new ExecuteCodeAction(
-                {trigger: kUp, parameter: key},
-                () => (handler || upHandler)(this, key, false)));
+                { trigger: kUp, parameter: key },
+                () => (handler || upHandler)(this, key, false))
+            );
         }
     }
 
@@ -393,41 +414,42 @@ export default class Engine extends Singleton {
      * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.
      * @return {undefined}
      */
-    registerMouseEventsForEntity(entity, {click, altClick, over, out, cursor}={}) {
-        const {ActionManager, ExecuteCodeAction} = this.GL;
+    async registerMouseEventsForEntity(entity, { click, altClick, over, out, cursor }={}) {
+        const { ActionManager, ExecuteCodeAction } = this.GL;
         const clickT = ActionManager.OnLeftPickTrigger;
         const altClickT = ActionManager.OnRightPickTrigger;
         const overT = ActionManager.OnPointerOverTrigger;
         const outT = ActionManager.OnPointerOutTrigger;
+        const mesh = await entity.meshAsync;
+        const { baby } = await mesh.ready();
+        let am = baby.actionManager;
 
-        return entity.meshAsync
-            .then(mesh => mesh.ready())
-            .then(({baby}) => {
-                let am = baby.actionManager;
-
-                if (!am) {
-                    am = baby.actionManager = new ActionManager(this.scene.baby);
-                }
-                if (cursor) {
-                    am.hoverCursor = cursor;
-                }
-                if (click) {
-                    am.registerAction(new ExecuteCodeAction(
-                        clickT, e => this.ctrl.entityClick(entity, e)));
-                }
-                if (altClick) {
-                    am.registerAction(new ExecuteCodeAction(
-                        altClickT, e => this.ctrl.entityAltClick(entity, e)));
-                }
-                if (over) {
-                    am.registerAction(new ExecuteCodeAction(
-                        overT, e => this.ctrl.entityOver(entity, e)));
-                }
-                if (out) {
-                    am.registerAction(new ExecuteCodeAction(
-                        outT, e => this.ctrl.entityOut(entity, e)));
-                }
-            });
+        if (!am) {
+            am = baby.actionManager = new ActionManager(this.scene.baby);
+        }
+        if (cursor) {
+            am.hoverCursor = cursor;
+        }
+        if (click) {
+            am.registerAction(new ExecuteCodeAction(
+                clickT, e => this.ctrl.entityClick(entity, e))
+            );
+        }
+        if (altClick) {
+            am.registerAction(new ExecuteCodeAction(
+                altClickT, e => this.ctrl.entityAltClick(entity, e))
+            );
+        }
+        if (over) {
+            am.registerAction(new ExecuteCodeAction(
+                overT, e => this.ctrl.entityOver(entity, e))
+            );
+        }
+        if (out) {
+            am.registerAction(new ExecuteCodeAction(
+                outT, e => this.ctrl.entityOut(entity, e))
+            );
+        }
     }
 
     /**
@@ -474,6 +496,8 @@ export const LoadStates = {
 };
 
 /**
+ * Exports private members for unit tests.
+ * 
  * @access private
  */
 export const getPrivateDataForTest = () => ({

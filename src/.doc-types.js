@@ -137,6 +137,7 @@
  * @property {bool} [debug=false]
  * @property {Object} [input]
  * @property {KeyDefinition[]} [input.keys]
+ * @property {number} [statsInterval=1000]
  */
 
 /**

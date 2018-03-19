@@ -1,10 +1,31 @@
 {
-  "plugins": [
-    "remove-comments"
-  ],
   "presets": [
     "env"
   ],
+  "env": {
+    "development": {
+      "plugins": [
+        ["module-resolver", {
+          "root": ["./"],
+          "alias": {
+            "src": "./src/"
+          }
+        }]
+      ],
+      "comments": false
+    },
+    "production": {
+      "plugins": [
+        ["module-resolver", {
+          "root": ["./"],
+          "alias": {
+            "src": "./src/"
+          }
+        }]
+      ],
+      "comments": false
+    }
+  },
   "ignore": [
     "src/.doc-types.js"
   ]

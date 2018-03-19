@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/stateEvents.js | bavel</title>
+  <title data-ice="title">src/Scene.js | bavel</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -58,18 +58,167 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/stateEvents.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import EventEmitter from &apos;events&apos;;
-
-const stateEvents = new EventEmitter();
+<div class="content" data-ice="content"><h1 data-ice="title">src/Scene.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import mapValues from &apos;lodash.mapvalues&apos;;
+import pickBy from &apos;lodash.pickby&apos;;
+import get from &apos;lodash.get&apos;;
+import forEach from &apos;lodash.foreach&apos;;
+import noop from &apos;lodash.noop&apos;;
+import Entity from &apos;src/Entity&apos;;
 
 /**
- * The EventEmitter for proxified object state changes.
- *
- * @access public
- * @type {EventEmitter}
+ * local vars for read-only class members
+ * 
+ * @access private
  */
-export default stateEvents;
+let instance = null;
+
+/**
+ * The Scene class
+ */
+export default class Scene {
+    /**
+     * Singleton instance of Scene
+     * 
+     * @type {?Scene}
+     */
+    static get instance() { return instance; }
+
+    /**
+     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).
+     */
+    static destroy() {
+        instance = null;
+    }
+
+    /**
+     * Helper method to create a new Scene instance, or return an existing one.
+     * 
+     * @returns {Scene}
+     */
+    static create() {
+        return (instance) ? instance : new Scene();
+    }
+
+    /**
+     * Scene constructor.
+     */
+    constructor() {
+        if (instance) throw new Error(&apos;Cannot instantiate more than one instance of Scene&apos;);
+        /**
+         * The map of entities registered to the scene (keys are entity.uid).
+         *
+         * @type {Object}
+         */
+        this.children = {};
+        /**
+         * The active camera entity.
+         *
+         * @type {?EntityInstance}
+         */
+        this.activeCamera = null;
+        Object.defineProperty(this, &apos;_baby&apos;, {
+            value: null,
+            writable: true
+        });
+        /**
+         * The underlying BabylonJS scene object.
+         * 
+         * @type {?BabylonJS#Scene}
+         */
+        this._baby = null;
+        instance = this;
+    }
+
+    /**
+     * The BabylonJS.Scene instance.
+     *
+     * @type {?BabylonJS.Scene}
+     */
+    get baby() { return this._baby; }
+
+    /**
+     * Instantiates the {@link Scene#baby} object.
+     *
+     * @param {Engine} engine
+     */
+    mount(engine) {
+        this._baby = new engine.GL.Scene(engine.baby);
+    }
+
+    /**
+     * Dismounts all child entities and disposes {@link Scene#baby} property.
+     *
+     * @param {Engine} engine
+     * @return {null}
+     */
+    dismount(engine) {
+        this.children = pickBy(mapValues(this.children, e =&gt; Entity.dismount(engine, e)));
+        get(this, &apos;_baby.dispose&apos;, noop)();
+        this._baby = null;
+        return null;
+    }
+
+    /**
+     * Gets child entity by EntityInstance#uid.
+     *
+     * @param {string} uid
+     * @return {EntityInstance} if entity is found.
+     * @return {undefined} if entity is not found.
+     */
+    getEntity(uid) {
+        return get(this.children, uid);
+    }
+
+    /**
+     * Updates/creates an entity with the provided data, and saves it to {@link Scene#children}.
+     *
+     * @param {Engine} engine
+     * @param {EntityMetaData} entityData
+     * @return {Promise&lt;EntityInstance&gt;} - The new/updated entity.
+     */
+    updateEntity(engine, entityData) {
+        return Entity.update(engine, this.children[entityData.uid], entityData)
+            .then(e =&gt; this.children[entityData.uid] = e);
+    }
+
+    /**
+     * Updates all entities in the provided list of entity data.
+     *
+     * @param {Engine} engine
+     * @param {EntityMetaData[]} entities
+     * @return {Promise&lt;Scene&gt;}
+     */
+    async updateEntities(engine, entities) {
+        await entities.reduce(
+            (promise, e) =&gt; promise.then(() =&gt; this.updateEntity(engine, e)),
+            Promise.resolve()
+        );
+        return this;
+    }
+
+    /**
+     * Dismounts and removes child entity by EntityInstance#uid.
+     *
+     * @param {Engine} engine
+     * @param {string} entityUid
+     * @return {null}
+     */
+    removeEntity(engine, entityUid) {
+        return this.children[entityUid] = Entity.dismount(engine, get(this.children, entityUid));
+    }
+
+    /**
+     * Executes registered tick methods for all child entities.
+     *
+     * @param {Engine} engine
+     * @param {number} t - The current timestamp in miliseconds.
+     * @param {number} dt - The elapsed miliseconds since the last tick.
+     */
+    tick(engine, t, dt) {
+        forEach(this.children, e =&gt; { Entity.tick(engine, e, t, dt) });
+    }
+}
 </code></pre>
 
 </div>

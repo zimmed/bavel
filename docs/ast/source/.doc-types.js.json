@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 4844,
+  "end": 4887,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 149,
+      "line": 150,
       "column": 0
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 4844,
+    "end": 4887,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 149,
+        "line": 150,
         "column": 0
       }
     },
@@ -209,16 +209,16 @@
       },
       {
         "type": "CommentBlock",
-        "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n ",
+        "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n * @property {number} [statsInterval=1000]\n ",
         "start": 4543,
-        "end": 4688,
+        "end": 4731,
         "loc": {
           "start": {
             "line": 135,
             "column": 0
           },
           "end": {
-            "line": 140,
+            "line": 141,
             "column": 3
           }
         }
@@ -226,15 +226,15 @@
       {
         "type": "CommentBlock",
         "value": "*\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n ",
-        "start": 4690,
-        "end": 4843,
+        "start": 4733,
+        "end": 4886,
         "loc": {
           "start": {
-            "line": 142,
+            "line": 143,
             "column": 0
           },
           "end": {
-            "line": 148,
+            "line": 149,
             "column": 3
           }
         }
@@ -420,16 +420,16 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n ",
+      "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n * @property {number} [statsInterval=1000]\n ",
       "start": 4543,
-      "end": 4688,
+      "end": 4731,
       "loc": {
         "start": {
           "line": 135,
           "column": 0
         },
         "end": {
-          "line": 140,
+          "line": 141,
           "column": 3
         }
       }
@@ -437,15 +437,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n ",
-      "start": 4690,
-      "end": 4843,
+      "start": 4733,
+      "end": 4886,
       "loc": {
         "start": {
-          "line": 142,
+          "line": 143,
           "column": 0
         },
         "end": {
-          "line": 148,
+          "line": 149,
           "column": 3
         }
       }
@@ -630,16 +630,16 @@
     },
     {
       "type": "CommentBlock",
-      "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n ",
+      "value": "*\n * @typedef {Object} Settings\n * @property {bool} [debug=false]\n * @property {Object} [input]\n * @property {KeyDefinition[]} [input.keys]\n * @property {number} [statsInterval=1000]\n ",
       "start": 4543,
-      "end": 4688,
+      "end": 4731,
       "loc": {
         "start": {
           "line": 135,
           "column": 0
         },
         "end": {
-          "line": 140,
+          "line": 141,
           "column": 3
         }
       }
@@ -647,15 +647,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n * @typedef {Object} Logger\n * @property {function} info\n * @property {function} debug\n * @property {function} warn\n * @property {function} error\n ",
-      "start": 4690,
-      "end": 4843,
+      "start": 4733,
+      "end": 4886,
       "loc": {
         "start": {
-          "line": 142,
+          "line": 143,
           "column": 0
         },
         "end": {
-          "line": 148,
+          "line": 149,
           "column": 3
         }
       }
@@ -673,15 +673,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 4844,
-      "end": 4844,
+      "start": 4887,
+      "end": 4887,
       "loc": {
         "start": {
-          "line": 149,
+          "line": 150,
           "column": 0
         },
         "end": {
-          "line": 149,
+          "line": 150,
           "column": 0
         }
       }

@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import events from '../src/stateEvents';
+import events from 'src/stateEvents';
 
 describe('StateEventManager', () => {
 
@@ -14,25 +13,27 @@ describe('StateEventManager', () => {
     listener for that event, registered with the on method`, (done) => {
         let test = 0;
 
-        expect(() => {
-            events.on('test', (data) => {
-                expect(data).to.equal('foobar');
-                test++;
-            });
-            events.on('finish', () => {
-                expect(test).to.equal(2);
-                events.removeAllListeners('test');
-                events.removeAllListeners('finish');
-                events.removeAllListeners('foo');
-                done();
-            });
-            events.on('foo', () => {
-                done('No foo event emitted, but handler called.');
-            });
-            events.emit('test', 'foobar');
-            events.emit('bar');
-            events.emit('test', 'foobar');
-            events.emit('finish');
-        }).to.not.throw(Error);
+        events.on('test', (data) => {
+            expect(data).to.equal('foobar');
+            test++;
+        });
+        events.on('finish', () => {
+            expect(test).to.equal(2);
+            events.removeAllListeners('test');
+            events.removeAllListeners('finish');
+            events.removeAllListeners('foo');
+            test++;
+        });
+        events.on('foo', () => {
+            done('No foo event emitted, but handler called.');
+        });
+        events.emit('test', 'foobar');
+        events.emit('bar');
+        events.emit('test', 'foobar');
+        events.emit('finish');
+        setTimeout(() => {
+            expect(test).to.equal(3);
+            done();
+        });
     });
-})
+});

@@ -1,6 +1,4 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
-import events from '../src/stateEvents';
+import events from 'src/stateEvents';
 import StateEventProxy, {
     DISABLE,
 } from '../src/StateEventProxy';
@@ -12,85 +10,67 @@ describe('StateEventProxy', () => {
     });
 
     describe('StateProxy exported function (integration tests)', () => {
-        let emit;
-
-        beforeEach(() => {
-            emit = sinon.stub(events, 'emit');
-        });
-        afterEach(() => {
-            emit.restore();
-        });
+        beforeEach(() => sandbox.stub(events, 'emit'));
 
         it(`should assign proxy properties from a list of keys to the provided object
         and emit state events when a property is reassigned`, (done) => {
-            let obj = {d: null};
+            let obj = { d: null };
 
-            expect(() => StateEventProxy.create(obj, 'obj', ['a', 'b', 'c'], { def: 0 })).to.not.throw(Error);
+            StateEventProxy.create(obj, 'obj', [ 'a', 'b', 'c' ], { def: 0 });
             expect(obj).to.exist;
-            expect(obj).to.have.all.keys(['a', 'b', 'c', 'd']);
-            expect(obj).to.eql({a: 0, b: 0, c: 0, d: null});
-            expect(() => obj.d = 5).to.not.throw(Error);
+            expect(obj).to.have.all.keys([ 'a', 'b', 'c', 'd' ]);
+            expect(obj).to.eql({ a: 0, b: 0, c: 0, d: null });
+            obj.d = 5;
             expect(obj.d).to.equal(5);
-            expect(() => obj.a = {foo: 'bar'}).to.not.throw(Error);
-            expect(obj.a).to.eql({foo: 'bar'});
-            expect(() => obj.b = [1, obj.a, 'three']).to.not.throw(Error);
-            expect(obj.b).to.eql([1, {foo: 'bar'}, 'three']);
-            expect(() => obj.b = null).to.not.throw(Error);
+            obj.a = { foo: 'bar' };
+            expect(obj.a).to.eql({ foo: 'bar' });
+            obj.b = [ 1, obj.a, 'three' ];
+            expect(obj.b).to.eql([ 1, { foo: 'bar' }, 'three' ]);
+            obj.b = null;
             expect(obj).to.eql({
-                a: {foo: 'bar'},
+                a: { foo: 'bar' },
                 b: null,
                 c: 0,
                 d: 5
             });
             setTimeout(() => {
-                expect(emit.callCount).to.equal(3);
-                expect(emit.calledWith('obj.a', {foo: 'bar'})).to.equal(true);
-                expect(emit.calledWith('obj.b', [1, {foo: 'bar'}, 'three'])).to.equal(true);
-                expect(emit.calledWith('obj.b', null)).to.equal(true);
+                expect(events.emit.callCount).to.equal(3);
+                expect(events.emit).to.have.been.calledWith('obj.a', { foo: 'bar' });
+                expect(events.emit).to.have.been.calledWith('obj.b', [ 1, { foo: 'bar' }, 'three' ]);
+                expect(events.emit).to.have.been.calledWith('obj.b', null);
                 done();
-            }, 1);
+            });
         });
 
         it(`should assign proxy properties from a map of keys and values to the provided
         object and emit state events when a property is reassigned`, (done) => {
-            let obj = {d: 10};
+            let obj = { d: 10 };
 
-            expect(() => StateEventProxy.create(obj, 'obj', {
+            StateEventProxy.create(obj, 'obj', {
                 a: null,
-                b: {foo: 'bar'},
-                c: ['foo', 'bar']
-            })).to.not.throw(Error);
-            expect(obj).to.have.all.keys(['a', 'b', 'c', 'd']);
-            expect(obj).to.eql({a: null, b: {foo: 'bar'}, c: ['foo', 'bar'], d: 10});
+                b: { foo: 'bar' },
+                c: [ 'foo', 'bar' ]
+            });
+            expect(obj).to.have.all.keys([ 'a', 'b', 'c', 'd' ]);
+            expect(obj).to.eql({ a: null, b: { foo: 'bar' }, c: [ 'foo', 'bar' ], d: 10 });
             obj.d = 42;
             expect(obj.d).to.equal(42);
-            obj.a = [1,2,3];
-            expect(obj.a).to.eql([1,2,3]);
+            obj.a = [ 1, 2, 3];
+            expect(obj.a).to.eql([ 1, 2, 3 ]);
             obj.b.foo = 'foo';
-            expect(obj.b).to.eql({foo: 'foo'});
+            expect(obj.b).to.eql({ foo: 'foo' });
             obj.b = 'foobar';
             expect(obj.b).to.equal('foobar');
             setTimeout(() => {
-                expect(emit.callCount).to.equal(2);
-                expect(emit.calledWith('obj.a', [1, 2, 3])).to.equal(true);
-                expect(emit.calledWith('obj.b', 'foobar')).to.equal(true);
+                expect(events.emit.callCount).to.equal(2);
+                expect(events.emit).to.have.been.calledWith('obj.a', [ 1, 2, 3 ]);
+                expect(events.emit).to.have.been.calledWith('obj.b', 'foobar');
                 done();
-            }, 1);
+            });
         });
     });
 
     describe('StateEventProxy Class', () => {
-
-        describe('create method', () => {
-            let emit;
-
-            beforeEach(() => {
-                emit = sinon.stub(StateEventProxy, 'emit');
-            });
-            afterEach(() => {
-                emit.restore();
-            });
-        });
 
         describe('isMutateFn method', () => {
 
@@ -119,195 +99,181 @@ describe('StateEventProxy', () => {
         });
 
         describe('emit method', () => {
-            let emit;
-
-            beforeEach(() => {
-                emit = sinon.stub(events, 'emit');
-            });
-            afterEach(() => {
-                emit.restore();
-            });
+            beforeEach(() => sandbox.stub(events, 'emit'));
 
             it(`should call events.emit if the scope is not disabled`, (done) => {
-                let v = 40, obj = {};
+                const v = 40;
+                const obj = {};
 
-                expect(() => StateEventProxy.emit('test.scope', v, obj)).to.not.throw(Error);
+            StateEventProxy.emit('test.scope', v, obj);
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(1);
-                    expect(emit.calledWithExactly('test.scope', v, obj)).to.equal(true);
+                    expect(events.emit.callCount).to.equal(1);
+                    expect(events.emit)
+                        .to.have.been.calledWithExactly('test.scope', v, obj);
                     done();
-                }, 1);
+                });
             });
 
             it(`should not call events.emit if the scope is disabled`, (done) => {
                 DISABLE['test.scope'] = true;
-                expect(() => StateEventProxy.emit('test.scope', 30, {})).to.not.throw(Error);
+                StateEventProxy.emit('test.scope', 30, {});
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(0);
+                    expect(events.emit.callCount).to.equal(0);
                     DISABLE['test.scope'] = false;
                     done();
-                }, 1);
+                });
             });
         });
 
         describe('proxifyProperty method', () => {
-            let buildObject, buildArray, emit;
-
             beforeEach(() => {
-                buildObject = sinon.stub(StateEventProxy, 'buildProxyObject', (s, v) => v);
-                buildArray = sinon.stub(StateEventProxy, 'buildProxyArray', (s, o, v) => v);
-                emit = sinon.stub(StateEventProxy, 'emit');
-            });
-            afterEach(() => {
-                buildObject.restore();
-                buildArray.restore();
-                emit.restore();
+                sandbox.stub(StateEventProxy, 'buildProxyObject').callsFake((s, v) => v);
+                sandbox.stub(StateEventProxy, 'buildProxyArray').callsFake((s, o, v) => v);
+                sandbox.stub(StateEventProxy, 'emit');
             });
 
             it(`should assign to the provided object a wrapped property that, when
             set, will emit a state event`, (done) => {
-                let obj = {}, prop = 'testProp', scope = 'test.obj.testProp';
+                const obj = {};
+                const prop = 'testProp';
+                const scope = 'test.obj.testProp';
 
-                expect(() => StateEventProxy.proxifyProperty(scope, obj, prop))
-                    .to.not.throw(Error);
+                StateEventProxy.proxifyProperty(scope, obj, prop);
                 expect(obj).to.exist;
                 expect(obj).to.have.property('testProp');
                 expect(obj).to.have.key('testProp');
                 expect(obj.testProp).to.not.exist;
-                expect(buildObject.callCount).to.equal(0);
-                expect(buildArray.callCount).to.equal(0);
+                expect(StateEventProxy.buildProxyObject.callCount).to.equal(0);
+                expect(StateEventProxy.buildProxyArray.callCount).to.equal(0);
                 obj.testProp = 'foobar';
                 expect(obj.testProp).to.equal('foobar');
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(1);
-                    expect(emit.calledWithExactly('test.obj.testProp', 'foobar', obj));
+                    expect(StateEventProxy.emit.callCount).to.equal(1);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly('test.obj.testProp', 'foobar', obj);
                     done();
-                }, 1)
+                })
             });
 
             it(`should assign to the provided object a deeply-proxied value when
             the value to be assigned is an array and deep=true`, (done) => {
-                let obj = {},
-                    prop = 'test',
-                    scope = 'obj.test',
-                    v = [1, 2, 3],
-                    opts = {deep: true, enumerable: true};
+                const obj = {};
+                const prop = 'test';
+                const scope = 'obj.test';
+                const v = [ 1, 2, 3 ];
+                const opts = { deep: true, enumerable: true };
 
-                expect(() => StateEventProxy.proxifyProperty(scope, obj, prop, v, opts))
-                    .to.not.throw(Error);
+                StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
                 expect(obj).to.exist;
-                expect(obj).to.have.property('test').that.eqls([1, 2, 3]);
-                expect(buildObject.callCount).to.equal(0);
-                expect(buildArray.callCount).to.equal(1);
-                expect(buildArray.calledWithExactly(scope, obj, v, opts)).to.equal(true);
-                obj.test = [3, 2];
-                expect(obj.test).to.eql([3, 2]);
-                expect(buildArray.callCount).to.equal(2);
-                expect(buildArray.calledWithExactly(scope, obj, [3, 2], opts));
+                expect(obj).to.have.property('test').that.eqls([ 1, 2, 3 ]);
+                expect(StateEventProxy.buildProxyObject.callCount).to.equal(0);
+                expect(StateEventProxy.buildProxyArray.callCount).to.equal(1);
+                expect(StateEventProxy.buildProxyArray)
+                    .to.have.been.calledWithExactly(scope, obj, v, opts);
+                obj.test = [ 3, 2 ];
+                expect(obj.test).to.eql([ 3, 2 ]);
+                expect(StateEventProxy.buildProxyArray.callCount).to.equal(2);
+                expect(StateEventProxy.buildProxyArray)
+                    .to.have.been.calledWithExactly(scope, obj, [ 3, 2 ], opts);
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(1);
-                    expect(emit.calledWithExactly(scope, [3, 2], obj)).to.equal(true);
+                    expect(StateEventProxy.emit.callCount).to.equal(1);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly(scope, [ 3, 2 ], obj);
                     done();
-                }, 1);
+                });
             });
 
             it(`should assign to the provided object a deeply-proxied value when
             the value to be assigned is an object and deep=true`, (done) => {
-                let obj = {},
-                    prop = 'test',
-                    scope = 'obj.test',
-                    v = {foo: 'bar'},
-                    opts = {deep: true, enumerable: true};
+                const obj = {};
+                const prop = 'test';
+                const scope = 'obj.test';
+                const v = { foo: 'bar' };
+                const opts = { deep: true, enumerable: true };
 
-                expect(() => StateEventProxy.proxifyProperty(scope, obj, prop, v, opts))
-                    .to.not.throw(Error);
+                StateEventProxy.proxifyProperty(scope, obj, prop, v, opts);
                 expect(obj).to.exist;
                 expect(obj).to.have.property('test').that.eqls(v);
-                expect(buildArray.callCount).to.equal(0);
-                expect(buildObject.callCount).to.equal(1);
-                expect(buildObject.calledWithExactly(scope, v, opts))
-                    .to.equal(true);
-                obj.test = {bar: 'foo'};
-                expect(obj.test).to.eql({bar: 'foo'});
-                expect(buildObject.callCount).to.equal(2);
-                expect(buildObject.calledWithExactly(scope, {bar: 'foo'}, opts));
+                expect(StateEventProxy.buildProxyArray.callCount).to.equal(0);
+                expect(StateEventProxy.buildProxyObject.callCount).to.equal(1);
+                expect(StateEventProxy.buildProxyObject)
+                    .to.have.been.calledWithExactly(scope, v, opts);
+                obj.test = { bar: 'foo' };
+                expect(obj.test).to.eql({ bar: 'foo' });
+                expect(StateEventProxy.buildProxyObject.callCount).to.equal(2);
+                expect(StateEventProxy.buildProxyObject)
+                    .to.have.been.calledWithExactly(scope, { bar: 'foo' }, opts);
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(1);
-                    expect(emit.calledWithExactly(scope, {bar: 'foo'}, obj)).to.equal(true);
+                    expect(StateEventProxy.emit.callCount).to.equal(1);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly(scope, { bar: 'foo' }, obj);
                     done();
-                }, 1);
+                });
             });
 
             it(`should assign to the provided object a wrapped property that is
             not enumerable when enumerable=false`, (done) => {
-                let obj = {}, prop = 'testProp', scope = 'test.obj.testProp';
+                const obj = {};
+                const prop = 'testProp';
+                const scope = 'test.obj.testProp';
 
-                expect(() => StateEventProxy.proxifyProperty(scope, obj, prop, 42, {
+                StateEventProxy.proxifyProperty(scope, obj, prop, 42, {
                     enumerable: false
-                })).to.not.throw(Error);
+                });
                 expect(obj).to.exist;
                 expect(obj).to.have.property('testProp');
                 expect(obj).to.not.have.key('testProp');
                 expect(obj.testProp).to.equal(42);
-                expect(buildObject.callCount).to.equal(0);
-                expect(buildArray.callCount).to.equal(0);
+                expect(StateEventProxy.buildProxyObject.callCount).to.equal(0);
+                expect(StateEventProxy.buildProxyArray.callCount).to.equal(0);
                 obj.testProp = 'foobar';
                 expect(obj.testProp).to.equal('foobar');
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(1);
-                    expect(emit.calledWithExactly('test.obj.testProp', 'foobar', obj));
+                    expect(StateEventProxy.emit.callCount).to.equal(1);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly('test.obj.testProp', 'foobar', obj);
                     done();
-                }, 1)
+                })
             });
         });
 
         describe('buildProxyObject method', () => {
-            let proxify;
 
-            beforeEach(() => proxify = sinon.stub(StateEventProxy, 'proxifyProperty'));
-            afterEach(() => proxify.restore());
+            beforeEach(() => sandbox.stub(StateEventProxy, 'proxifyProperty'));
 
             it(`should return an object that has proxified properties forEach
             each property on the original object`, () => {
-                let p,
-                    scope = 'test.obj.obj',
-                    obj = {
-                        foo: 'bar',
-                        bar: 'foo'
-                    },
-                    opts = {deep: true};
+                const scope = 'test.obj.obj';
+                const obj = {
+                    foo: 'bar',
+                    bar: 'foo'
+                };
+                const opts = { deep: true };
+                const p = StateEventProxy.buildProxyObject(scope, obj, opts);
 
-                expect(() => p = StateEventProxy.buildProxyObject(scope, obj, opts))
-                    .to.not.throw(Error);
                 expect(p).to.exist;
-                expect(proxify.callCount).to.equal(2);
-                expect(proxify.calledWithExactly(scope + '.foo', p, 'foo', 'bar', opts))
-                    .to.equal(true);
-                expect(proxify.calledWithExactly(scope + '.bar', p, 'bar', 'foo', opts))
-                    .to.equal(true);
+                expect(StateEventProxy.proxifyProperty.callCount).to.equal(2);
+                expect(StateEventProxy.proxifyProperty)
+                    .to.have.been.calledWithExactly(scope + '.foo', p, 'foo', 'bar', opts);
+                expect(StateEventProxy.proxifyProperty)
+                    .to.have.been.calledWithExactly(scope + '.bar', p, 'bar', 'foo', opts);
             });
 
         });
 
         describe('buildProxyArray method', () => {
-            let buildObject, emit;
-
             beforeEach(() => {
-                buildObject = sinon.stub(StateEventProxy, 'buildProxyObject', (s, v) => v);
-                emit = sinon.stub(StateEventProxy, 'emit');
-            });
-            afterEach(() => {
-                buildObject.restore();
-                emit.restore();
+                sandbox.stub(StateEventProxy, 'buildProxyObject').callsFake((s, v) => v);
+                sandbox.stub(StateEventProxy, 'emit');
             });
 
             it(`should create and return an Array Proxy that wraps sets to be
             deeply-watched for new values, and gets to be watched if a mutation
             method is requested`, (done) => {
                 let p, scope = 'test.obj.arr',
-                    arr = [[1, 2, 3], 7, 42, {foo: 'bar'}],
-                    obj = {arr},
-                    opts = {deep: true};
+                    arr = [ [ 1, 2, 3 ], 7, 42, { foo: 'bar' } ],
+                    obj = { arr },
+                    opts = { deep: true };
 
                 expect(() => p = StateEventProxy.buildProxyArray(scope, obj, arr, opts))
                     .to.not.throw(Error);
@@ -315,21 +281,22 @@ describe('StateEventProxy', () => {
                 expect(p.length).to.equal(4);
                 expect(p[0].length).to.equal(3);
                 expect(p.sort()).to.eql(arr.sort());
-                expect(buildObject.callCount).to.equal(1);
-                expect(buildObject.calledWithExactly(scope + '[3]', {foo: 'bar'}, opts))
-                    .to.equal(true);
+                expect(StateEventProxy.buildProxyObject.callCount).to.equal(1);
+                expect(StateEventProxy.buildProxyObject)
+                    .to.have.been.calledWithExactly(`${scope}[3]`, { foo: 'bar' }, opts);
                 p[1] = 8;
                 delete p[0][1];
                 setTimeout(() => {
-                    expect(emit.callCount).to.equal(3);
-                    expect(emit.calledWithExactly(scope, p, obj)).to.equal(true);
-                    expect(emit.calledWithExactly(`${scope}[1]`, 8, p)).to.equal(true);
-                    expect(emit.calledWithExactly(`${scope}[0][1]`, undefined, p[0]))
-                        .to.equal(true);
+                    expect(StateEventProxy.emit.callCount).to.equal(3);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly(scope, p, obj);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly(`${scope}[1]`, 8, p);
+                    expect(StateEventProxy.emit)
+                        .to.have.been.calledWithExactly(`${scope}[0][1]`, undefined, p[0]);
                     done();
-                }, 1);
+                });
             });
         });
     });
-
 });

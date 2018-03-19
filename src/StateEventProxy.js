@@ -1,9 +1,8 @@
-import Static from 'basic-static';
 import forEach from 'lodash.foreach';
 import isObject from 'lodash.isobject';
 import isPlainObject from 'lodash.isplainobject';
 import isNumber from 'lodash.isnumber';
-import stateEvents from './stateEvents';
+import stateEvents from 'src/stateEvents';
 
 /**
  * @typedef {function(scope: string, newValue: *, parentObject: Object): undefined} ScopedEventListener
@@ -16,6 +15,8 @@ import stateEvents from './stateEvents';
  */
 
 /**
+ * Exported disable map for testing purposes.
+ * 
  * @access private
  */
 export const DISABLE = {};
@@ -54,7 +55,17 @@ export const DISABLE = {};
  * console.log(myObject) // {myPropA: [{id: 42}, {id: 'bar'}, 'foobar'], myPropB: {}}
 
  */
-export default class StateEventProxy extends Static {
+export default class StateEventProxy {
+
+    /**
+     * Un-used constructor. Throws an error if instantiation is attempted.
+     * 
+     * @access private
+     * @throws {Error}
+     */
+    constructor() {
+        throw new Error('Cannot instantiate static class StateEventProxy');
+    }
 
     /**
     * @return {ProxifiedObject}
@@ -76,23 +87,26 @@ export default class StateEventProxy extends Static {
         return self;
     }
 
+    /**
+     * @access private
+     */
     static proxifyProperty(scope, obj, prop, value, {
         deep=false, enumerable=true
     }={}) {
         let p = value;
 
         if (deep && isPlainObject(value)) {
-            p = this.buildProxyObject(scope, value, {deep, enumerable});
+            p = this.buildProxyObject(scope, value, { deep, enumerable });
         } else if (deep && Array.isArray(value)) {
-            p = this.buildProxyArray(scope, obj, value, {deep, enumerable});
+            p = this.buildProxyArray(scope, obj, value, { deep, enumerable });
         }
         Object.defineProperty(obj, prop, {
             get: () => p,
             set: (v) => {
                 if (deep && isObject(v)) {
                     v = Array.isArray(v)
-                        ? this.buildProxyArray(scope, obj, v, {deep, enumerable})
-                        : this.buildProxyObject(scope, v, {deep, enumerable});
+                        ? this.buildProxyArray(scope, obj, v, { deep, enumerable })
+                        : this.buildProxyObject(scope, v, { deep, enumerable });
                 }
                 this.emit(scope, v, obj);
                 p = v;
@@ -103,6 +117,9 @@ export default class StateEventProxy extends Static {
         });
     }
 
+    /**
+     * @access private
+     */
     static buildProxyObject(scope, obj, o) {
         let p = {};
 
@@ -110,6 +127,9 @@ export default class StateEventProxy extends Static {
         return p;
     }
 
+    /**
+     * @access private
+     */
     static buildProxyArray(scope, parent, arr, o) {
         const ret = new Proxy(
             arr.map((e, i) =>
@@ -151,12 +171,18 @@ export default class StateEventProxy extends Static {
         return ret;
     }
 
+    /**
+     * @access private
+     */
     static emit(scope, v, obj) {
         if (!DISABLE[scope]) {
             setTimeout(() => stateEvents.emit(scope, v, obj));
         }
     }
 
+    /**
+     * @access private
+     */
     static isMutateFn(key) {
         return [
             'copyWithin',
