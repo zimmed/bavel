@@ -1084,7 +1084,7 @@
     "__docId__": 62,
     "kind": "file",
     "name": "src/Engine.js",
-    "content": "import forEach from 'lodash.foreach';\nimport get from 'lodash.get';\nimport noop from 'lodash.noop';\nimport Scene from 'src/Scene';\nimport StateEventProxy from 'src/StateEventProxy';\nimport stateEvents from 'src/stateEvents';\nimport PlayerController from 'src/PlayerController';\nimport BabylonJS from 'babylonjs';\n\n/**\n * local vars for read-only class members\n * \n * @access private\n */\nlet loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity,\n    instance = null;\n\n/**\n * The game engine class (abstraction of BabylonJS Engine).\n *\n * @example <caption>Basic construction with default args</caption>\n * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider));\n * @example <caption>One-line runner</caption>\n * Engine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n *     .mount(document.getElementById('my-canvas'))\n *     .then(engine => engine.run(entityData))\n *     .then(engine => window.addEventListener('resize', () => engine.resize()));\n */\nexport default class Engine {\n\n    /**\n     * The singleton Engine instance.\n     * \n     * @type {?Engine}\n     */\n    static get instance() { return instance; }\n\n    /**\n     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).\n     */\n    static destroy() {\n        instance = null;\n    }\n\n    /**\n     * The general creation/initialization method for the class. Creates an\n     * engine instance or returns the existing one if already instantiated.\n     *\n     * @param {Logger} loggerService\n     * @param {ResourceLoader} resourceProviderLoader\n     * @param {class} [PlayerController]\n     * @param {Settings} [settings={}]\n     * @return {Engine}\n     */\n    static init(\n        loggerService,\n        resourceProviderLoader,\n        PlayerController,\n        settings={}\n    ) {\n        let engine = instance;\n\n        if (engine) return engine;\n        loader = logger = playerController = GraphicsLibrary = terrainEntity =\n            resourceProvider = canvasElement = babylonEngine = null;\n        engine = new this(loggerService, PlayerController, settings);\n        engine.loading = LoadStates.RES;\n        loader = resourceProviderLoader().then(provider => {\n            resourceProvider = provider;\n            engine.loading = LoadStates.INIT;\n            engine.scene = Scene.create();\n        });\n        return engine;\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    static constructorHelper(engine, ...args) {\n        engine.constructorHelper(...args);\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    constructorHelper(loggerService, PlayerCtrlClass, settings) {\n        StateEventProxy.create(this, 'engine', ['fps', 'loading']);\n        /**\n         * The currently rendered frames-per-second.\n         *\n         * @type {ProxyValue}\n         */\n        this.fps = 0;\n        /**\n         * The current loading state of the engine.\n         *\n         * @type {ProxyValue}\n         */\n        this.loading = LoadStates.BOOT;\n        /** @type {?Scene} **/\n        this.scene = null\n        /** @type {boolean} **/\n        this.running = false;\n        /** @type {Settings} **/\n        this.settings = settings;\n        /** @type {?Interval} **/\n        this.statsInterval = null;\n        logger = loggerService;\n        playerController = PlayerController.create(this, PlayerCtrlClass);\n    }\n\n    /**\n     * @access private\n     */\n    constructor(...args) {\n        if (instance) throw new Error('Cannot instantiate more than one instance of Engine');\n        Engine.constructorHelper(this, ...args);\n        instance = this;\n    }\n\n    /**\n     * The BabylonJS graphics library.\n     *\n     * @type {?BabylonJS}\n     */\n    get GL() { return GraphicsLibrary; }\n    /**\n     * The BabylonJS.Engine instance.\n     *\n     * @type {?BabylonJS.Engine}\n     */\n    get baby() { return babylonEngine; }\n    /**\n     * The canvas element to which the engine has been mounted.\n     *\n     * @type {?DOMElement}\n     */\n    get canvas() { return canvasElement; }\n    /**\n     * @type {?ResourceProvider}\n     */\n    get provider() { return resourceProvider; }\n    /**\n     * @type {?PlayerController}\n     */\n    get ctrl() { return playerController; }\n    /**\n     * @type {Logger}\n     */\n    get logger() { return logger; }\n    /**\n     * The scene's default terrain entity.\n     *\n     * @type {?EntityInstance}\n     */\n    get terrain() { return terrainEntity; }\n    /**\n     * @type {EntityInstance}\n     */\n    set terrain(v) { return terrainEntity = v; }\n\n    /**\n     * Mount the engine to the given canvas.\n     *\n     * @access public\n     * @param {DOMElement} canvas\n     * @return {Promise<Engine>}\n     */\n    async mount(canvas) {\n        await loader;\n        logger.debug('Mounting engine to canvas...');\n        this.loading = LoadStates.GL;\n        GraphicsLibrary = BabylonJS;\n        this.loading = LoadStates.GAME;\n        babylonEngine = new GraphicsLibrary.Engine(canvas, true);\n        canvasElement = canvas;\n        logger.debug('Loading scene...');\n        await this.scene.mount(this);\n        this.loading = LoadStates.DATA;\n        logger.info('Engine mounted.');\n        return this;\n    }\n\n    /**\n     * Dismount engine from canvas.\n     *\n     * @access public\n     * @return {Promise<Engine>}\n     */\n    dismount() {\n        logger.debug('Dismounting from to canvas...');\n        if (this.running) {\n            this.stop();\n        }\n        this.scene = this.scene.dismount(this);\n        get(babylonEngine, 'dispose', noop)();\n        babylonEngine = null;\n        canvasElement = null;\n        logger.info('Engine dismounted.');\n        return Promise.resolve(this);\n    }\n\n    /**\n     * Initialize given entities (if any), then begin rendering to mounted canvas.\n     *\n     * @access public\n     * @param {EntityMetaData[]} [entities]\n     * @return {Promise<Engine>}\n     */\n    async run(entities) {\n        const step = 1000 / 60;\n        let count,\n            time,\n            accum = 0,\n            defer = Promise.resolve(this);\n\n        if (!this.running && this.loading === LoadStates.DATA) {\n            if (entities) {\n                this.loading = LoadStates.PROC;\n                logger.debug('Adding initial entities to scene...');\n                defer = this.scene.updateEntities(this, entities);\n            }\n            await defer;\n            this.ctrl.setup(this.settings);\n            forEach(\n                this.ctrl.DOM_EVENTS,\n                (fn, name) => canvasElement.addEventListener(\n                    name,\n                    e => e.preventDefault() && false || this.ctrl[fn](e)\n                )\n            );\n            this.loading = LoadStates.REND;\n            logger.debug('Starting engine render loop. ENGINE: ');\n            babylonEngine.runRenderLoop(() => {\n                count = 0;\n                time = Date.now();\n                accum = babylonEngine.getDeltaTime();\n                // accum += engine.baby.getDeltaTime();\n                // while (accum >= step) {\n                //     count++;\n                //     engine.scene.tick(engine, time, step);\n                //     accum -= step;\n                //     if (count > 5) accum = 0;\n                // }\n                this.scene.tick(this, time, accum);\n                this.scene.baby.render();\n            });\n            this.loading = LoadStates.DONE;\n            this.statsInterval = setInterval(() => {\n                this.fps = Math.floor(this.baby.fps)\n            }, this.settings.statsInterval || 1000);\n            this.running = true;\n            return this;\n        }\n        return this;\n    }\n\n    /**\n     * Stop the rendering loop.\n     *\n     * @access public\n     * @return {Engine}\n     */\n    stop() {\n        if (this.running) {\n            logger.debug('Stopping engine render loop.');\n            babylonEngine.stopRenderLoop();\n            this.running = false;\n            this.loading = LoadStates.DATA;\n            clearInterval(this.statsInterval);\n        }\n        return this;\n    }\n\n    /**\n     * Passthrough to BabylonJS.Engine#resize method.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    resize() {\n        return get(babylonEngine, 'resize', noop)();\n    }\n\n    /**\n     * Creates a new BabylonJS.Vector3.\n     *\n     * @access public\n     * @param {Object} param\n     * @param {number} [param.x=0]\n     * @param {number} [param.y=0]\n     * @param {number} [param.z=0]\n     * @return {BabylonJS.Vector3}\n     */\n    toVector({x=0, y=0, z=0}={}) {\n        return new this.GL.Vector3(x, y, z);\n    }\n\n    /**\n     * Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    emitDebugEvent(...args) {\n        return this.settings.debug ? this.emitEvent(...args) : false;\n    }\n\n    /**\n     * Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    onDebugEvent(...args) {\n        return this.settings.debug ? this.onEvent(...args) : false;\n    }\n\n    /**\n     * Emits the given state event.\n     *\n     * @access public\n     * @param {string} scope - The scoped event name (e.g., 'engine.fps').\n     * @param {*} v - The changed value.\n     * @param {Object} obj - The parent object who's property changed.\n     * @return {undefined}\n     */\n    emitEvent(scope, v, obj) {\n        return stateEvents.emit(scope, v, obj);\n    }\n\n    /**\n     * Registers a listener method for a state event.\n     *\n     * @access public\n     * @param {string} event - The scoped event name.\n     * @param {function(value: *, obj: Object)} handler - The event handler.\n     * @return {undefined}\n     */\n    onEvent(event, handler) {\n        return stateEvents.on(event, handler);\n    }\n\n    /**\n     * Hooks a Keyboard Key action listener into the engine.\n     *\n     * @access public\n     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).\n     * @param {Object} handlers\n     * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.\n     * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.\n     * @param {KeyHandler} [handlers.handler] - Handler method for both events.\n     * @return {undefined}\n     */\n    registerKeyAction(key, {downHandler, upHandler, handler}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const kUp = ActionManager.OnKeyUpTrigger;\n        const kDn = ActionManager.OnKeyDownTrigger;\n        let am = this.scene.baby.actionManager;\n\n        if (!am) {\n            am = this.scene.baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (handler || downHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                { trigger: kDn, parameter: key },\n                () => (handler || downHandler)(this, key, true))\n            );\n        }\n        if (handler || upHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                { trigger: kUp, parameter: key },\n                () => (handler || upHandler)(this, key, false))\n            );\n        }\n    }\n\n    /**\n     * Hooks Mouse action listener(s) into the engine for a given Entity.\n     *\n     * @access public\n     * @param {Entity} entity\n     * @param {Object} opts\n     * @param {bool} [opts.click] - Hooks the left-click (or equivalent) when true.\n     * @param {bool} [opts.altClick] - Hooks the right-click (or equivalent) when true.\n     * @param {bool} [opts.over] - Hooks the mouse-over when true.\n     * @param {bool} [opts.out] - Hooks the mouse-out when true.\n     * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.\n     * @return {undefined}\n     */\n    async registerMouseEventsForEntity(entity, { click, altClick, over, out, cursor }={}) {\n        const { ActionManager, ExecuteCodeAction } = this.GL;\n        const clickT = ActionManager.OnLeftPickTrigger;\n        const altClickT = ActionManager.OnRightPickTrigger;\n        const overT = ActionManager.OnPointerOverTrigger;\n        const outT = ActionManager.OnPointerOutTrigger;\n        const mesh = await entity.meshAsync;\n        const { baby } = await mesh.ready();\n        let am = baby.actionManager;\n\n        if (!am) {\n            am = baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (cursor) {\n            am.hoverCursor = cursor;\n        }\n        if (click) {\n            am.registerAction(new ExecuteCodeAction(\n                clickT, e => this.ctrl.entityClick(entity, e))\n            );\n        }\n        if (altClick) {\n            am.registerAction(new ExecuteCodeAction(\n                altClickT, e => this.ctrl.entityAltClick(entity, e))\n            );\n        }\n        if (over) {\n            am.registerAction(new ExecuteCodeAction(\n                overT, e => this.ctrl.entityOver(entity, e))\n            );\n        }\n        if (out) {\n            am.registerAction(new ExecuteCodeAction(\n                outT, e => this.ctrl.entityOut(entity, e))\n            );\n        }\n    }\n\n    /**\n     * Removes all Mouse action listeners and mouse-over cursor for a given entity.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    deregisterMouseEventsForEntity(entity) {\n        let am = entity.mesh.baby.actionManager;\n\n        if (am) {\n            am.hoverCursor = 'default';\n            while (am.actions.length) { am.actions.pop(); }\n        }\n    }\n}\n\n/**\n * The various states of Engine#loading.\n *\n * @access protected\n * @type {Object}\n * @property {string} BOOT\n * @property {string} RES\n * @property {string} INIT\n * @property {string} GL\n * @property {string} GAME\n * @property {string} DATA\n * @property {string} PROC\n * @property {string} REND\n * @property {null} DONE\n */\nexport const LoadStates = {\n    BOOT: 'Booting Up',\n    RES: 'Loading Resources',\n    INIT: 'Initial Setup',\n    GL: 'Loading Graphics Libraries',\n    GAME: 'Loading Game Engine',\n    DATA: 'Waiting For Initial Data',\n    PROC: 'Processing Initial Data',\n    REND: 'Rendering To Canvas',\n    DONE: null\n};\n\n/**\n * Exports private members for unit tests.\n * \n * @access private\n */\nexport const getPrivateDataForTest = () => ({\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity\n});\n",
+    "content": "import forEach from 'lodash.foreach';\nimport get from 'lodash.get';\nimport noop from 'lodash.noop';\nimport Scene from 'src/Scene';\nimport StateEventProxy from 'src/StateEventProxy';\nimport stateEvents from 'src/stateEvents';\nimport PlayerController from 'src/PlayerController';\n\n/**\n * local vars for read-only class members\n * \n * @access private\n */\nlet loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity,\n    instance = null;\n\n/**\n * The game engine class (abstraction of BabylonJS Engine).\n *\n * @example <caption>Basic construction with default args</caption>\n * let engine = Engine.init(logger, () => Promise.resolve(resourceProvider));\n * @example <caption>One-line runner</caption>\n * Engine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n *     .mount(document.getElementById('my-canvas'))\n *     .then(engine => engine.run(entityData))\n *     .then(engine => window.addEventListener('resize', () => engine.resize()));\n */\nexport default class Engine {\n\n    /**\n     * The singleton Engine instance.\n     * \n     * @type {?Engine}\n     */\n    static get instance() { return instance; }\n\n    /**\n     * Destroys singleton instance of class. (Hack until Singleton has own destroy method).\n     */\n    static destroy() {\n        instance = null;\n    }\n\n    /**\n     * The general creation/initialization method for the class. Creates an\n     * engine instance or returns the existing one if already instantiated.\n     *\n     * @param {Logger} loggerService\n     * @param {ResourceLoader} resourceProviderLoader\n     * @param {class} [PlayerController]\n     * @param {Settings} [settings={}]\n     * @return {Engine}\n     */\n    static init(\n        loggerService,\n        resourceProviderLoader,\n        PlayerController,\n        settings={}\n    ) {\n        let engine = instance;\n\n        if (engine) return engine;\n        loader = logger = playerController = GraphicsLibrary = terrainEntity =\n            resourceProvider = canvasElement = babylonEngine = null;\n        engine = new this(loggerService, PlayerController, settings);\n        engine.loading = LoadStates.RES;\n        loader = resourceProviderLoader().then(provider => {\n            resourceProvider = provider;\n            engine.loading = LoadStates.INIT;\n            engine.scene = Scene.create();\n        });\n        return engine;\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    static constructorHelper(engine, ...args) {\n        engine.constructorHelper(...args);\n    }\n\n    /**\n     * For testing purposes -- cannot stub constructor\n     *\n     * @access private\n     */\n    constructorHelper(loggerService, PlayerCtrlClass, settings) {\n        StateEventProxy.create(this, 'engine', ['fps', 'loading']);\n        /**\n         * The currently rendered frames-per-second.\n         *\n         * @type {ProxyValue}\n         */\n        this.fps = 0;\n        /**\n         * The current loading state of the engine.\n         *\n         * @type {ProxyValue}\n         */\n        this.loading = LoadStates.BOOT;\n        /** @type {?Scene} **/\n        this.scene = null\n        /** @type {boolean} **/\n        this.running = false;\n        /** @type {Settings} **/\n        this.settings = settings;\n        /** @type {?Interval} **/\n        this.statsInterval = null;\n        logger = loggerService;\n        playerController = PlayerController.create(this, PlayerCtrlClass);\n    }\n\n    /**\n     * @access private\n     */\n    constructor(...args) {\n        if (instance) throw new Error('Cannot instantiate more than one instance of Engine');\n        Engine.constructorHelper(this, ...args);\n        instance = this;\n    }\n\n    /**\n     * The BabylonJS graphics library.\n     *\n     * @type {?BabylonJS}\n     */\n    get GL() { return GraphicsLibrary; }\n    /**\n     * The BabylonJS.Engine instance.\n     *\n     * @type {?BabylonJS.Engine}\n     */\n    get baby() { return babylonEngine; }\n    /**\n     * The canvas element to which the engine has been mounted.\n     *\n     * @type {?DOMElement}\n     */\n    get canvas() { return canvasElement; }\n    /**\n     * @type {?ResourceProvider}\n     */\n    get provider() { return resourceProvider; }\n    /**\n     * @type {?PlayerController}\n     */\n    get ctrl() { return playerController; }\n    /**\n     * @type {Logger}\n     */\n    get logger() { return logger; }\n    /**\n     * The scene's default terrain entity.\n     *\n     * @type {?EntityInstance}\n     */\n    get terrain() { return terrainEntity; }\n    /**\n     * @type {EntityInstance}\n     */\n    set terrain(v) { return terrainEntity = v; }\n\n    /**\n     * Mount the engine to the given canvas.\n     *\n     * @access public\n     * @param {DOMElement} canvas\n     * @return {Promise<Engine>}\n     */\n    async mount(canvas) {\n        await loader;\n        logger.debug('Mounting engine to canvas...');\n        this.loading = LoadStates.GL;\n        GraphicsLibrary = BabylonJS;\n        this.loading = LoadStates.GAME;\n        babylonEngine = new GraphicsLibrary.Engine(canvas, true);\n        canvasElement = canvas;\n        logger.debug('Loading scene...');\n        await this.scene.mount(this);\n        this.loading = LoadStates.DATA;\n        logger.info('Engine mounted.');\n        return this;\n    }\n\n    /**\n     * Dismount engine from canvas.\n     *\n     * @access public\n     * @return {Promise<Engine>}\n     */\n    dismount() {\n        logger.debug('Dismounting from to canvas...');\n        if (this.running) {\n            this.stop();\n        }\n        this.scene = this.scene.dismount(this);\n        get(babylonEngine, 'dispose', noop)();\n        babylonEngine = null;\n        canvasElement = null;\n        logger.info('Engine dismounted.');\n        return Promise.resolve(this);\n    }\n\n    /**\n     * Initialize given entities (if any), then begin rendering to mounted canvas.\n     *\n     * @access public\n     * @param {EntityMetaData[]} [entities]\n     * @return {Promise<Engine>}\n     */\n    async run(entities) {\n        const step = 1000 / 60;\n        let count,\n            time,\n            accum = 0,\n            defer = Promise.resolve(this);\n\n        if (!this.running && this.loading === LoadStates.DATA) {\n            if (entities) {\n                this.loading = LoadStates.PROC;\n                logger.debug('Adding initial entities to scene...');\n                defer = this.scene.updateEntities(this, entities);\n            }\n            await defer;\n            this.ctrl.setup(this.settings);\n            forEach(\n                this.ctrl.DOM_EVENTS,\n                (fn, name) => canvasElement.addEventListener(\n                    name,\n                    e => e.preventDefault() && false || this.ctrl[fn](e)\n                )\n            );\n            this.loading = LoadStates.REND;\n            logger.debug('Starting engine render loop. ENGINE: ');\n            babylonEngine.runRenderLoop(() => {\n                count = 0;\n                time = Date.now();\n                accum = babylonEngine.getDeltaTime();\n                // accum += engine.baby.getDeltaTime();\n                // while (accum >= step) {\n                //     count++;\n                //     engine.scene.tick(engine, time, step);\n                //     accum -= step;\n                //     if (count > 5) accum = 0;\n                // }\n                this.scene.tick(this, time, accum);\n                this.scene.baby.render();\n            });\n            this.loading = LoadStates.DONE;\n            this.statsInterval = setInterval(() => {\n                this.fps = Math.floor(this.baby.getFps());\n            }, this.settings.statsInterval || 1000);\n            this.running = true;\n            return this;\n        }\n        return this;\n    }\n\n    /**\n     * Stop the rendering loop.\n     *\n     * @access public\n     * @return {Engine}\n     */\n    stop() {\n        if (this.running) {\n            logger.debug('Stopping engine render loop.');\n            babylonEngine.stopRenderLoop();\n            this.running = false;\n            this.loading = LoadStates.DATA;\n            clearInterval(this.statsInterval);\n        }\n        return this;\n    }\n\n    /**\n     * Passthrough to BabylonJS.Engine#resize method.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    resize() {\n        return get(babylonEngine, 'resize', noop)();\n    }\n\n    /**\n     * Creates a new BabylonJS.Vector3.\n     *\n     * @access public\n     * @param {Object} param\n     * @param {number} [param.x=0]\n     * @param {number} [param.y=0]\n     * @param {number} [param.z=0]\n     * @return {BabylonJS.Vector3}\n     */\n    toVector({x=0, y=0, z=0}={}) {\n        return new this.GL.Vector3(x, y, z);\n    }\n\n    /**\n     * Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    emitDebugEvent(...args) {\n        return this.settings.debug ? this.emitEvent(...args) : false;\n    }\n\n    /**\n     * Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    onDebugEvent(...args) {\n        return this.settings.debug ? this.onEvent(...args) : false;\n    }\n\n    /**\n     * Emits the given state event.\n     *\n     * @access public\n     * @param {string} scope - The scoped event name (e.g., 'engine.fps').\n     * @param {*} v - The changed value.\n     * @param {Object} obj - The parent object who's property changed.\n     * @return {undefined}\n     */\n    emitEvent(scope, v, obj) {\n        return stateEvents.emit(scope, v, obj);\n    }\n\n    /**\n     * Registers a listener method for a state event.\n     *\n     * @access public\n     * @param {string} event - The scoped event name.\n     * @param {function(value: *, obj: Object)} handler - The event handler.\n     * @return {undefined}\n     */\n    onEvent(event, handler) {\n        return stateEvents.on(event, handler);\n    }\n\n    /**\n     * Hooks a Keyboard Key action listener into the engine.\n     *\n     * @access public\n     * @param {string} key - The event key to listen for (e.g., 'w', 'a', 's', 'd', ' ', etc.).\n     * @param {Object} handlers\n     * @param {KeyHandler} [handlers.downHandler] - Handler method for KeyDown event.\n     * @param {KeyHandler} [handlers.upHandler] - Handler method for KeyUp event.\n     * @param {KeyHandler} [handlers.handler] - Handler method for both events.\n     * @return {undefined}\n     */\n    registerKeyAction(key, {downHandler, upHandler, handler}={}) {\n        const {ActionManager, ExecuteCodeAction} = this.GL;\n        const kUp = ActionManager.OnKeyUpTrigger;\n        const kDn = ActionManager.OnKeyDownTrigger;\n        let am = this.scene.baby.actionManager;\n\n        if (!am) {\n            am = this.scene.baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (handler || downHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                { trigger: kDn, parameter: key },\n                () => (handler || downHandler)(this, key, true))\n            );\n        }\n        if (handler || upHandler) {\n            am.registerAction(new ExecuteCodeAction(\n                { trigger: kUp, parameter: key },\n                () => (handler || upHandler)(this, key, false))\n            );\n        }\n    }\n\n    /**\n     * Hooks Mouse action listener(s) into the engine for a given Entity.\n     *\n     * @access public\n     * @param {Entity} entity\n     * @param {Object} opts\n     * @param {bool} [opts.click] - Hooks the left-click (or equivalent) when true.\n     * @param {bool} [opts.altClick] - Hooks the right-click (or equivalent) when true.\n     * @param {bool} [opts.over] - Hooks the mouse-over when true.\n     * @param {bool} [opts.out] - Hooks the mouse-out when true.\n     * @param {string} [opts.cursor] - Changes the mouse-over cursor when set.\n     * @return {undefined}\n     */\n    async registerMouseEventsForEntity(entity, { click, altClick, over, out, cursor }={}) {\n        const { ActionManager, ExecuteCodeAction } = this.GL;\n        const clickT = ActionManager.OnLeftPickTrigger;\n        const altClickT = ActionManager.OnRightPickTrigger;\n        const overT = ActionManager.OnPointerOverTrigger;\n        const outT = ActionManager.OnPointerOutTrigger;\n        const mesh = await entity.meshAsync;\n        const { baby } = await mesh.ready();\n        let am = baby.actionManager;\n\n        if (!am) {\n            am = baby.actionManager = new ActionManager(this.scene.baby);\n        }\n        if (cursor) {\n            am.hoverCursor = cursor;\n        }\n        if (click) {\n            am.registerAction(new ExecuteCodeAction(\n                clickT, e => this.ctrl.entityClick(entity, e))\n            );\n        }\n        if (altClick) {\n            am.registerAction(new ExecuteCodeAction(\n                altClickT, e => this.ctrl.entityAltClick(entity, e))\n            );\n        }\n        if (over) {\n            am.registerAction(new ExecuteCodeAction(\n                overT, e => this.ctrl.entityOver(entity, e))\n            );\n        }\n        if (out) {\n            am.registerAction(new ExecuteCodeAction(\n                outT, e => this.ctrl.entityOut(entity, e))\n            );\n        }\n    }\n\n    /**\n     * Removes all Mouse action listeners and mouse-over cursor for a given entity.\n     *\n     * @access public\n     * @return {undefined}\n     */\n    deregisterMouseEventsForEntity(entity) {\n        let am = entity.mesh.baby.actionManager;\n\n        if (am) {\n            am.hoverCursor = 'default';\n            while (am.actions.length) { am.actions.pop(); }\n        }\n    }\n}\n\n/**\n * The various states of Engine#loading.\n *\n * @access protected\n * @type {Object}\n * @property {string} BOOT\n * @property {string} RES\n * @property {string} INIT\n * @property {string} GL\n * @property {string} GAME\n * @property {string} DATA\n * @property {string} PROC\n * @property {string} REND\n * @property {null} DONE\n */\nexport const LoadStates = {\n    BOOT: 'Booting Up',\n    RES: 'Loading Resources',\n    INIT: 'Initial Setup',\n    GL: 'Loading Graphics Libraries',\n    GAME: 'Loading Game Engine',\n    DATA: 'Waiting For Initial Data',\n    PROC: 'Processing Initial Data',\n    REND: 'Rendering To Canvas',\n    DONE: null\n};\n\n/**\n * Exports private members for unit tests.\n * \n * @access private\n */\nexport const getPrivateDataForTest = () => ({\n    loader,\n    logger,\n    playerController,\n    GraphicsLibrary,\n    resourceProvider,\n    canvasElement,\n    babylonEngine,\n    terrainEntity\n});\n",
     "static": true,
     "longname": "/Users/zimmed/Bavel/bavel/src/Engine.js",
     "access": "public",
@@ -1107,7 +1107,7 @@
       "<caption>Basic construction with default args</caption>\nlet engine = Engine.init(logger, () => Promise.resolve(resourceProvider));",
       "<caption>One-line runner</caption>\nEngine.init(myLogger, myResourceLazyLoader, MyPlayerCtrl, settings)\n    .mount(document.getElementById('my-canvas'))\n    .then(engine => engine.run(entityData))\n    .then(engine => window.addEventListener('resize', () => engine.resize()));"
     ],
-    "lineNumber": 36,
+    "lineNumber": 35,
     "interface": false
   },
   {
@@ -1121,7 +1121,7 @@
     "longname": "src/Engine.js~Engine.instance",
     "access": "public",
     "description": "The singleton Engine instance.",
-    "lineNumber": 43,
+    "lineNumber": 42,
     "type": {
       "nullable": true,
       "types": [
@@ -1142,7 +1142,7 @@
     "longname": "src/Engine.js~Engine.destroy",
     "access": "public",
     "description": "Destroys singleton instance of class. (Hack until Singleton has own destroy method).",
-    "lineNumber": 48,
+    "lineNumber": 47,
     "params": [],
     "return": null
   },
@@ -1157,7 +1157,7 @@
     "longname": "src/Engine.js~Engine.init",
     "access": "public",
     "description": "The general creation/initialization method for the class. Creates an\nengine instance or returns the existing one if already instantiated.",
-    "lineNumber": 62,
+    "lineNumber": 61,
     "params": [
       {
         "nullable": null,
@@ -1222,7 +1222,7 @@
     "longname": "src/Engine.js~Engine.constructorHelper",
     "access": "private",
     "description": "For testing purposes -- cannot stub constructor",
-    "lineNumber": 88,
+    "lineNumber": 87,
     "params": [
       {
         "name": "engine",
@@ -1251,7 +1251,7 @@
     "longname": "src/Engine.js~Engine#constructorHelper",
     "access": "private",
     "description": "For testing purposes -- cannot stub constructor",
-    "lineNumber": 97,
+    "lineNumber": 96,
     "params": [
       {
         "name": "loggerService",
@@ -1283,7 +1283,7 @@
     "longname": "src/Engine.js~Engine#fps",
     "access": "public",
     "description": "The currently rendered frames-per-second.",
-    "lineNumber": 104,
+    "lineNumber": 103,
     "type": {
       "nullable": null,
       "types": [
@@ -1302,7 +1302,7 @@
     "longname": "src/Engine.js~Engine#loading",
     "access": "public",
     "description": "The current loading state of the engine.",
-    "lineNumber": 110,
+    "lineNumber": 109,
     "type": {
       "nullable": null,
       "types": [
@@ -1321,7 +1321,7 @@
     "longname": "src/Engine.js~Engine#scene",
     "access": "public",
     "description": null,
-    "lineNumber": 112,
+    "lineNumber": 111,
     "type": {
       "nullable": true,
       "types": [
@@ -1340,7 +1340,7 @@
     "longname": "src/Engine.js~Engine#running",
     "access": "public",
     "description": null,
-    "lineNumber": 114,
+    "lineNumber": 113,
     "type": {
       "nullable": null,
       "types": [
@@ -1359,7 +1359,7 @@
     "longname": "src/Engine.js~Engine#settings",
     "access": "public",
     "description": null,
-    "lineNumber": 116,
+    "lineNumber": 115,
     "type": {
       "nullable": null,
       "types": [
@@ -1378,7 +1378,7 @@
     "longname": "src/Engine.js~Engine#statsInterval",
     "access": "public",
     "description": null,
-    "lineNumber": 118,
+    "lineNumber": 117,
     "type": {
       "nullable": true,
       "types": [
@@ -1399,7 +1399,7 @@
     "longname": "src/Engine.js~Engine#constructor",
     "access": "private",
     "description": "",
-    "lineNumber": 126
+    "lineNumber": 125
   },
   {
     "__docId__": 76,
@@ -1412,7 +1412,7 @@
     "longname": "src/Engine.js~Engine#GL",
     "access": "public",
     "description": "The BabylonJS graphics library.",
-    "lineNumber": 137,
+    "lineNumber": 136,
     "type": {
       "nullable": true,
       "types": [
@@ -1433,7 +1433,7 @@
     "longname": "src/Engine.js~Engine#baby",
     "access": "public",
     "description": "The BabylonJS.Engine instance.",
-    "lineNumber": 143,
+    "lineNumber": 142,
     "type": {
       "nullable": true,
       "types": [
@@ -1454,7 +1454,7 @@
     "longname": "src/Engine.js~Engine#canvas",
     "access": "public",
     "description": "The canvas element to which the engine has been mounted.",
-    "lineNumber": 149,
+    "lineNumber": 148,
     "type": {
       "nullable": true,
       "types": [
@@ -1475,7 +1475,7 @@
     "longname": "src/Engine.js~Engine#provider",
     "access": "public",
     "description": "",
-    "lineNumber": 153,
+    "lineNumber": 152,
     "type": {
       "nullable": true,
       "types": [
@@ -1496,7 +1496,7 @@
     "longname": "src/Engine.js~Engine#ctrl",
     "access": "public",
     "description": "",
-    "lineNumber": 157,
+    "lineNumber": 156,
     "type": {
       "nullable": true,
       "types": [
@@ -1517,7 +1517,7 @@
     "longname": "src/Engine.js~Engine#logger",
     "access": "public",
     "description": "",
-    "lineNumber": 161,
+    "lineNumber": 160,
     "type": {
       "nullable": null,
       "types": [
@@ -1538,7 +1538,7 @@
     "longname": "src/Engine.js~Engine#terrain",
     "access": "public",
     "description": "The scene's default terrain entity.",
-    "lineNumber": 167,
+    "lineNumber": 166,
     "type": {
       "nullable": true,
       "types": [
@@ -1559,7 +1559,7 @@
     "longname": "src/Engine.js~Engine#terrain",
     "access": "public",
     "description": "",
-    "lineNumber": 171,
+    "lineNumber": 170,
     "type": {
       "nullable": null,
       "types": [
@@ -1580,7 +1580,7 @@
     "longname": "src/Engine.js~Engine#mount",
     "access": "public",
     "description": "Mount the engine to the given canvas.",
-    "lineNumber": 180,
+    "lineNumber": 179,
     "params": [
       {
         "nullable": null,
@@ -1613,7 +1613,7 @@
     "longname": "src/Engine.js~Engine#dismount",
     "access": "public",
     "description": "Dismount engine from canvas.",
-    "lineNumber": 201,
+    "lineNumber": 200,
     "return": {
       "nullable": null,
       "types": [
@@ -1635,7 +1635,7 @@
     "longname": "src/Engine.js~Engine#run",
     "access": "public",
     "description": "Initialize given entities (if any), then begin rendering to mounted canvas.",
-    "lineNumber": 221,
+    "lineNumber": 220,
     "params": [
       {
         "nullable": null,
@@ -1668,7 +1668,7 @@
     "longname": "src/Engine.js~Engine#stop",
     "access": "public",
     "description": "Stop the rendering loop.",
-    "lineNumber": 275,
+    "lineNumber": 274,
     "return": {
       "nullable": null,
       "types": [
@@ -1690,7 +1690,7 @@
     "longname": "src/Engine.js~Engine#resize",
     "access": "public",
     "description": "Passthrough to BabylonJS.Engine#resize method.",
-    "lineNumber": 292,
+    "lineNumber": 291,
     "return": {
       "nullable": null,
       "types": [
@@ -1712,7 +1712,7 @@
     "longname": "src/Engine.js~Engine#toVector",
     "access": "public",
     "description": "Creates a new BabylonJS.Vector3.",
-    "lineNumber": 306,
+    "lineNumber": 305,
     "params": [
       {
         "nullable": null,
@@ -1781,7 +1781,7 @@
     "longname": "src/Engine.js~Engine#emitDebugEvent",
     "access": "public",
     "description": "Emits the given state event, only when settings.debug = true. See {@link Engine#emitEvent}.",
-    "lineNumber": 316,
+    "lineNumber": 315,
     "return": {
       "nullable": null,
       "types": [
@@ -1811,7 +1811,7 @@
     "longname": "src/Engine.js~Engine#onDebugEvent",
     "access": "public",
     "description": "Adds state event listener only when settings.debug = true. See {@link Engine#onEvent}.",
-    "lineNumber": 326,
+    "lineNumber": 325,
     "return": {
       "nullable": null,
       "types": [
@@ -1841,7 +1841,7 @@
     "longname": "src/Engine.js~Engine#emitEvent",
     "access": "public",
     "description": "Emits the given state event.",
-    "lineNumber": 339,
+    "lineNumber": 338,
     "params": [
       {
         "nullable": null,
@@ -1894,7 +1894,7 @@
     "longname": "src/Engine.js~Engine#onEvent",
     "access": "public",
     "description": "Registers a listener method for a state event.",
-    "lineNumber": 351,
+    "lineNumber": 350,
     "params": [
       {
         "nullable": null,
@@ -1937,7 +1937,7 @@
     "longname": "src/Engine.js~Engine#registerKeyAction",
     "access": "public",
     "description": "Hooks a Keyboard Key action listener into the engine.",
-    "lineNumber": 366,
+    "lineNumber": 365,
     "params": [
       {
         "nullable": null,
@@ -2010,7 +2010,7 @@
     "longname": "src/Engine.js~Engine#registerMouseEventsForEntity",
     "access": "public",
     "description": "Hooks Mouse action listener(s) into the engine for a given Entity.",
-    "lineNumber": 402,
+    "lineNumber": 401,
     "params": [
       {
         "nullable": null,
@@ -2103,7 +2103,7 @@
     "longname": "src/Engine.js~Engine#deregisterMouseEventsForEntity",
     "access": "public",
     "description": "Removes all Mouse action listeners and mouse-over cursor for a given entity.",
-    "lineNumber": 446,
+    "lineNumber": 445,
     "return": {
       "nullable": null,
       "types": [
@@ -2133,7 +2133,7 @@
     "importPath": "bavel/src/Engine.js",
     "importStyle": "{LoadStates}",
     "description": "The various states of Engine#loading.",
-    "lineNumber": 471,
+    "lineNumber": 470,
     "properties": [
       {
         "nullable": null,
@@ -2249,7 +2249,7 @@
     "importPath": "bavel/src/Engine.js",
     "importStyle": "{getPrivateDataForTest}",
     "description": "Exports private members for unit tests.",
-    "lineNumber": 488,
+    "lineNumber": 487,
     "params": [],
     "return": null
   },
@@ -4448,6 +4448,17 @@
   {
     "__docId__": 184,
     "kind": "file",
+    "name": "src/setup.js",
+    "content": "import * as BabylonJS from 'babylonjs';\n\nObject.assign(global, {\n  BabylonJS\n});\n",
+    "static": true,
+    "longname": "/Users/zimmed/Bavel/bavel/src/setup.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 185,
+    "kind": "file",
     "name": "src/stateEvents.js",
     "content": "import EventEmitter from 'events';\n\nconst stateEvents = new EventEmitter();\n\n/**\n * The EventEmitter for proxified object state changes.\n *\n * @access public\n * @type {EventEmitter}\n */\nexport default stateEvents;\n",
     "static": true,
@@ -4466,7 +4477,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"bavel\",\n  \"description\": \"BabylonJS game framework with proper entity/component structure.\",\n  \"authors\": [\n    \"zimmed@zimmed.io\"\n  ],\n  \"version\": \"0.2.0\",\n  \"license\": \"MIT\",\n  \"repository\": \"github.com/zimmed/bavel\",\n  \"main\": \"lib/index.js\",\n  \"scripts\": {\n    \"test-spec\": \"node ./node_modules/.bin/mocha --no-color --reporter markdown --require test/setup.js test/hooks.js 'test/**/*.spec.js' > build/test-spec.md\",\n    \"test-results\": \"node ./node_modules/.bin/mocha --no-color --reporter json --require test/setup.js test/hooks.js 'test/**/*.spec.js' > build/test-results.json && node build/test-results.js\",\n    \"test-save\": \"npm run test-spec && npm run test-results\",\n    \"test-run\": \"node ./node_modules/.bin/mocha --require test/setup.js test/hooks.js 'test/**/*.spec.js'\",\n    \"test\": \"npm run test-save && npm run test-run\",\n    \"compile\": \"rm -rf ./lib && node ./node_modules/.bin/babel -d lib/ src/\",\n    \"doc\": \"node ./node_modules/.bin/esdoc\",\n    \"build\": \"npm run test-run && npm run test-save && npm run doc && npm run compile\"\n  },\n  \"graphicsLibs\": [\n    \"babylonjs\"\n  ],\n  \"dependencies\": {\n    \"babylonjs\": \"^2.5.0\",\n    \"lodash.foreach\": \"^4.5.0\",\n    \"lodash.get\": \"^4.4.2\",\n    \"lodash.isempty\": \"^4.4.0\",\n    \"lodash.isnumber\": \"^3.0.3\",\n    \"lodash.isobject\": \"^3.0.2\",\n    \"lodash.isplainobject\": \"^4.0.6\",\n    \"lodash.mapvalues\": \"^4.6.0\",\n    \"lodash.merge\": \"^4.6.1\",\n    \"lodash.noop\": \"^3.0.1\",\n    \"lodash.omit\": \"^4.5.0\",\n    \"lodash.pickby\": \"^4.6.0\",\n    \"lodash.take\": \"^4.1.1\",\n    \"lodash.values\": \"^4.3.0\",\n    \"lodash.zipobject\": \"^4.1.3\",\n    \"moment\": \"^2.20.1\",\n    \"babel-polyfill\": \"^6.26.0\"\n  },\n  \"devDependencies\": {\n    \"babel-cli\": \"^6.26.0\",\n    \"babel-core\": \"^6.26.0\",\n    \"babel-plugin-module-resolver\": \"^3.1.0\",\n    \"babel-preset-env\": \"^1.6.1\",\n    \"babel-preset-es2015\": \"^6.24.1\",\n    \"babel-preset-node8\": \"^1.2.0\",\n    \"chai\": \"^4.1.2\",\n    \"esdoc\": \"^1.0.4\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"mocha\": \"^5.0.4\",\n    \"mock-require\": \"^3.0.1\",\n    \"sinon\": \"^4.4.6\",\n    \"sinon-chai\": \"^3.0.0\"\n  }\n}\n",
+    "content": "{\n  \"name\": \"bavel\",\n  \"description\": \"BabylonJS game framework with proper entity/component structure.\",\n  \"authors\": [\n    \"zimmed@zimmed.io\"\n  ],\n  \"version\": \"0.2.1\",\n  \"license\": \"MIT\",\n  \"repository\": \"github.com/zimmed/bavel\",\n  \"main\": \"lib/index.js\",\n  \"scripts\": {\n    \"test-spec\": \"node ./node_modules/.bin/mocha --no-color --reporter markdown --require test/setup.js test/hooks.js 'test/**/*.spec.js' > build/test-spec.md\",\n    \"test-results\": \"node ./node_modules/.bin/mocha --no-color --reporter json --require test/setup.js test/hooks.js 'test/**/*.spec.js' > build/test-results.json && node build/test-results.js\",\n    \"test-save\": \"npm run test-spec && npm run test-results\",\n    \"test-run\": \"node ./node_modules/.bin/mocha --require test/setup.js test/hooks.js 'test/**/*.spec.js'\",\n    \"test\": \"npm run test-save && npm run test-run\",\n    \"compile\": \"rm -rf ./lib && node ./node_modules/.bin/babel -d lib/ src/\",\n    \"doc\": \"node ./node_modules/.bin/esdoc\",\n    \"build\": \"npm run test-run && npm run test-save && npm run doc && npm run compile\"\n  },\n  \"graphicsLibs\": [\n    \"babylonjs\"\n  ],\n  \"dependencies\": {\n    \"babylonjs\": \"^3.2.0-beta.1\",\n    \"lodash.foreach\": \"^4.5.0\",\n    \"lodash.get\": \"^4.4.2\",\n    \"lodash.isempty\": \"^4.4.0\",\n    \"lodash.isnumber\": \"^3.0.3\",\n    \"lodash.isobject\": \"^3.0.2\",\n    \"lodash.isplainobject\": \"^4.0.6\",\n    \"lodash.mapvalues\": \"^4.6.0\",\n    \"lodash.merge\": \"^4.6.1\",\n    \"lodash.noop\": \"^3.0.1\",\n    \"lodash.omit\": \"^4.5.0\",\n    \"lodash.pickby\": \"^4.6.0\",\n    \"lodash.take\": \"^4.1.1\",\n    \"lodash.values\": \"^4.3.0\",\n    \"lodash.zipobject\": \"^4.1.3\",\n    \"moment\": \"^2.20.1\"\n  },\n  \"devDependencies\": {\n    \"babel-cli\": \"^6.26.0\",\n    \"babel-core\": \"^6.26.0\",\n    \"babel-plugin-module-resolver\": \"^3.1.0\",\n    \"babel-preset-env\": \"^1.6.1\",\n    \"babel-preset-es2015\": \"^6.24.1\",\n    \"babel-preset-node8\": \"^1.2.0\",\n    \"chai\": \"^4.1.2\",\n    \"esdoc\": \"^1.0.4\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"mocha\": \"^5.0.4\",\n    \"mock-require\": \"^3.0.1\",\n    \"sinon\": \"^4.4.6\",\n    \"sinon-chai\": \"^3.0.0\",\n    \"babel-polyfill\": \"^6.26.0\"\n  }\n}\n",
     "longname": "/Users/zimmed/Bavel/bavel/package.json",
     "name": "package.json",
     "static": true,

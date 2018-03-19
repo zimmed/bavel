@@ -1,3 +1,5 @@
+import './setup';
+
 export { default as Engine } from 'src/Engine';
 export { default as PlayerController } from 'src/PlayerController';
 export { default as StateEventProxy } from 'src/StateEventProxy';

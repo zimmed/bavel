@@ -583,13 +583,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/engine.js~engine#terrain",
-    "class/src/Engine.js~Engine.html#instance-get-terrain",
+    "class/src/Engine.js~Engine.html#instance-set-terrain",
     "src/Engine.js~Engine#terrain",
     "member"
   ],
   [
     "src/engine.js~engine#terrain",
-    "class/src/Engine.js~Engine.html#instance-set-terrain",
+    "class/src/Engine.js~Engine.html#instance-get-terrain",
     "src/Engine.js~Engine#terrain",
     "member"
   ],
@@ -970,6 +970,12 @@ window.esdocSearchIndex = [
     "class/src/StateEventProxy.js~StateEventProxy.html#static-method-proxifyProperty",
     "src/StateEventProxy.js~StateEventProxy.proxifyProperty",
     "method"
+  ],
+  [
+    "src/setup.js",
+    "file/src/setup.js.html",
+    "src/setup.js",
+    "file"
   ],
   [
     "src/stateevents.js",

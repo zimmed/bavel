@@ -5,7 +5,6 @@ import Scene from 'src/Scene';
 import StateEventProxy from 'src/StateEventProxy';
 import stateEvents from 'src/stateEvents';
 import PlayerController from 'src/PlayerController';
-import BabylonJS from 'babylonjs';
 
 /**
  * local vars for read-only class members
@@ -258,7 +257,7 @@ export default class Engine {
             });
             this.loading = LoadStates.DONE;
             this.statsInterval = setInterval(() => {
-                this.fps = Math.floor(this.baby.fps)
+                this.fps = Math.floor(this.baby.getFps());
             }, this.settings.statsInterval || 1000);
             this.running = true;
             return this;

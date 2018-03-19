@@ -4,7 +4,7 @@
   "authors": [
     "zimmed@zimmed.io"
   ],
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "repository": "github.com/zimmed/bavel",
   "main": "lib/index.js",
@@ -22,7 +22,7 @@
     "babylonjs"
   ],
   "dependencies": {
-    "babylonjs": "^2.5.0",
+    "babylonjs": "^3.2.0-beta.1",
     "lodash.foreach": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",

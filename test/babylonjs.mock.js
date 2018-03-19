@@ -18,7 +18,7 @@ const mock = module.exports = {
         const sb = sinon.createSandbox();
 
         Object.assign(this, {
-            fps: 60,
+            getFps: sb.spy(() => 60),
             constructor: sb.spy(),
             runRenderLoop: sb.spy(),
             stopRenderLoop: sb.spy(),

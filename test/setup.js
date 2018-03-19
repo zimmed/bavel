@@ -25,7 +25,6 @@ const GLOBALS = {
   wait: (timeoutMs=1) => new Promise(res => setTimeout(() => res(), timeoutMs >= 1 ? timeoutMs : 1)),
 };
 const MOCKS = {
-	'babylonjs': BabylonJS
 };
 
 setupTestEnv();
